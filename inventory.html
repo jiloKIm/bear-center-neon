@@ -1243,7 +1243,10 @@
 
         // 일괄 입력 처리
         function processBulkInput() {
+            console.log('processBulkInput 함수 호출됨');
+            
             const inputText = document.getElementById('bulkInputText').value.trim();
+            console.log('입력 텍스트:', inputText);
             
             if (!inputText) {
                 showMessage('❌ 입력할 데이터가 없습니다.', 'error');
@@ -1251,10 +1254,14 @@
             }
             
             const lines = inputText.split('\n').filter(line => line.trim());
+            console.log('처리할 라인 수:', lines.length);
+            
             let addedCount = 0;
             
-            lines.forEach(line => {
+            lines.forEach((line, index) => {
+                console.log(`라인 ${index + 1}:`, line);
                 const columns = line.split(',').map(col => col.trim());
+                console.log('컬럼들:', columns);
                 
                 if (columns.length >= 4) {
                     const [name, quantity, unit, price] = columns;
@@ -1263,17 +1270,26 @@
                         const numQuantity = parseInt(quantity) || 1;
                         const numPrice = parseInt(price.replace(/[^0-9]/g, '')) || 0;
                         
-                        detailItems.push({
+                        const item = {
                             name: name,
                             quantity: numQuantity,
                             unit: unit,
                             price: numPrice
-                        });
+                        };
                         
+                        console.log('추가할 아이템:', item);
+                        detailItems.push(item);
                         addedCount++;
+                    } else {
+                        console.log('빈 데이터가 있어 건너뜀:', { name, quantity, unit, price });
                     }
+                } else {
+                    console.log('컬럼 수가 부족함:', columns.length);
                 }
             });
+            
+            console.log('총 추가된 아이템 수:', addedCount);
+            console.log('현재 detailItems 배열:', detailItems);
             
             if (addedCount > 0) {
                 updateDetailsDisplay();
