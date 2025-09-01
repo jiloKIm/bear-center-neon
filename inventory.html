@@ -936,7 +936,7 @@
                 <div class="detail-row">
                     <input type="text" placeholder="품명" value="${item.name}" 
                            onchange="detailItems[${index}].name = this.value; updateDetailsJSON()">
-                    <input type="text" placeholder="규격" value="${item.spec}" 
+                    <input type="text" placeholder="규격" value="${item.spec || ''}" 
                            onchange="detailItems[${index}].spec = this.value; updateDetailsJSON()">
                     <input type="number" placeholder="수량" value="${item.quantity}" min="1" 
                            onchange="detailItems[${index}].quantity = parseInt(this.value) || 1; updateDetailTotal(${index}); updateDetailsJSON()">
@@ -944,7 +944,7 @@
                            onchange="detailItems[${index}].unit = this.value; updateDetailsJSON()">
                     <input type="number" placeholder="단가" value="${item.price}" min="0" 
                            onchange="detailItems[${index}].price = parseInt(this.value) || 0; updateDetailTotal(${index}); updateDetailsJSON()">
-                    <div class="detail-total">${item.total.toLocaleString()}</div>
+                    <div class="detail-total">${(item.total || 0).toLocaleString()}</div>
                     <button type="button" class="btn-remove-detail" onclick="removeDetailRow(${index})">
                         <i class="fas fa-trash"></i>
                     </button>
@@ -1300,9 +1300,11 @@
                         
                         const item = {
                             name: name,
+                            spec: '', // 규격 필드 추가
                             quantity: numQuantity,
                             unit: unit,
-                            price: numPrice
+                            price: numPrice,
+                            total: numQuantity * numPrice // total 필드 추가
                         };
                         
                         console.log('추가할 아이템:', item);
