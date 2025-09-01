@@ -302,6 +302,15 @@
             border-left: 4px solid #a855f7;
         }
 
+        /* 폰트 색상 클래스 */
+        .event.color-red { color: #dc2626 !important; font-weight: bold; }
+        .event.color-blue { color: #2563eb !important; font-weight: bold; }
+        .event.color-green { color: #16a34a !important; font-weight: bold; }
+        .event.color-orange { color: #ca8a04 !important; font-weight: bold; }
+        .event.color-purple { color: #9333ea !important; font-weight: bold; }
+        .event.color-pink { color: #ec4899 !important; font-weight: bold; }
+        .event.color-gray { color: #374151 !important; font-weight: bold; }
+
         /* 일정 추가 버튼 */
         .add-btn { 
             background: #f3f4f6; 
@@ -1031,12 +1040,20 @@
         document.getElementById('eventForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             
+            const selectedColor = document.getElementById('eventColor').value;
             const formData = {
                 date_value: document.getElementById('eventDate').value,
                 title: document.getElementById('eventTitle').value,
-                category: document.getElementById('eventCategory').value,
-                color: document.getElementById('eventColor').value
+                category: document.getElementById('eventCategory').value
             };
+            
+            // 색상 정보를 localStorage에 임시 저장
+            if (selectedColor !== '#333333') {
+                const colorData = JSON.parse(localStorage.getItem('eventColors') || '{}');
+                const eventKey = `${formData.date_value}-${formData.title}`;
+                colorData[eventKey] = selectedColor;
+                localStorage.setItem('eventColors', JSON.stringify(colorData));
+            }
             
             try {
                 const method = currentEditingEvent ? 'PUT' : 'POST';
@@ -1128,9 +1145,26 @@
                     eventElement.className = `event cat-${event.category}`;
                     eventElement.textContent = event.title;
                     eventElement.setAttribute('data-event-id', event.id);
-                    if (event.color) {
-                        eventElement.style.color = event.color;
-                        eventElement.style.fontWeight = 'bold';
+                    // localStorage에서 저장된 색상 적용
+                    const colorData = JSON.parse(localStorage.getItem('eventColors') || '{}');
+                    const eventKey = `${event.date_value}-${event.title}`;
+                    const savedColor = colorData[eventKey];
+                    
+                    if (savedColor) {
+                        const colorMap = {
+                            '#dc2626': 'color-red',
+                            '#2563eb': 'color-blue', 
+                            '#16a34a': 'color-green',
+                            '#ca8a04': 'color-orange',
+                            '#9333ea': 'color-purple',
+                            '#ec4899': 'color-pink',
+                            '#374151': 'color-gray'
+                        };
+                        
+                        const colorClass = colorMap[savedColor];
+                        if (colorClass) {
+                            eventElement.classList.add(colorClass);
+                        }
                     }
                     eventElement.setAttribute('title', `${getCategoryName(event.category)}: ${event.title}`);
                     eventElement.onclick = (e) => {
