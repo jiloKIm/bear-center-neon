@@ -13,99 +13,221 @@
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Segoe UI', Tahoma, sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
-            padding: 20px;
+            margin: 0;
+            padding: 0;
+            color: #333;
         }
 
         .container {
             max-width: 1200px;
             margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* 네비게이션 스타일 */
+        .main-nav {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 20px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+
+        .nav-brand h1 {
+            margin: 0;
+            color: #333;
+            font-size: 1.8em;
+            font-weight: 700;
+        }
+
+        .nav-menu {
+            display: flex;
+            gap: 20px;
+        }
+
+        .nav-item {
+            text-decoration: none;
+            color: #555;
+            padding: 12px 20px;
+            border-radius: 25px;
+            font-weight: 600;
+            font-size: 1.1em;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .nav-item:hover {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .nav-item.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            box-shadow: 0 3px 10px rgba(102, 126, 234, 0.3);
         }
 
         .header {
             text-align: center;
-            margin-bottom: 30px;
+            margin: 30px 20px 40px;
             color: white;
         }
 
         .header h1 {
-            font-size: 2.5rem;
-            margin-bottom: 10px;
+            font-size: 2.5em;
+            margin: 0 0 10px;
             text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            font-weight: 700;
         }
 
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+        }
+
+        /* 카테고리 범례 */
+        .legend-container {
+            display: flex; 
+            flex-wrap: wrap; 
+            gap: 12px; 
+            justify-content: center; 
+            margin: 20px 0 25px; 
+        }
+
+        .legend-item { 
+            display: flex; 
+            align-items: center; 
+            gap: 10px; 
+            font-size: 16px; 
+            color: #374151;
+            font-weight: 600;
+            padding: 8px 12px;
+            background: rgba(255, 255, 255, 0.7);
+            border-radius: 8px;
+            border: 1px solid rgba(0,0,0,0.05);
+        }
+
+        .legend-color { 
+            width: 18px; 
+            height: 18px; 
+            border-radius: 6px; 
+        }
+
+        .legend-color.cat-인사 {
+            background: #fef3c7;
+            border: 2px solid #f59e0b;
+        }
+        
+        .legend-color.cat-협약MOU {
+            background: #e0f2fe;
+            border: 2px solid #0ea5e9;
+        }
+        
+        .legend-color.cat-외부업체방문 {
+            background: #ede9fe;
+            border: 2px solid #8b5cf6;
+        }
+        
+        .legend-color.cat-조달설치 {
+            background: #dcfce7;
+            border: 2px solid #22c55e;
+        }
+        
+        .legend-color.cat-gom입식and개소 {
+            background: #ffe4e6;
+            border: 2px solid #fb7185;
+        }
+        
+        .legend-color.cat-출장시공 {
+            background: #faf5ff;
+            border: 2px solid #a855f7;
+        }
+
+        /* 달력 컨테이너 */
         .calendar-container {
-            background: white;
+            background: rgba(255, 255, 255, 0.95);
             border-radius: 20px;
-            padding: 30px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
-            backdrop-filter: blur(10px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            margin-top: 20px;
+            margin-bottom: 40px;
+            padding: 20px;
         }
 
         .calendar-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 20px;
+            margin-bottom: 30px;
             padding: 0 10px;
         }
 
         .calendar-nav {
-            background: none;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             border: none;
-            font-size: 1.5rem;
-            color: #667eea;
+            width: 45px;
+            height: 45px;
+            border-radius: 12px;
+            color: white;
             cursor: pointer;
-            padding: 10px;
-            border-radius: 50%;
             transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
         }
 
         .calendar-nav:hover {
-            background: #667eea;
-            color: white;
-            transform: scale(1.1);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
         }
 
         .calendar-title {
-            font-size: 1.8rem;
-            color: #333;
-            font-weight: 600;
+            font-size: 2.1rem;
+            color: #2c3e50;
+            font-weight: 700;
+            text-align: center;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
 
+        /* 달력 테이블 */
         .calendar {
             width: 100%;
             border-collapse: collapse;
-        }
-
-        .calendar th,
-        .calendar td {
-            width: 14.28%;
-            height: 120px;
-            border: 1px solid #e9ecef;
-            vertical-align: top;
-            position: relative;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
         }
 
         .calendar th {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
+            background: #111827; 
+            color: #fff; 
             font-weight: 600;
             text-align: center;
-            height: 50px;
-            vertical-align: middle;
+            height: 58px;
+            font-size: 1.05rem;
+            letter-spacing: 0.8px;
         }
 
         .calendar td {
-            padding: 8px;
+            width: 14.28%;
+            height: 120px;
+            border: 1px solid #e5e7eb; 
+            vertical-align: top;
+            position: relative;
             background: white;
-            transition: background-color 0.3s ease;
-        }
-
-        .calendar td:hover {
-            background: #f8f9ff;
+            padding: 8px;
         }
 
         .calendar td.other-month {
@@ -116,77 +238,86 @@
         .calendar td.today {
             background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
             border: 2px solid #f39c12;
+            box-shadow: inset 0 0 0 1px rgba(243, 156, 18, 0.3);
         }
 
         .date-number {
+            font-weight: 700; 
+            margin-bottom: 6px; 
+            display: block; 
+            color: #111827;
             font-size: 1.1rem;
-            font-weight: 600;
-            color: #333;
-            margin-bottom: 5px;
         }
 
         .other-month .date-number {
-            color: #adb5bd;
+            color: #9ca3af;
         }
 
+        .today .date-number {
+            color: #e67e22;
+            font-weight: 700;
+        }
+
+        /* 일정 영역 */
         .events {
-            max-height: 80px;
-            overflow-y: auto;
+            margin-top: 6px;
         }
 
         .event {
-            font-size: 0.75rem;
-            padding: 2px 6px;
-            margin: 1px 0;
-            border-radius: 4px;
-            color: white;
-            font-weight: 500;
+            margin: 4px 0; 
+            padding: 4px 6px; 
+            font-size: 12px; 
+            border-radius: 6px; 
+            line-height: 1.3; 
             cursor: pointer;
-            transition: all 0.2s ease;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
         }
 
-        .event:hover {
-            transform: scale(1.05);
-            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        .event:hover { 
+            opacity: 0.8; 
         }
 
         /* 카테고리별 색상 */
-        .event.cat-인사 { background-color: #ff6b6b; }
-        .event.cat-협약MOU { background-color: #4ecdc4; }
-        .event.cat-외부업체방문 { background-color: #45b7d1; }
-        .event.cat-조달설치 { background-color: #f9ca24; }
-        .event.cat-gom입식and개소 { background-color: #6c5ce7; }
-        .event.cat-출장시공 { background-color: #a29bfe; }
-
-        .add-btn {
-            position: absolute;
-            bottom: 5px;
-            right: 5px;
-            width: 24px;
-            height: 24px;
-            background: #667eea;
-            color: white;
-            border: none;
-            border-radius: 50%;
-            cursor: pointer;
-            font-size: 14px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.3s ease;
-            opacity: 0;
+        .event.cat-인사 {
+            background: #fef3c7;
+            border-left: 4px solid #f59e0b;
+        }
+        .event.cat-협약MOU {
+            background: #e0f2fe;
+            border-left: 4px solid #0ea5e9;
+        }
+        .event.cat-외부업체방문 {
+            background: #ede9fe;
+            border-left: 4px solid #8b5cf6;
+        }
+        .event.cat-조달설치 {
+            background: #dcfce7;
+            border-left: 4px solid #22c55e;
+        }
+        .event.cat-gom입식and개소 {
+            background: #ffe4e6;
+            border-left: 4px solid #fb7185;
+        }
+        .event.cat-출장시공 {
+            background: #faf5ff;
+            border-left: 4px solid #a855f7;
         }
 
-        .calendar td:hover .add-btn {
-            opacity: 1;
+        /* 일정 추가 버튼 */
+        .add-btn { 
+            background: #f3f4f6; 
+            color: #6b7280; 
+            border: 1px dashed #d1d5db; 
+            border-radius: 6px; 
+            padding: 4px 6px; 
+            font-size: 12px; 
+            cursor: pointer; 
+            margin: 4px 0;
+            text-align: center;
         }
 
-        .add-btn:hover {
-            background: #5a6fd8;
-            transform: scale(1.2);
+        .add-btn:hover { 
+            background: #e5e7eb; 
+            border-color: #9ca3af; 
         }
 
         /* 모달 스타일 */
@@ -198,18 +329,19 @@
             top: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0,0,0,0.5);
+            background-color: rgba(0,0,0,0.6);
+            backdrop-filter: blur(4px);
             animation: fadeIn 0.3s ease;
         }
 
         .modal-content {
             background: white;
             margin: 5% auto;
-            padding: 30px;
-            border-radius: 15px;
+            padding: 35px;
+            border-radius: 20px;
             width: 90%;
-            max-width: 500px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+            max-width: 520px;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.25);
             animation: slideIn 0.3s ease;
             position: relative;
         }
@@ -220,7 +352,7 @@
         }
 
         @keyframes slideIn {
-            from { transform: translateY(-50px); opacity: 0; }
+            from { transform: translateY(-30px); opacity: 0; }
             to { transform: translateY(0); opacity: 1; }
         }
 
@@ -228,39 +360,47 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 25px;
-            padding-bottom: 15px;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
             border-bottom: 2px solid #f1f3f4;
         }
 
         .modal-title {
-            font-size: 1.5rem;
+            font-size: 1.6rem;
             color: #333;
-            font-weight: 600;
+            font-weight: 700;
         }
 
         .close {
             background: none;
             border: none;
-            font-size: 1.8rem;
+            font-size: 2rem;
             color: #adb5bd;
             cursor: pointer;
-            transition: color 0.3s ease;
+            transition: all 0.3s ease;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .close:hover {
             color: #dc3545;
+            background: rgba(220, 53, 69, 0.1);
         }
 
         .form-group {
-            margin-bottom: 20px;
+            margin-bottom: 25px;
         }
 
         .form-group label {
             display: block;
-            margin-bottom: 8px;
+            margin-bottom: 10px;
             font-weight: 600;
             color: #555;
+            font-size: 1rem;
             display: flex;
             align-items: center;
             gap: 8px;
@@ -269,31 +409,34 @@
         .form-group input,
         .form-group select {
             width: 100%;
-            padding: 12px 16px;
+            padding: 14px 18px;
             border: 2px solid #e9ecef;
-            border-radius: 8px;
+            border-radius: 12px;
             font-size: 16px;
             transition: all 0.3s ease;
+            background: white;
+            font-family: inherit;
         }
 
         .form-group input:focus,
         .form-group select:focus {
             outline: none;
             border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+            transform: translateY(-1px);
         }
 
         .btn-group {
             display: flex;
             gap: 15px;
-            margin-top: 25px;
+            margin-top: 30px;
         }
 
         .btn {
             flex: 1;
-            padding: 12px 20px;
+            padding: 14px 20px;
             border: none;
-            border-radius: 8px;
+            border-radius: 12px;
             font-size: 16px;
             font-weight: 600;
             cursor: pointer;
@@ -302,59 +445,66 @@
             align-items: center;
             justify-content: center;
             gap: 8px;
+            font-family: inherit;
+            min-height: 50px;
         }
 
         .btn-primary {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
         }
 
         .btn-primary:hover {
             transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
         }
 
         .btn-secondary {
             background: #6c757d;
             color: white;
+            box-shadow: 0 4px 15px rgba(108, 117, 125, 0.3);
         }
 
         .btn-secondary:hover {
             background: #5a6268;
             transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(108, 117, 125, 0.4);
         }
 
         .btn-danger {
-            background: #dc3545;
+            background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
             color: white;
+            box-shadow: 0 4px 15px rgba(220, 53, 69, 0.3);
         }
 
         .btn-danger:hover {
-            background: #c82333;
             transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(220, 53, 69, 0.4);
         }
 
         /* 메시지 스타일 */
         .message {
             position: fixed;
-            top: 20px;
-            right: 20px;
-            padding: 15px 20px;
-            border-radius: 8px;
+            top: 30px;
+            right: 30px;
+            padding: 16px 24px;
+            border-radius: 12px;
             font-weight: 500;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.15);
             z-index: 1001;
-            animation: slideInRight 0.3s ease;
+            animation: slideInRight 0.4s ease;
+            max-width: 400px;
         }
 
         .message.success {
-            background: #d4edda;
+            background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
             color: #155724;
             border: 1px solid #c3e6cb;
         }
 
         .message.error {
-            background: #f8d7da;
+            background: linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%);
             color: #721c24;
             border: 1px solid #f5c6cb;
         }
@@ -364,61 +514,150 @@
             to { transform: translateX(0); opacity: 1; }
         }
 
+        /* 스크롤바 스타일 */
+        .events::-webkit-scrollbar {
+            width: 3px;
+        }
+
+        .events::-webkit-scrollbar-track {
+            background: rgba(0,0,0,0.1);
+            border-radius: 2px;
+        }
+
+        .events::-webkit-scrollbar-thumb {
+            background: rgba(102, 126, 234, 0.7);
+            border-radius: 2px;
+        }
+
         /* 반응형 디자인 */
+        @media (max-width: 1024px) {
+            .legend-grid {
+                grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+                gap: 8px;
+            }
+            
+            .calendar th,
+            .calendar td {
+                height: 100px;
+            }
+        }
+
         @media (max-width: 768px) {
+            body {
+                padding: 15px;
+            }
+
             .header h1 {
-                font-size: 2rem;
+                font-size: 2.2rem;
             }
 
             .calendar-container {
-                padding: 15px;
+                padding: 20px;
+            }
+
+            .legend-grid {
+                grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+                gap: 6px;
+            }
+
+            .legend-item {
+                padding: 6px 8px;
             }
 
             .calendar th,
             .calendar td {
                 height: 80px;
-                font-size: 0.9rem;
+                font-size: 0.85rem;
             }
 
             .event {
                 font-size: 0.7rem;
-                padding: 1px 4px;
+                padding: 2px 4px;
             }
 
             .modal-content {
                 margin: 10% auto;
-                padding: 20px;
+                padding: 25px;
+            }
+
+            .calendar-nav {
+                width: 40px;
+                height: 40px;
+                font-size: 1rem;
+            }
+
+            .calendar-title {
+                font-size: 1.6rem;
             }
         }
 
-        /* 스크롤바 스타일 */
-        .events::-webkit-scrollbar {
-            width: 4px;
-        }
+        @media (max-width: 480px) {
+            .header h1 {
+                font-size: 1.8rem;
+            }
 
-        .events::-webkit-scrollbar-track {
-            background: #f1f1f1;
-        }
+            .btn-group {
+                flex-direction: column;
+            }
 
-        .events::-webkit-scrollbar-thumb {
-            background: #667eea;
-            border-radius: 2px;
+            .legend-grid {
+                grid-template-columns: 1fr 1fr;
+            }
         }
     </style>
 </head>
 <body>
+    <nav class="main-nav">
+        <div class="nav-brand">
+            <h1>🐻 사육곰 센터 관리 시스템</h1>
+        </div>
+        <div class="nav-menu">
+            <a href="index.html" class="nav-item active">📅 일정 관리</a>
+            <a href="inventory.html" class="nav-item">📦 물품 관리</a>
+        </div>
+    </nav>
+
     <div class="container">
         <div class="header">
             <h1><i class="fas fa-paw"></i> 사육곰 센터 일정 관리</h1>
+            <p>효율적이고 체계적인 일정 관리 시스템</p>
         </div>
 
         <div class="calendar-container">
+            <!-- 카테고리 범례 -->
+            <div class="legend-container">
+                <div class="legend-item">
+                    <div class="legend-color cat-인사"></div>
+                    인사
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color cat-협약MOU"></div>
+                    협약 / MOU
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color cat-외부업체방문"></div>
+                    외부 업체 방문
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color cat-조달설치"></div>
+                    조달 / 설치
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color cat-gom입식and개소"></div>
+                    곰 입식 & 개소
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color cat-출장시공"></div>
+                    출장 / 시공
+                </div>
+            </div>
+
             <div class="calendar-header">
-                <button class="calendar-nav" onclick="previousMonth()">
+                <button class="calendar-nav" onclick="previousMonth()" title="이전 달">
                     <i class="fas fa-chevron-left"></i>
                 </button>
                 <div class="calendar-title" id="calendarTitle"></div>
-                <button class="calendar-nav" onclick="nextMonth()">
+                <button class="calendar-nav" onclick="nextMonth()" title="다음 달">
                     <i class="fas fa-chevron-right"></i>
                 </button>
             </div>
@@ -446,7 +685,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h2 class="modal-title" id="modalTitle">일정 추가</h2>
-                <button class="close" onclick="closeModal()">&times;</button>
+                <button class="close" onclick="closeModal()" title="닫기">&times;</button>
             </div>
             
             <form id="eventForm">
@@ -530,25 +769,25 @@
 
                 for (let j = 0; j < 7; j++) {
                     const cell = document.createElement('td');
-                    cell.innerHTML = '<div class="events"></div><button class="add-btn" onclick="openAddModal(this)"><i class="fas fa-plus"></i></button>';
+                    cell.innerHTML = '<div class="events"></div><div class="add-btn" onclick="openAddModal(this)">+ 일정 추가</div>';
 
                     if (i === 0 && j < firstDayOfWeek) {
                         // 이전 달 날짜
                         const prevMonth = new Date(year, month - 1, 0);
                         const prevDate = prevMonth.getDate() - firstDayOfWeek + j + 1;
-                        cell.innerHTML = `<div class="date-number">${prevDate}</div>` + cell.innerHTML;
+                        cell.innerHTML = `<span class="date-number">${prevDate}</span>` + cell.innerHTML;
                         cell.classList.add('other-month');
                         cell.setAttribute('data-date', `${year}-${String(month).padStart(2, '0')}-${String(prevDate).padStart(2, '0')}`);
                     } else if (date > daysInMonth) {
                         // 다음 달 날짜
                         const nextDate = date - daysInMonth;
-                        cell.innerHTML = `<div class="date-number">${nextDate}</div>` + cell.innerHTML;
+                        cell.innerHTML = `<span class="date-number">${nextDate}</span>` + cell.innerHTML;
                         cell.classList.add('other-month');
                         cell.setAttribute('data-date', `${year}-${String(month + 2).padStart(2, '0')}-${String(nextDate).padStart(2, '0')}`);
                         date++;
                     } else {
                         // 현재 달 날짜
-                        cell.innerHTML = `<div class="date-number">${date}</div>` + cell.innerHTML;
+                        cell.innerHTML = `<span class="date-number">${date}</span>` + cell.innerHTML;
                         const cellDate = `${year}-${String(month + 1).padStart(2, '0')}-${String(date).padStart(2, '0')}`;
                         cell.setAttribute('data-date', cellDate);
                         
@@ -632,6 +871,13 @@
             }
         }
 
+        // 키보드 ESC로 모달 닫기
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') {
+                closeModal();
+            }
+        });
+
         // 폼 제출 처리
         document.getElementById('eventForm').addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -660,13 +906,18 @@
                     throw new Error(`HTTP ${response.status}: ${response.statusText}`);
                 }
                 
-                showMessage(currentEditingEvent ? '일정이 성공적으로 수정되었습니다!' : '일정이 성공적으로 추가되었습니다!', 'success');
+                showMessage(
+                    currentEditingEvent 
+                        ? '✅ 일정이 성공적으로 수정되었습니다!' 
+                        : '✅ 일정이 성공적으로 추가되었습니다!', 
+                    'success'
+                );
                 closeModal();
                 await loadEvents();
                 
             } catch (error) {
                 console.error('Error saving event:', error);
-                showMessage(`일정 저장 실패: ${error.message}`, 'error');
+                showMessage(`❌ 일정 저장 실패: ${error.message}`, 'error');
             }
         });
 
@@ -687,13 +938,13 @@
                     throw new Error(`HTTP ${response.status}: ${response.statusText}`);
                 }
                 
-                showMessage('일정이 성공적으로 삭제되었습니다!', 'success');
+                showMessage('✅ 일정이 성공적으로 삭제되었습니다!', 'success');
                 closeModal();
                 await loadEvents();
                 
             } catch (error) {
                 console.error('Error deleting event:', error);
-                showMessage(`일정 삭제 실패: ${error.message}`, 'error');
+                showMessage(`❌ 일정 삭제 실패: ${error.message}`, 'error');
             }
         }
 
@@ -711,7 +962,7 @@
                 
             } catch (error) {
                 console.error('Error loading events:', error);
-                showMessage(`일정 불러오기 실패: ${error.message}`, 'error');
+                showMessage(`❌ 일정 불러오기 실패: ${error.message}`, 'error');
             }
         }
 
@@ -728,7 +979,10 @@
                     eventElement.textContent = event.title;
                     eventElement.setAttribute('data-event-id', event.id);
                     eventElement.setAttribute('title', `${getCategoryName(event.category)}: ${event.title}`);
-                    eventElement.onclick = () => openEditModal(eventElement);
+                    eventElement.onclick = (e) => {
+                        e.stopPropagation();
+                        openEditModal(eventElement);
+                    };
                     
                     const eventsContainer = cell.querySelector('.events');
                     eventsContainer.appendChild(eventElement);
@@ -739,18 +993,24 @@
         // 카테고리 이름 변환
         function getCategoryName(category) {
             const categoryMap = {
-                '인사': '인사',
-                '협약MOU': '협약 / MOU',
-                '외부업체방문': '외부 업체 방문',
-                '조달설치': '조달 / 설치',
-                'gom입식and개소': '곰 입식 & 개소',
-                '출장시공': '출장 / 시공'
+                '인사': '👥 인사',
+                '협약MOU': '📋 협약 / MOU',
+                '외부업체방문': '🏢 외부 업체 방문',
+                '조달설치': '🔧 조달 / 설치',
+                'gom입식and개소': '🐻 곰 입식 & 개소',
+                '출장시공': '🚗 출장 / 시공'
             };
             return categoryMap[category] || category;
         }
 
         // 메시지 표시
         function showMessage(message, type) {
+            // 기존 메시지 제거
+            const existingMessage = document.querySelector('.message');
+            if (existingMessage) {
+                existingMessage.remove();
+            }
+
             const messageDiv = document.createElement('div');
             messageDiv.className = `message ${type}`;
             messageDiv.textContent = message;
@@ -758,7 +1018,9 @@
             document.body.appendChild(messageDiv);
             
             setTimeout(() => {
-                messageDiv.remove();
+                if (messageDiv.parentNode) {
+                    messageDiv.remove();
+                }
             }, 4000);
         }
     </script>
