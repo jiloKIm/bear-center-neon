@@ -201,10 +201,54 @@
             line-height: 1.1;
         }
 
-        .event-곰입식and개소 { background: #fef3c7; color: #92400e; }
+        /* 사육곰 관련 - 주황/갈색 계열 */
+        .event-곰입식and개소 { background: #fed7aa; color: #c2410c; }
+        .event-사육관리 { background: #fef3c7; color: #92400e; }
+        .event-의료검진 { background: #fecaca; color: #dc2626; }
+        
+        /* 외부업체/방문 - 파란색 계열 */
         .event-외부업체방문 { background: #dbeafe; color: #1d4ed8; }
+        .event-시설점검 { background: #bfdbfe; color: #1e40af; }
+        .event-공사작업 { background: #93c5fd; color: #1d4ed8; }
+        
+        /* 행정업무 - 녹색 계열 */
         .event-인사 { background: #d1fae5; color: #065f46; }
+        .event-회의 { background: #bbf7d0; color: #047857; }
+        .event-교육훈련 { background: #a7f3d0; color: #059669; }
+        
+        /* 협약/법무 - 보라/분홍 계열 */
         .event-협약MOU { background: #fce7f3; color: #be185d; }
+        .event-법무검토 { background: #f3e8ff; color: #7c3aed; }
+        .event-감사 { background: #e9d5ff; color: #8b5cf6; }
+        
+        /* 예산/재정 - 청록색 계열 */
+        .event-예산편성 { background: #cffafe; color: #0891b2; }
+        .event-구매조달 { background: #a7f3d0; color: #059669; }
+        .event-결산 { background: #bfdbfe; color: #0369a1; }
+        
+        /* 긴급/중요 - 빨간색 계열 */
+        .event-긴급상황 { 
+            background: #fecaca; 
+            color: #dc2626; 
+            font-weight: 700;
+            border: 1px solid #f87171;
+            animation: pulse 2s infinite;
+        }
+        .event-응급처치 { 
+            background: #fed7d7; 
+            color: #b91c1c; 
+            font-weight: 700;
+            border: 1px solid #fca5a5;
+        }
+
+        @keyframes pulse {
+            0%, 100% { 
+                box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4);
+            }
+            50% { 
+                box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.1);
+            }
+        }
 
         .day-cell.other-month {
             color: #d1d5db;
@@ -259,10 +303,45 @@
             margin-bottom: 8px;
         }
 
-        .category-곰입식and개소 { background: #fef3c7; color: #92400e; }
+        /* 사육곰 관련 - 주황/갈색 계열 */
+        .category-곰입식and개소 { background: #fed7aa; color: #c2410c; }
+        .category-사육관리 { background: #fef3c7; color: #92400e; }
+        .category-의료검진 { background: #fecaca; color: #dc2626; }
+        
+        /* 외부업체/방문 - 파란색 계열 */
         .category-외부업체방문 { background: #dbeafe; color: #1d4ed8; }
+        .category-시설점검 { background: #bfdbfe; color: #1e40af; }
+        .category-공사작업 { background: #93c5fd; color: #1d4ed8; }
+        
+        /* 행정업무 - 녹색 계열 */
         .category-인사 { background: #d1fae5; color: #065f46; }
+        .category-회의 { background: #bbf7d0; color: #047857; }
+        .category-교육훈련 { background: #a7f3d0; color: #059669; }
+        
+        /* 협약/법무 - 보라/분홍 계열 */
         .category-협약MOU { background: #fce7f3; color: #be185d; }
+        .category-법무검토 { background: #f3e8ff; color: #7c3aed; }
+        .category-감사 { background: #e9d5ff; color: #8b5cf6; }
+        
+        /* 예산/재정 - 청록색 계열 */
+        .category-예산편성 { background: #cffafe; color: #0891b2; }
+        .category-구매조달 { background: #a7f3d0; color: #059669; }
+        .category-결산 { background: #bfdbfe; color: #0369a1; }
+        
+        /* 긴급/중요 - 빨간색 계열 */
+        .category-긴급상황 { 
+            background: #fecaca; 
+            color: #dc2626; 
+            font-weight: 700;
+            border: 1px solid #f87171;
+            animation: pulse 2s infinite;
+        }
+        .category-응급처치 { 
+            background: #fed7d7; 
+            color: #b91c1c; 
+            font-weight: 700;
+            border: 1px solid #fca5a5;
+        }
 
         /* 액션 버튼 */
         .action-btn {
@@ -574,10 +653,35 @@
                             <label class="form-label" for="eventCategory">카테고리</label>
                             <select id="eventCategory" class="form-select" required>
                                 <option value="">선택하세요</option>
-                                <option value="곰입식and개소">곰입식and개소</option>
-                                <option value="외부업체방문">외부업체방문</option>
-                                <option value="인사">인사</option>
-                                <option value="협약MOU">협약MOU</option>
+                                <optgroup label="🐻 사육곰 관련">
+                                    <option value="곰입식and개소">곰입식 및 개소</option>
+                                    <option value="사육관리">사육 관리</option>
+                                    <option value="의료검진">의료 검진</option>
+                                </optgroup>
+                                <optgroup label="🏢 외부업체/시설">
+                                    <option value="외부업체방문">외부업체 방문</option>
+                                    <option value="시설점검">시설 점검</option>
+                                    <option value="공사작업">공사 작업</option>
+                                </optgroup>
+                                <optgroup label="📋 행정업무">
+                                    <option value="인사">인사</option>
+                                    <option value="회의">회의</option>
+                                    <option value="교육훈련">교육 훈련</option>
+                                </optgroup>
+                                <optgroup label="📜 협약/법무">
+                                    <option value="협약MOU">협약 MOU</option>
+                                    <option value="법무검토">법무 검토</option>
+                                    <option value="감사">감사</option>
+                                </optgroup>
+                                <optgroup label="💰 예산/재정">
+                                    <option value="예산편성">예산 편성</option>
+                                    <option value="구매조달">구매 조달</option>
+                                    <option value="결산">결산</option>
+                                </optgroup>
+                                <optgroup label="🚨 긴급/중요">
+                                    <option value="긴급상황">긴급 상황</option>
+                                    <option value="응급처치">응급 처치</option>
+                                </optgroup>
                             </select>
                         </div>
                     </div>
@@ -688,7 +792,10 @@
                         dayEvents.slice(0, 3).forEach(event => {
                             const eventElement = document.createElement('div');
                             eventElement.className = `event-item event-${event.category}`;
-                            eventElement.textContent = event.title;
+                            
+                            // 카테고리별 아이콘 추가
+                            const icon = getCategoryIcon(event.category);
+                            eventElement.innerHTML = `${icon} ${event.title}`;
                             eventElement.title = event.title; // 툴팁으로 전체 제목 표시
                             eventsContainer.appendChild(eventElement);
                         });
@@ -773,7 +880,9 @@
 
             todayEventsList.innerHTML = dayEvents.map(event => `
                 <div class="event-card">
-                    <div class="event-category category-${event.category}">${event.category}</div>
+                    <div class="event-category category-${event.category}">
+                        ${getCategoryIcon(event.category)} ${event.category}
+                    </div>
                     <div class="event-title">${event.title}</div>
                 </div>
             `).join('');
@@ -845,13 +954,72 @@
             }
         }
 
+        // 카테고리별 아이콘 반환
+        function getCategoryIcon(category) {
+            const icons = {
+                // 사육곰 관련
+                '곰입식and개소': '🐻',
+                '사육관리': '🍯',
+                '의료검진': '🩺',
+                
+                // 외부업체/시설
+                '외부업체방문': '🏢',
+                '시설점검': '🔧',
+                '공사작업': '🏗️',
+                
+                // 행정업무
+                '인사': '👥',
+                '회의': '💼',
+                '교육훈련': '📚',
+                
+                // 협약/법무
+                '협약MOU': '🤝',
+                '법무검토': '⚖️',
+                '감사': '🔍',
+                
+                // 예산/재정
+                '예산편성': '💰',
+                '구매조달': '🛒',
+                '결산': '📊',
+                
+                // 긴급/중요
+                '긴급상황': '🚨',
+                '응급처치': '🚑'
+            };
+            return icons[category] || '📅';
+        }
+
         // 카테고리 색상 반환
         function getCategoryColor(category) {
             const colors = {
-                '곰입식and개소': '#92400e',
+                // 사육곰 관련 - 주황/갈색 계열
+                '곰입식and개소': '#c2410c',
+                '사육관리': '#92400e', 
+                '의료검진': '#dc2626',
+                
+                // 외부업체/방문 - 파란색 계열
                 '외부업체방문': '#1d4ed8',
+                '시설점검': '#1e40af',
+                '공사작업': '#1d4ed8',
+                
+                // 행정업무 - 녹색 계열
                 '인사': '#065f46',
-                '협약MOU': '#be185d'
+                '회의': '#047857',
+                '교육훈련': '#059669',
+                
+                // 협약/법무 - 보라/분홍 계열
+                '협약MOU': '#be185d',
+                '법무검토': '#7c3aed',
+                '감사': '#8b5cf6',
+                
+                // 예산/재정 - 청록색 계열
+                '예산편성': '#0891b2',
+                '구매조달': '#059669',
+                '결산': '#0369a1',
+                
+                // 긴급/중요 - 빨간색 계열
+                '긴급상황': '#dc2626',
+                '응급처치': '#b91c1c'
             };
             return colors[category] || '#6b7280';
         }
