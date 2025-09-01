@@ -15,11 +15,25 @@ export const handler = async (event, context) => {
   }
 
   try {
-    // 네온 데이터베이스 연결
-    const sql = neon(process.env.DATABASE_URL);
+    // 네온 데이터베이스 연결 - 공백 제거
+    const dbUrl = process.env.DATABASE_URL.replace(/\s+/g, '');
+    const sql = neon(dbUrl);
 
     // GET: 모든 물품 조회
     if (event.httpMethod === 'GET') {
+      // 헬스 체크
+      if (event.queryStringParameters && event.queryStringParameters.health === 'check') {
+        return {
+          statusCode: 200,
+          headers,
+          body: JSON.stringify({ 
+            status: 'OK',
+            timestamp: new Date().toISOString(),
+            databaseConnected: true
+          })
+        };
+      }
+      
       const items = await sql`SELECT * FROM inventory_items ORDER BY created_at DESC`;
       return {
         statusCode: 200,
@@ -85,12 +99,17 @@ export const handler = async (event, context) => {
 
   } catch (error) {
     console.error('API Error:', error);
+    console.error('Request method:', event.httpMethod);
+    console.error('Request body:', event.body);
+    console.error('Database URL length:', process.env.DATABASE_URL ? process.env.DATABASE_URL.length : 'undefined');
+    
     return {
       statusCode: 500,
       headers,
       body: JSON.stringify({ 
         error: 'Server error',
-        message: error.message 
+        message: error.message,
+        details: error.stack
       })
     };
   }
