@@ -146,16 +146,19 @@
         }
 
         .day-cell {
-            aspect-ratio: 1;
+            min-height: 80px;
             display: flex;
+            flex-direction: column;
             align-items: center;
-            justify-content: center;
+            justify-content: flex-start;
             font-size: 14px;
             font-weight: 500;
             border-radius: 8px;
             cursor: pointer;
             transition: all 0.2s ease;
             position: relative;
+            padding: 4px 2px;
+            overflow: hidden;
         }
 
         .day-cell:hover {
@@ -174,17 +177,34 @@
             font-weight: 600;
         }
 
-        .day-cell.has-event::after {
-            content: '';
-            position: absolute;
-            bottom: 2px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 4px;
-            height: 4px;
-            background: #3b82f6;
-            border-radius: 50%;
+        .day-number {
+            font-weight: 600;
+            margin-bottom: 2px;
         }
+
+        .day-events {
+            width: 100%;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 1px;
+        }
+
+        .event-item {
+            font-size: 9px;
+            padding: 1px 2px;
+            border-radius: 2px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            font-weight: 600;
+            line-height: 1.1;
+        }
+
+        .event-곰입식and개소 { background: #fef3c7; color: #92400e; }
+        .event-외부업체방문 { background: #dbeafe; color: #1d4ed8; }
+        .event-인사 { background: #d1fae5; color: #065f46; }
+        .event-협약MOU { background: #fce7f3; color: #be185d; }
 
         .day-cell.other-month {
             color: #d1d5db;
@@ -437,6 +457,16 @@
                 flex-direction: column;
             }
 
+            .day-cell {
+                min-height: 100px;
+                padding: 6px 4px;
+            }
+
+            .event-item {
+                font-size: 10px;
+                padding: 2px 4px;
+            }
+
             .modal-content {
                 position: relative;
                 max-width: 500px;
@@ -626,7 +656,12 @@
                     
                     const dayCell = document.createElement('div');
                     dayCell.className = 'day-cell';
-                    dayCell.textContent = cellDate.getDate();
+                    
+                    // 날짜 번호
+                    const dayNumber = document.createElement('div');
+                    dayNumber.className = 'day-number';
+                    dayNumber.textContent = cellDate.getDate();
+                    dayCell.appendChild(dayNumber);
                     
                     // 오늘 날짜 표시
                     const today = new Date();
@@ -639,10 +674,35 @@
                         dayCell.classList.add('other-month');
                     }
                     
-                    // 이벤트 있는 날짜 표시
+                    // 이벤트 표시
                     const dateString = cellDate.toISOString().split('T')[0];
-                    if (events.some(event => event.date_value === dateString)) {
+                    const dayEvents = events.filter(event => event.date_value === dateString);
+                    
+                    if (dayEvents.length > 0) {
                         dayCell.classList.add('has-event');
+                        
+                        const eventsContainer = document.createElement('div');
+                        eventsContainer.className = 'day-events';
+                        
+                        // 최대 3개까지만 표시
+                        dayEvents.slice(0, 3).forEach(event => {
+                            const eventElement = document.createElement('div');
+                            eventElement.className = `event-item event-${event.category}`;
+                            eventElement.textContent = event.title;
+                            eventElement.title = event.title; // 툴팁으로 전체 제목 표시
+                            eventsContainer.appendChild(eventElement);
+                        });
+                        
+                        // 더 많은 이벤트가 있으면 표시
+                        if (dayEvents.length > 3) {
+                            const moreElement = document.createElement('div');
+                            moreElement.className = 'event-item';
+                            moreElement.style.cssText = 'background: #f3f4f6; color: #6b7280; font-size: 8px;';
+                            moreElement.textContent = `+${dayEvents.length - 3}개 더`;
+                            eventsContainer.appendChild(moreElement);
+                        }
+                        
+                        dayCell.appendChild(eventsContainer);
                     }
                     
                     // 클릭 이벤트
