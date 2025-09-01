@@ -26,7 +26,7 @@
 
         .header {
             text-align: center;
-            margin-bottom: 40px;
+            margin-bottom: 30px;
             color: white;
         }
 
@@ -36,34 +36,220 @@
             text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
         }
 
-        .header p {
-            font-size: 1.2rem;
-            opacity: 0.9;
-        }
-
-        .main-content {
-            display: grid;
-            grid-template-columns: 1fr 2fr;
-            gap: 30px;
-            margin-bottom: 40px;
-        }
-
-        .form-section {
+        .calendar-container {
             background: white;
             border-radius: 20px;
             padding: 30px;
             box-shadow: 0 20px 40px rgba(0,0,0,0.1);
             backdrop-filter: blur(10px);
-            height: fit-content;
         }
 
-        .form-section h2 {
-            color: #333;
-            margin-bottom: 25px;
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding: 0 10px;
+        }
+
+        .calendar-nav {
+            background: none;
+            border: none;
             font-size: 1.5rem;
+            color: #667eea;
+            cursor: pointer;
+            padding: 10px;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+        }
+
+        .calendar-nav:hover {
+            background: #667eea;
+            color: white;
+            transform: scale(1.1);
+        }
+
+        .calendar-title {
+            font-size: 1.8rem;
+            color: #333;
+            font-weight: 600;
+        }
+
+        .calendar {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .calendar th,
+        .calendar td {
+            width: 14.28%;
+            height: 120px;
+            border: 1px solid #e9ecef;
+            vertical-align: top;
+            position: relative;
+        }
+
+        .calendar th {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            font-weight: 600;
+            text-align: center;
+            height: 50px;
+            vertical-align: middle;
+        }
+
+        .calendar td {
+            padding: 8px;
+            background: white;
+            transition: background-color 0.3s ease;
+        }
+
+        .calendar td:hover {
+            background: #f8f9ff;
+        }
+
+        .calendar td.other-month {
+            background: #f8f9fa;
+            color: #adb5bd;
+        }
+
+        .calendar td.today {
+            background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
+            border: 2px solid #f39c12;
+        }
+
+        .date-number {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .other-month .date-number {
+            color: #adb5bd;
+        }
+
+        .events {
+            max-height: 80px;
+            overflow-y: auto;
+        }
+
+        .event {
+            font-size: 0.75rem;
+            padding: 2px 6px;
+            margin: 1px 0;
+            border-radius: 4px;
+            color: white;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .event:hover {
+            transform: scale(1.05);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+
+        /* 카테고리별 색상 */
+        .event.cat-인사 { background-color: #ff6b6b; }
+        .event.cat-협약MOU { background-color: #4ecdc4; }
+        .event.cat-외부업체방문 { background-color: #45b7d1; }
+        .event.cat-조달설치 { background-color: #f9ca24; }
+        .event.cat-gom입식and개소 { background-color: #6c5ce7; }
+        .event.cat-출장시공 { background-color: #a29bfe; }
+
+        .add-btn {
+            position: absolute;
+            bottom: 5px;
+            right: 5px;
+            width: 24px;
+            height: 24px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 14px;
             display: flex;
             align-items: center;
-            gap: 10px;
+            justify-content: center;
+            transition: all 0.3s ease;
+            opacity: 0;
+        }
+
+        .calendar td:hover .add-btn {
+            opacity: 1;
+        }
+
+        .add-btn:hover {
+            background: #5a6fd8;
+            transform: scale(1.2);
+        }
+
+        /* 모달 스타일 */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            animation: fadeIn 0.3s ease;
+        }
+
+        .modal-content {
+            background: white;
+            margin: 5% auto;
+            padding: 30px;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+            animation: slideIn 0.3s ease;
+            position: relative;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideIn {
+            from { transform: translateY(-50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #f1f3f4;
+        }
+
+        .modal-title {
+            font-size: 1.5rem;
+            color: #333;
+            font-weight: 600;
+        }
+
+        .close {
+            background: none;
+            border: none;
+            font-size: 1.8rem;
+            color: #adb5bd;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        .close:hover {
+            color: #dc3545;
         }
 
         .form-group {
@@ -80,18 +266,17 @@
             gap: 8px;
         }
 
-        .form-group input, 
+        .form-group input,
         .form-group select {
             width: 100%;
             padding: 12px 16px;
-            border: 2px solid #e1e5e9;
-            border-radius: 12px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
             font-size: 16px;
             transition: all 0.3s ease;
-            background: white;
         }
 
-        .form-group input:focus, 
+        .form-group input:focus,
         .form-group select:focus {
             outline: none;
             border-color: #667eea;
@@ -100,287 +285,124 @@
 
         .btn-group {
             display: flex;
-            gap: 12px;
+            gap: 15px;
             margin-top: 25px;
         }
 
         .btn {
-            padding: 12px 24px;
+            flex: 1;
+            padding: 12px 20px;
             border: none;
-            border-radius: 12px;
+            border-radius: 8px;
             font-size: 16px;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s ease;
             display: flex;
             align-items: center;
+            justify-content: center;
             gap: 8px;
-            text-decoration: none;
         }
 
         .btn-primary {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
-            flex: 1;
         }
 
         .btn-primary:hover {
             transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
         }
 
         .btn-secondary {
-            background: #f8f9fa;
-            color: #6c757d;
-            border: 2px solid #e9ecef;
+            background: #6c757d;
+            color: white;
         }
 
         .btn-secondary:hover {
-            background: #e9ecef;
+            background: #5a6268;
             transform: translateY(-2px);
         }
 
-        .events-section {
-            background: white;
-            border-radius: 20px;
-            padding: 30px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
-            backdrop-filter: blur(10px);
-        }
-
-        .events-section h2 {
-            color: #333;
-            margin-bottom: 25px;
-            font-size: 1.5rem;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .events-grid {
-            display: grid;
-            gap: 16px;
-            max-height: 600px;
-            overflow-y: auto;
-        }
-
-        .event-card {
-            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-            border-radius: 16px;
-            padding: 20px;
-            border-left: 5px solid;
-            transition: all 0.3s ease;
-            cursor: pointer;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .event-card:hover {
-            transform: translateX(5px);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
-        }
-
-        .event-card.cat-인사 { 
-            border-left-color: #ff6b6b;
-            background: linear-gradient(135deg, #fff5f5 0%, #fed7d7 100%);
-        }
-        .event-card.cat-협약MOU { 
-            border-left-color: #4ecdc4;
-            background: linear-gradient(135deg, #f0fdfa 0%, #ccfbf1 100%);
-        }
-        .event-card.cat-외부업체방문 { 
-            border-left-color: #45b7d1;
-            background: linear-gradient(135deg, #f0f9ff 0%, #dbeafe 100%);
-        }
-        .event-card.cat-조달설치 { 
-            border-left-color: #f9ca24;
-            background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
-        }
-        .event-card.cat-gom입식and개소 { 
-            border-left-color: #6c5ce7;
-            background: linear-gradient(135deg, #faf5ff 0%, #e9d5ff 100%);
-        }
-        .event-card.cat-출장시공 { 
-            border-left-color: #a29bfe;
-            background: linear-gradient(135deg, #f3f4f6 0%, #d1d5db 100%);
-        }
-
-        .event-date {
-            font-size: 0.9rem;
-            font-weight: 600;
-            color: #666;
-            margin-bottom: 8px;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .event-title {
-            font-size: 1.2rem;
-            font-weight: 700;
-            color: #333;
-            margin-bottom: 8px;
-        }
-
-        .event-category {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            padding: 6px 12px;
-            border-radius: 20px;
-            font-size: 0.85rem;
-            font-weight: 600;
-            background: rgba(255, 255, 255, 0.8);
-            color: #333;
-        }
-
-        .event-actions {
-            position: absolute;
-            top: 15px;
-            right: 15px;
-            display: flex;
-            gap: 8px;
-            opacity: 0;
-            transition: opacity 0.3s ease;
-        }
-
-        .event-card:hover .event-actions {
-            opacity: 1;
-        }
-
-        .action-btn {
-            width: 32px;
-            height: 32px;
-            border: none;
-            border-radius: 50%;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.3s ease;
-            font-size: 14px;
-        }
-
-        .edit-btn {
-            background: #4ecdc4;
+        .btn-danger {
+            background: #dc3545;
             color: white;
         }
 
-        .edit-btn:hover {
-            background: #26d0ce;
-            transform: scale(1.1);
+        .btn-danger:hover {
+            background: #c82333;
+            transform: translateY(-2px);
         }
 
-        .delete-btn {
-            background: #ff6b6b;
-            color: white;
-        }
-
-        .delete-btn:hover {
-            background: #ff5252;
-            transform: scale(1.1);
-        }
-
+        /* 메시지 스타일 */
         .message {
-            margin: 20px 0;
-            padding: 16px;
-            border-radius: 12px;
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 20px;
+            border-radius: 8px;
             font-weight: 500;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            z-index: 1001;
+            animation: slideInRight 0.3s ease;
         }
 
         .message.success {
-            background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+            background: #d4edda;
             color: #155724;
             border: 1px solid #c3e6cb;
         }
 
         .message.error {
-            background: linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%);
+            background: #f8d7da;
             color: #721c24;
             border: 1px solid #f5c6cb;
         }
 
-        .message.loading {
-            background: linear-gradient(135deg, #d1ecf1 0%, #bee5eb 100%);
-            color: #0c5460;
-            border: 1px solid #bee5eb;
-        }
-
-        .loading-spinner {
-            display: inline-block;
-            width: 20px;
-            height: 20px;
-            border: 2px solid #f3f3f3;
-            border-top: 2px solid #667eea;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin-right: 10px;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        .empty-state {
-            text-align: center;
-            padding: 60px 20px;
-            color: #666;
-        }
-
-        .empty-state i {
-            font-size: 4rem;
-            color: #ddd;
-            margin-bottom: 20px;
-        }
-
-        .empty-state h3 {
-            font-size: 1.5rem;
-            margin-bottom: 10px;
-        }
-
-        .empty-state p {
-            font-size: 1rem;
-            opacity: 0.8;
+        @keyframes slideInRight {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
         }
 
         /* 반응형 디자인 */
         @media (max-width: 768px) {
-            .main-content {
-                grid-template-columns: 1fr;
-                gap: 20px;
-            }
-
             .header h1 {
                 font-size: 2rem;
             }
 
-            .form-section, .events-section {
-                padding: 20px;
+            .calendar-container {
+                padding: 15px;
             }
 
-            .btn-group {
-                flex-direction: column;
+            .calendar th,
+            .calendar td {
+                height: 80px;
+                font-size: 0.9rem;
+            }
+
+            .event {
+                font-size: 0.7rem;
+                padding: 1px 4px;
+            }
+
+            .modal-content {
+                margin: 10% auto;
+                padding: 20px;
             }
         }
 
         /* 스크롤바 스타일 */
-        .events-grid::-webkit-scrollbar {
-            width: 6px;
+        .events::-webkit-scrollbar {
+            width: 4px;
         }
 
-        .events-grid::-webkit-scrollbar-track {
+        .events::-webkit-scrollbar-track {
             background: #f1f1f1;
-            border-radius: 10px;
         }
 
-        .events-grid::-webkit-scrollbar-thumb {
+        .events::-webkit-scrollbar-thumb {
             background: #667eea;
-            border-radius: 10px;
-        }
-
-        .events-grid::-webkit-scrollbar-thumb:hover {
-            background: #5a6fd8;
+            border-radius: 2px;
         }
     </style>
 </head>
@@ -388,101 +410,242 @@
     <div class="container">
         <div class="header">
             <h1><i class="fas fa-paw"></i> 사육곰 센터 일정 관리</h1>
-            <p>효율적이고 체계적인 일정 관리 시스템</p>
         </div>
 
-        <div class="main-content">
-            <!-- 일정 등록 폼 -->
-            <div class="form-section">
-                <h2><i class="fas fa-plus-circle"></i> 새 일정 등록</h2>
-                
-                <form id="eventForm">
-                    <div class="form-group">
-                        <label for="date">
-                            <i class="fas fa-calendar"></i> 날짜
-                        </label>
-                        <input type="date" id="date" required>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="title">
-                            <i class="fas fa-edit"></i> 일정 제목
-                        </label>
-                        <input type="text" id="title" placeholder="일정 제목을 입력하세요" required>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="category">
-                            <i class="fas fa-tags"></i> 카테고리
-                        </label>
-                        <select id="category" required>
-                            <option value="">카테고리를 선택하세요</option>
-                            <option value="인사">👥 인사</option>
-                            <option value="협약MOU">📋 협약 / MOU</option>
-                            <option value="외부업체방문">🏢 외부 업체 방문</option>
-                            <option value="조달설치">🔧 조달 / 설치</option>
-                            <option value="gom입식and개소">🐻 곰 입식 & 개소</option>
-                            <option value="출장시공">🚗 출장 / 시공</option>
-                        </select>
-                    </div>
-                    
-                    <div class="btn-group">
-                        <button type="submit" class="btn btn-primary">
-                            <i class="fas fa-save"></i> 일정 등록
-                        </button>
-                        <button type="button" class="btn btn-secondary" onclick="loadEvents()">
-                            <i class="fas fa-sync-alt"></i> 새로고침
-                        </button>
-                    </div>
-                </form>
-                
-                <div id="message"></div>
+        <div class="calendar-container">
+            <div class="calendar-header">
+                <button class="calendar-nav" onclick="previousMonth()">
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+                <div class="calendar-title" id="calendarTitle"></div>
+                <button class="calendar-nav" onclick="nextMonth()">
+                    <i class="fas fa-chevron-right"></i>
+                </button>
             </div>
 
-            <!-- 일정 목록 -->
-            <div class="events-section">
-                <h2><i class="fas fa-list"></i> 등록된 일정</h2>
-                <div id="eventsList" class="events-grid">
-                    <div class="loading-state">
-                        <div class="loading-spinner"></div>
-                        일정을 불러오는 중...
-                    </div>
-                </div>
+            <table class="calendar" id="calendar">
+                <thead>
+                    <tr>
+                        <th>일</th>
+                        <th>월</th>
+                        <th>화</th>
+                        <th>수</th>
+                        <th>목</th>
+                        <th>금</th>
+                        <th>토</th>
+                    </tr>
+                </thead>
+                <tbody id="calendarBody">
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- 일정 추가/수정 모달 -->
+    <div id="eventModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title" id="modalTitle">일정 추가</h2>
+                <button class="close" onclick="closeModal()">&times;</button>
             </div>
+            
+            <form id="eventForm">
+                <div class="form-group">
+                    <label for="eventDate">
+                        <i class="fas fa-calendar"></i> 날짜
+                    </label>
+                    <input type="date" id="eventDate" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="eventTitle">
+                        <i class="fas fa-edit"></i> 일정 제목
+                    </label>
+                    <input type="text" id="eventTitle" placeholder="일정 제목을 입력하세요" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="eventCategory">
+                        <i class="fas fa-tags"></i> 카테고리
+                    </label>
+                    <select id="eventCategory" required>
+                        <option value="">카테고리를 선택하세요</option>
+                        <option value="인사">👥 인사</option>
+                        <option value="협약MOU">📋 협약 / MOU</option>
+                        <option value="외부업체방문">🏢 외부 업체 방문</option>
+                        <option value="조달설치">🔧 조달 / 설치</option>
+                        <option value="gom입식and개소">🐻 곰 입식 & 개소</option>
+                        <option value="출장시공">🚗 출장 / 시공</option>
+                    </select>
+                </div>
+                
+                <div class="btn-group">
+                    <button type="submit" class="btn btn-primary" id="submitBtn">
+                        <i class="fas fa-save"></i> 저장
+                    </button>
+                    <button type="button" class="btn btn-secondary" onclick="closeModal()">
+                        <i class="fas fa-times"></i> 취소
+                    </button>
+                    <button type="button" class="btn btn-danger" id="deleteBtn" onclick="deleteCurrentEvent()" style="display: none;">
+                        <i class="fas fa-trash"></i> 삭제
+                    </button>
+                </div>
+            </form>
         </div>
     </div>
 
     <script>
-        let editingEventId = null;
+        let currentDate = new Date();
+        let currentEditingEvent = null;
+        let allEvents = [];
 
-        // 페이지 로드시 일정 불러오기
+        // 페이지 로드시 초기화
         window.addEventListener('DOMContentLoaded', () => {
+            generateCalendar();
             loadEvents();
-            setTodayDate();
         });
 
-        // 오늘 날짜 기본값 설정
-        function setTodayDate() {
-            const today = new Date().toISOString().split('T')[0];
-            document.getElementById('date').value = today;
+        // 달력 생성
+        function generateCalendar() {
+            const year = currentDate.getFullYear();
+            const month = currentDate.getMonth();
+            
+            // 달력 제목 설정
+            document.getElementById('calendarTitle').textContent = 
+                `${year}년 ${month + 1}월`;
+
+            const firstDay = new Date(year, month, 1);
+            const lastDay = new Date(year, month + 1, 0);
+            const firstDayOfWeek = firstDay.getDay();
+            const daysInMonth = lastDay.getDate();
+
+            const calendarBody = document.getElementById('calendarBody');
+            calendarBody.innerHTML = '';
+
+            let date = 1;
+            let today = new Date();
+
+            for (let i = 0; i < 6; i++) {
+                const row = document.createElement('tr');
+
+                for (let j = 0; j < 7; j++) {
+                    const cell = document.createElement('td');
+                    cell.innerHTML = '<div class="events"></div><button class="add-btn" onclick="openAddModal(this)"><i class="fas fa-plus"></i></button>';
+
+                    if (i === 0 && j < firstDayOfWeek) {
+                        // 이전 달 날짜
+                        const prevMonth = new Date(year, month - 1, 0);
+                        const prevDate = prevMonth.getDate() - firstDayOfWeek + j + 1;
+                        cell.innerHTML = `<div class="date-number">${prevDate}</div>` + cell.innerHTML;
+                        cell.classList.add('other-month');
+                        cell.setAttribute('data-date', `${year}-${String(month).padStart(2, '0')}-${String(prevDate).padStart(2, '0')}`);
+                    } else if (date > daysInMonth) {
+                        // 다음 달 날짜
+                        const nextDate = date - daysInMonth;
+                        cell.innerHTML = `<div class="date-number">${nextDate}</div>` + cell.innerHTML;
+                        cell.classList.add('other-month');
+                        cell.setAttribute('data-date', `${year}-${String(month + 2).padStart(2, '0')}-${String(nextDate).padStart(2, '0')}`);
+                        date++;
+                    } else {
+                        // 현재 달 날짜
+                        cell.innerHTML = `<div class="date-number">${date}</div>` + cell.innerHTML;
+                        const cellDate = `${year}-${String(month + 1).padStart(2, '0')}-${String(date).padStart(2, '0')}`;
+                        cell.setAttribute('data-date', cellDate);
+                        
+                        // 오늘 날짜 표시
+                        if (year === today.getFullYear() && 
+                            month === today.getMonth() && 
+                            date === today.getDate()) {
+                            cell.classList.add('today');
+                        }
+                        date++;
+                    }
+
+                    row.appendChild(cell);
+                }
+
+                calendarBody.appendChild(row);
+                if (date > daysInMonth && i > 3) break;
+            }
+
+            // 일정 표시 업데이트
+            displayEventsOnCalendar();
         }
-        
+
+        // 이전 달
+        function previousMonth() {
+            currentDate.setMonth(currentDate.getMonth() - 1);
+            generateCalendar();
+        }
+
+        // 다음 달
+        function nextMonth() {
+            currentDate.setMonth(currentDate.getMonth() + 1);
+            generateCalendar();
+        }
+
+        // 일정 추가 모달 열기
+        function openAddModal(button) {
+            const cell = button.closest('td');
+            const date = cell.getAttribute('data-date');
+            
+            document.getElementById('modalTitle').textContent = '일정 추가';
+            document.getElementById('eventDate').value = date;
+            document.getElementById('eventTitle').value = '';
+            document.getElementById('eventCategory').value = '';
+            document.getElementById('submitBtn').innerHTML = '<i class="fas fa-save"></i> 저장';
+            document.getElementById('deleteBtn').style.display = 'none';
+            
+            currentEditingEvent = null;
+            document.getElementById('eventModal').style.display = 'block';
+        }
+
+        // 일정 수정 모달 열기
+        function openEditModal(eventElement) {
+            const eventId = eventElement.getAttribute('data-event-id');
+            const event = allEvents.find(e => e.id == eventId);
+            
+            if (event) {
+                document.getElementById('modalTitle').textContent = '일정 수정';
+                document.getElementById('eventDate').value = event.date_value;
+                document.getElementById('eventTitle').value = event.title;
+                document.getElementById('eventCategory').value = event.category;
+                document.getElementById('submitBtn').innerHTML = '<i class="fas fa-save"></i> 수정';
+                document.getElementById('deleteBtn').style.display = 'block';
+                
+                currentEditingEvent = event;
+                document.getElementById('eventModal').style.display = 'block';
+            }
+        }
+
+        // 모달 닫기
+        function closeModal() {
+            document.getElementById('eventModal').style.display = 'none';
+            currentEditingEvent = null;
+        }
+
+        // 모달 외부 클릭시 닫기
+        window.onclick = function(event) {
+            const modal = document.getElementById('eventModal');
+            if (event.target === modal) {
+                closeModal();
+            }
+        }
+
         // 폼 제출 처리
         document.getElementById('eventForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             
             const formData = {
-                date_value: document.getElementById('date').value,
-                title: document.getElementById('title').value,
-                category: document.getElementById('category').value
+                date_value: document.getElementById('eventDate').value,
+                title: document.getElementById('eventTitle').value,
+                category: document.getElementById('eventCategory').value
             };
             
             try {
-                showMessage('<div class="loading-spinner"></div>일정을 저장하는 중...', 'loading');
-                
-                const method = editingEventId ? 'PUT' : 'POST';
-                const body = editingEventId 
-                    ? { ...formData, id: editingEventId }
+                const method = currentEditingEvent ? 'PUT' : 'POST';
+                const body = currentEditingEvent 
+                    ? { ...formData, id: currentEditingEvent.id }
                     : formData;
 
                 const response = await fetch('/.netlify/functions/calendar-api', {
@@ -497,197 +660,82 @@
                     throw new Error(`HTTP ${response.status}: ${response.statusText}`);
                 }
                 
-                const result = await response.json();
-                showMessage(`<i class="fas fa-check-circle"></i> ${editingEventId ? '일정이 성공적으로 수정되었습니다!' : '일정이 성공적으로 추가되었습니다!'}`, 'success');
-                
-                // 폼 초기화
-                document.getElementById('eventForm').reset();
-                setTodayDate();
-                editingEventId = null;
-                updateFormUI();
-                
-                // 일정 목록 새로고침
+                showMessage(currentEditingEvent ? '일정이 성공적으로 수정되었습니다!' : '일정이 성공적으로 추가되었습니다!', 'success');
+                closeModal();
                 await loadEvents();
                 
             } catch (error) {
                 console.error('Error saving event:', error);
-                showMessage(`<i class="fas fa-exclamation-triangle"></i> 일정 저장 실패: ${error.message}`, 'error');
+                showMessage(`일정 저장 실패: ${error.message}`, 'error');
             }
         });
-        
-        // 일정 목록 불러오기
-        async function loadEvents() {
-            try {
-                document.getElementById('eventsList').innerHTML = `
-                    <div class="loading-state">
-                        <div class="loading-spinner"></div>
-                        일정을 불러오는 중...
-                    </div>
-                `;
-                
-                const response = await fetch('/.netlify/functions/calendar-api');
-                
-                if (!response.ok) {
-                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-                }
-                
-                const events = await response.json();
-                displayEvents(events);
-                
-            } catch (error) {
-                console.error('Error loading events:', error);
-                document.getElementById('eventsList').innerHTML = `
-                    <div class="message error">
-                        <i class="fas fa-exclamation-triangle"></i> 일정 불러오기 실패: ${error.message}
-                    </div>
-                `;
-            }
-        }
-        
-        // 일정 목록 표시
-        function displayEvents(events) {
-            const container = document.getElementById('eventsList');
-            
-            if (events.length === 0) {
-                container.innerHTML = `
-                    <div class="empty-state">
-                        <i class="fas fa-calendar-plus"></i>
-                        <h3>등록된 일정이 없습니다</h3>
-                        <p>새로운 일정을 등록해 보세요!</p>
-                    </div>
-                `;
-                return;
-            }
-            
-            // 날짜순으로 정렬
-            const sortedEvents = events.sort((a, b) => new Date(a.date_value) - new Date(b.date_value));
-            
-            container.innerHTML = sortedEvents.map(event => `
-                <div class="event-card cat-${event.category}" data-event-id="${event.id}">
-                    <div class="event-actions">
-                        <button class="action-btn edit-btn" onclick="editEvent(${event.id})" title="수정">
-                            <i class="fas fa-edit"></i>
-                        </button>
-                        <button class="action-btn delete-btn" onclick="deleteEvent(${event.id})" title="삭제">
-                            <i class="fas fa-trash"></i>
-                        </button>
-                    </div>
-                    
-                    <div class="event-date">
-                        <i class="fas fa-calendar"></i>
-                        ${formatDate(event.date_value)}
-                    </div>
-                    
-                    <div class="event-title">${event.title}</div>
-                    
-                    <div class="event-category">
-                        ${getCategoryIcon(event.category)}
-                        ${getCategoryName(event.category)}
-                    </div>
-                </div>
-            `).join('');
-        }
-
-        // 일정 수정
-        async function editEvent(eventId) {
-            try {
-                const response = await fetch('/.netlify/functions/calendar-api');
-                const events = await response.json();
-                const event = events.find(e => e.id == eventId);
-                
-                if (event) {
-                    document.getElementById('date').value = event.date_value;
-                    document.getElementById('title').value = event.title;
-                    document.getElementById('category').value = event.category;
-                    editingEventId = eventId;
-                    updateFormUI();
-                    
-                    // 폼 섹션으로 스크롤
-                    document.querySelector('.form-section').scrollIntoView({ behavior: 'smooth' });
-                }
-            } catch (error) {
-                showMessage(`<i class="fas fa-exclamation-triangle"></i> 일정 불러오기 실패: ${error.message}`, 'error');
-            }
-        }
 
         // 일정 삭제
-        async function deleteEvent(eventId) {
-            if (!confirm('정말로 이 일정을 삭제하시겠습니까?')) return;
+        async function deleteCurrentEvent() {
+            if (!currentEditingEvent || !confirm('정말로 이 일정을 삭제하시겠습니까?')) return;
             
             try {
-                showMessage('<div class="loading-spinner"></div>일정을 삭제하는 중...', 'loading');
-                
                 const response = await fetch('/.netlify/functions/calendar-api', {
                     method: 'DELETE',
                     headers: {
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify({ id: eventId })
+                    body: JSON.stringify({ id: currentEditingEvent.id })
                 });
                 
                 if (!response.ok) {
                     throw new Error(`HTTP ${response.status}: ${response.statusText}`);
                 }
                 
-                showMessage('<i class="fas fa-check-circle"></i> 일정이 성공적으로 삭제되었습니다!', 'success');
+                showMessage('일정이 성공적으로 삭제되었습니다!', 'success');
+                closeModal();
                 await loadEvents();
                 
             } catch (error) {
                 console.error('Error deleting event:', error);
-                showMessage(`<i class="fas fa-exclamation-triangle"></i> 일정 삭제 실패: ${error.message}`, 'error');
+                showMessage(`일정 삭제 실패: ${error.message}`, 'error');
             }
         }
 
-        // 폼 UI 업데이트 (수정 모드)
-        function updateFormUI() {
-            const formTitle = document.querySelector('.form-section h2');
-            const submitBtn = document.querySelector('.btn-primary');
-            
-            if (editingEventId) {
-                formTitle.innerHTML = '<i class="fas fa-edit"></i> 일정 수정';
-                submitBtn.innerHTML = '<i class="fas fa-save"></i> 수정 완료';
-                submitBtn.style.background = 'linear-gradient(135deg, #f39c12 0%, #e67e22 100%)';
-            } else {
-                formTitle.innerHTML = '<i class="fas fa-plus-circle"></i> 새 일정 등록';
-                submitBtn.innerHTML = '<i class="fas fa-save"></i> 일정 등록';
-                submitBtn.style.background = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
+        // 일정 목록 불러오기
+        async function loadEvents() {
+            try {
+                const response = await fetch('/.netlify/functions/calendar-api');
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                allEvents = await response.json();
+                displayEventsOnCalendar();
+                
+            } catch (error) {
+                console.error('Error loading events:', error);
+                showMessage(`일정 불러오기 실패: ${error.message}`, 'error');
             }
         }
 
-        // 날짜 포맷팅
-        function formatDate(dateString) {
-            const date = new Date(dateString + 'T00:00:00');
-            const today = new Date();
-            const tomorrow = new Date(today);
-            tomorrow.setDate(tomorrow.getDate() + 1);
+        // 달력에 일정 표시
+        function displayEventsOnCalendar() {
+            // 모든 일정 요소 제거
+            document.querySelectorAll('.event').forEach(event => event.remove());
             
-            const isToday = date.toDateString() === today.toDateString();
-            const isTomorrow = date.toDateString() === tomorrow.toDateString();
-            
-            if (isToday) return '오늘 (' + date.toLocaleDateString('ko-KR', { month: 'short', day: 'numeric' }) + ')';
-            if (isTomorrow) return '내일 (' + date.toLocaleDateString('ko-KR', { month: 'short', day: 'numeric' }) + ')';
-            
-            return date.toLocaleDateString('ko-KR', { 
-                year: 'numeric',
-                month: 'short', 
-                day: 'numeric',
-                weekday: 'short'
+            allEvents.forEach(event => {
+                const cell = document.querySelector(`td[data-date="${event.date_value}"]`);
+                if (cell) {
+                    const eventElement = document.createElement('div');
+                    eventElement.className = `event cat-${event.category}`;
+                    eventElement.textContent = event.title;
+                    eventElement.setAttribute('data-event-id', event.id);
+                    eventElement.setAttribute('title', `${getCategoryName(event.category)}: ${event.title}`);
+                    eventElement.onclick = () => openEditModal(eventElement);
+                    
+                    const eventsContainer = cell.querySelector('.events');
+                    eventsContainer.appendChild(eventElement);
+                }
             });
         }
-        
-        // 카테고리 아이콘
-        function getCategoryIcon(category) {
-            const iconMap = {
-                '인사': '<i class="fas fa-users"></i>',
-                '협약MOU': '<i class="fas fa-handshake"></i>',
-                '외부업체방문': '<i class="fas fa-building"></i>',
-                '조달설치': '<i class="fas fa-tools"></i>',
-                'gom입식and개소': '<i class="fas fa-paw"></i>',
-                '출장시공': '<i class="fas fa-car"></i>'
-            };
-            return iconMap[category] || '<i class="fas fa-calendar"></i>';
-        }
-        
+
         // 카테고리 이름 변환
         function getCategoryName(category) {
             const categoryMap = {
@@ -700,25 +748,18 @@
             };
             return categoryMap[category] || category;
         }
-        
+
         // 메시지 표시
         function showMessage(message, type) {
-            const messageDiv = document.getElementById('message');
-            messageDiv.innerHTML = `<div class="message ${type}">${message}</div>`;
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${type}`;
+            messageDiv.textContent = message;
             
-            if (type === 'success') {
-                setTimeout(() => {
-                    messageDiv.innerHTML = '';
-                }, 4000);
-            }
-        }
-
-        // 취소 버튼 (수정 모드일 때)
-        function cancelEdit() {
-            editingEventId = null;
-            document.getElementById('eventForm').reset();
-            setTodayDate();
-            updateFormUI();
+            document.body.appendChild(messageDiv);
+            
+            setTimeout(() => {
+                messageDiv.remove();
+            }, 4000);
         }
     </script>
 </body>
