@@ -574,27 +574,59 @@
                 padding: 10px 8px;
             }
 
+            .details-section {
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+            }
+            
             .details-header,
             .detail-row {
-                grid-template-columns: 1fr;
-                gap: 5px;
+                min-width: 800px;
+                grid-template-columns: 1.5fr 1.2fr 0.6fr 0.6fr 1fr 1fr 1fr 0.6fr;
+                font-size: 12px;
             }
 
             .details-header span {
-                display: none;
+                font-size: 11px;
+                padding: 5px;
             }
 
-            .detail-row input {
-                position: relative;
+            .detail-row input,
+            .detail-row .detail-total {
+                font-size: 12px;
+                padding: 4px 6px;
+                min-width: 60px;
             }
 
-            .detail-row input::before {
-                content: attr(data-label);
-                position: absolute;
-                left: 0;
-                top: -20px;
+            .detail-row .btn-remove-detail {
+                font-size: 10px;
+                padding: 4px 6px;
+            }
+            
+            .details-section::before {
+                content: "← 좌우로 스크롤하세요";
+                display: block;
                 font-size: 11px;
                 color: #6c757d;
+                margin-bottom: 5px;
+                text-align: center;
+            }
+            
+            .modal-content {
+                margin: 10px;
+                max-width: calc(100vw - 20px);
+                max-height: calc(100vh - 20px);
+                overflow-y: auto;
+            }
+            
+            #bulkInputText {
+                font-size: 12px;
+                min-height: 150px;
+            }
+            
+            .btn-add-detail {
+                font-size: 12px;
+                padding: 8px 12px;
             }
         }
     </style>
@@ -926,7 +958,12 @@
         function updateDetailTotal(index) {
             const item = detailItems[index];
             item.total = item.quantity * item.price;
-            updateDetailsDisplay();
+            updateDetailsJSON();
+            // 해당 행의 total 값만 업데이트
+            const totalElement = document.querySelector(`#detailsList .detail-row:nth-child(${index + 1}) .detail-total`);
+            if (totalElement) {
+                totalElement.textContent = item.total.toLocaleString();
+            }
         }
 
         function updateDetailsDisplay() {
