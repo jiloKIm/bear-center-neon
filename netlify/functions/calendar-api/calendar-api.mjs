@@ -15,8 +15,9 @@ export const handler = async (event, context) => {
   }
 
   try {
-    // 네온 데이터베이스 연결
-    const sql = neon(process.env.DATABASE_URL);
+    // 네온 데이터베이스 연결 - 공백 제거
+    const dbUrl = process.env.DATABASE_URL.replace(/\s+/g, '');
+    const sql = neon(dbUrl);
 
     // GET: 모든 일정 조회
     if (event.httpMethod === 'GET') {
