@@ -34,8 +34,8 @@ export const handler = async (event, context) => {
       const data = JSON.parse(event.body);
       
       const result = await sql`
-        INSERT INTO schedule_events (date_value, title, category) 
-        VALUES (${data.date_value}, ${data.title}, ${data.category})
+        INSERT INTO schedule_events (date_value, title, category, color) 
+        VALUES (${data.date_value}, ${data.title}, ${data.category}, ${data.color || '#333333'})
         RETURNING *
       `;
       
@@ -52,7 +52,7 @@ export const handler = async (event, context) => {
       
       const result = await sql`
         UPDATE schedule_events 
-        SET title = ${data.title}, category = ${data.category}
+        SET title = ${data.title}, category = ${data.category}, color = ${data.color || '#333333'}
         WHERE id = ${data.id}
         RETURNING *
       `;

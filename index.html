@@ -543,41 +543,149 @@
         }
 
         @media (max-width: 768px) {
-            body {
+            .container {
                 padding: 15px;
+            }
+
+            .main-nav {
+                padding: 12px 20px;
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .nav-menu {
+                flex-direction: column;
+                gap: 10px;
+                width: 100%;
+            }
+
+            .nav-menu a {
+                text-align: center;
+                padding: 12px;
             }
 
             .header h1 {
                 font-size: 2.2rem;
+                text-align: center;
             }
 
             .calendar-container {
-                padding: 20px;
+                padding: 15px;
+                overflow-x: auto;
             }
 
             .legend-grid {
-                grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-                gap: 6px;
+                grid-template-columns: repeat(2, 1fr);
+                gap: 8px;
             }
 
             .legend-item {
-                padding: 6px 8px;
+                padding: 8px 12px;
+                font-size: 0.8rem;
+            }
+
+            .calendar {
+                min-width: 100%;
+                overflow-x: auto;
+            }
+
+            .calendar th,
+            .calendar td {
+                height: 90px;
+                font-size: 0.85rem;
+                min-width: 100px;
+                padding: 6px;
+            }
+
+            .event {
+                font-size: 0.7rem;
+                padding: 3px 6px;
+                margin-bottom: 3px;
+                word-break: break-word;
+                line-height: 1.2;
+            }
+
+            .add-event-btn {
+                width: 32px;
+                height: 32px;
+                font-size: 18px;
+            }
+
+            .modal-content {
+                margin: 5% 10px;
+                padding: 20px;
+                max-width: none;
+                width: calc(100% - 20px);
+            }
+
+            .form-group input,
+            .form-group select {
+                font-size: 16px; /* iOS 줌 방지 */
+                padding: 16px;
+            }
+
+            .btn-group {
+                flex-direction: column;
+                gap: 12px;
+            }
+
+            .btn {
+                min-height: 54px;
+                font-size: 18px;
+            }
+
+            .calendar-nav {
+                width: 44px;
+                height: 44px;
+                font-size: 1.2rem;
+            }
+
+            .calendar-title {
+                font-size: 1.6rem;
+                text-align: center;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .main-nav {
+                padding: 10px 15px;
+            }
+
+            .nav-brand h1 {
+                font-size: 1.4rem;
+            }
+
+            .header h1 {
+                font-size: 1.8rem;
             }
 
             .calendar th,
             .calendar td {
                 height: 80px;
-                font-size: 0.85rem;
+                min-width: 80px;
+                padding: 4px;
+                font-size: 0.8rem;
             }
 
             .event {
-                font-size: 0.7rem;
+                font-size: 0.65rem;
                 padding: 2px 4px;
             }
 
-            .modal-content {
-                margin: 10% auto;
-                padding: 25px;
+            .add-event-btn {
+                width: 28px;
+                height: 28px;
+                font-size: 16px;
+            }
+
+            .legend-grid {
+                grid-template-columns: 1fr 1fr;
+                gap: 6px;
+            }
+
+            .legend-item {
+                padding: 6px 8px;
+                font-size: 0.7rem;
             }
 
             .calendar-nav {
@@ -587,21 +695,44 @@
             }
 
             .calendar-title {
-                font-size: 1.6rem;
+                font-size: 1.4rem;
+            }
+
+            .modal-content {
+                margin: 2% 5px;
+                padding: 15px;
+                width: calc(100% - 10px);
+            }
+
+            .form-group input,
+            .form-group select {
+                padding: 14px;
+                font-size: 16px;
             }
         }
 
-        @media (max-width: 480px) {
-            .header h1 {
-                font-size: 1.8rem;
+        /* 터치 디바이스 최적화 */
+        @media (hover: none) and (pointer: coarse) {
+            .add-event-btn {
+                min-width: 44px;
+                min-height: 44px;
             }
 
-            .btn-group {
-                flex-direction: column;
+            .event {
+                min-height: 32px;
+                display: flex;
+                align-items: center;
+                cursor: pointer;
+                -webkit-tap-highlight-color: rgba(0,0,0,0.1);
             }
 
-            .legend-grid {
-                grid-template-columns: 1fr 1fr;
+            .btn {
+                min-height: 48px;
+            }
+
+            .calendar-nav {
+                min-width: 44px;
+                min-height: 44px;
             }
         }
     </style>
@@ -715,6 +846,22 @@
                         <option value="조달설치">🔧 조달 / 설치</option>
                         <option value="gom입식and개소">🐻 곰 입식 & 개소</option>
                         <option value="출장시공">🚗 출장 / 시공</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="eventColor">
+                        <i class="fas fa-palette"></i> 폰트 색상
+                    </label>
+                    <select id="eventColor">
+                        <option value="#333333">기본 색상</option>
+                        <option value="#dc2626" style="color: #dc2626;">빨간색</option>
+                        <option value="#2563eb" style="color: #2563eb;">파란색</option>
+                        <option value="#16a34a" style="color: #16a34a;">초록색</option>
+                        <option value="#ca8a04" style="color: #ca8a04;">주황색</option>
+                        <option value="#9333ea" style="color: #9333ea;">보라색</option>
+                        <option value="#ec4899" style="color: #ec4899;">분홍색</option>
+                        <option value="#374151" style="color: #374151;">회색</option>
                     </select>
                 </div>
                 
@@ -832,6 +979,7 @@
             document.getElementById('eventDate').value = date;
             document.getElementById('eventTitle').value = '';
             document.getElementById('eventCategory').value = '';
+            document.getElementById('eventColor').value = '#333333';
             document.getElementById('submitBtn').innerHTML = '<i class="fas fa-save"></i> 저장';
             document.getElementById('deleteBtn').style.display = 'none';
             
@@ -849,6 +997,7 @@
                 document.getElementById('eventDate').value = event.date_value;
                 document.getElementById('eventTitle').value = event.title;
                 document.getElementById('eventCategory').value = event.category;
+                document.getElementById('eventColor').value = event.color || '#333333';
                 document.getElementById('submitBtn').innerHTML = '<i class="fas fa-save"></i> 수정';
                 document.getElementById('deleteBtn').style.display = 'block';
                 
@@ -885,7 +1034,8 @@
             const formData = {
                 date_value: document.getElementById('eventDate').value,
                 title: document.getElementById('eventTitle').value,
-                category: document.getElementById('eventCategory').value
+                category: document.getElementById('eventCategory').value,
+                color: document.getElementById('eventColor').value
             };
             
             try {
@@ -978,6 +1128,10 @@
                     eventElement.className = `event cat-${event.category}`;
                     eventElement.textContent = event.title;
                     eventElement.setAttribute('data-event-id', event.id);
+                    if (event.color) {
+                        eventElement.style.color = event.color;
+                        eventElement.style.fontWeight = 'bold';
+                    }
                     eventElement.setAttribute('title', `${getCategoryName(event.category)}: ${event.title}`);
                     eventElement.onclick = (e) => {
                         e.stopPropagation();

@@ -4,6 +4,7 @@ CREATE TABLE schedule_events (
     date_value TEXT NOT NULL,
     title TEXT NOT NULL,
     category TEXT NOT NULL,
+    color TEXT DEFAULT '#333333',
     created_at TIMESTAMP DEFAULT NOW()
 );
 
