@@ -649,6 +649,11 @@
                 </div>
 
                 <div class="form-group">
+                    <label for="itemLocation">설치 위치</label>
+                    <input type="text" id="itemLocation" placeholder="설치 위치를 입력하세요">
+                </div>
+
+                <div class="form-group">
                     <label for="itemNotes">비고</label>
                     <textarea id="itemNotes" rows="3" placeholder="추가 메모사항"></textarea>
                 </div>
@@ -702,6 +707,7 @@
             document.getElementById('modalTitle').textContent = '건 추가';
             document.getElementById('itemForm').reset();
             document.getElementById('itemStatus').value = '계획';
+            document.getElementById('itemLocation').value = '';
             detailItems = [];
             updateDetailsDisplay();
             currentEditingItem = null;
@@ -713,6 +719,7 @@
             document.getElementById('itemType').value = item.type;
             document.getElementById('itemStatus').value = item.status;
             document.getElementById('itemName').value = item.name;
+            document.getElementById('itemLocation').value = item.installation_location || '';
             document.getElementById('itemNotes').value = item.notes || '';
             
             // 세부 품목 파싱
@@ -816,6 +823,7 @@
                 quantity: 1, // 기본값
                 details: document.getElementById('itemDetails').value,
                 notes: document.getElementById('itemNotes').value,
+                installation_location: document.getElementById('itemLocation').value,
                 created_at: currentEditingItem ? currentEditingItem.created_at : new Date().toISOString()
             };
 
@@ -930,6 +938,7 @@
                     <td class="amount">${item.amount.toLocaleString()}</td>
                     <td><span class="status-badge status-${item.status}">${item.status}</span></td>
                     <td>${new Date(item.created_at).toLocaleDateString()}</td>
+                    <td class="installation-location">${item.installation_location || '-'}</td>
                     <td class="actions">
                         <button class="btn-small btn-edit" onclick="openEditModal(${JSON.stringify(item).replace(/"/g, '&quot;')})">
                             <i class="fas fa-edit"></i>

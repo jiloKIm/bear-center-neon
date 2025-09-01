@@ -33,8 +33,8 @@ export const handler = async (event, context) => {
       const data = JSON.parse(event.body);
       
       const result = await sql`
-        INSERT INTO inventory_items (type, status, name, amount, quantity, details, notes, created_at) 
-        VALUES (${data.type}, ${data.status}, ${data.name}, ${data.amount}, ${data.quantity}, ${data.details}, ${data.notes}, ${data.created_at})
+        INSERT INTO inventory_items (type, status, name, amount, quantity, details, notes, installation_location, created_at) 
+        VALUES (${data.type}, ${data.status}, ${data.name}, ${data.amount}, ${data.quantity}, ${data.details}, ${data.notes}, ${data.installation_location}, ${data.created_at})
         RETURNING *
       `;
       
@@ -52,7 +52,7 @@ export const handler = async (event, context) => {
       const result = await sql`
         UPDATE inventory_items 
         SET type = ${data.type}, status = ${data.status}, name = ${data.name}, 
-            amount = ${data.amount}, quantity = ${data.quantity}, details = ${data.details}, notes = ${data.notes}
+            amount = ${data.amount}, quantity = ${data.quantity}, details = ${data.details}, notes = ${data.notes}, installation_location = ${data.installation_location}
         WHERE id = ${data.id}
         RETURNING *
       `;
