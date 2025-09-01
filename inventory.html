@@ -15,955 +15,908 @@
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            margin: 0;
-            padding: 0;
-            color: #333;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f6f8fb;
+            color: #1a1a1a;
+            line-height: 1.6;
         }
 
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-
-        /* 네비게이션 스타일 */
-        .main-nav {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            padding: 15px 30px;
+        /* 토스 스타일 네비게이션 */
+        .nav-header {
+            background: #fff;
+            padding: 16px 20px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            box-shadow: 0 2px 20px rgba(0,0,0,0.1);
-            margin-bottom: 20px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
         }
 
-        .nav-brand h1 {
-            margin: 0;
-            color: #333;
-            font-size: 1.8em;
+        .nav-title {
+            font-size: 20px;
             font-weight: 700;
+            color: #191f28;
         }
 
-        .nav-menu {
+        .nav-tabs {
             display: flex;
-            gap: 20px;
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 4px;
+            gap: 4px;
         }
 
-        .nav-item {
+        .nav-tab {
+            padding: 8px 16px;
+            border-radius: 8px;
             text-decoration: none;
-            color: #555;
-            padding: 12px 20px;
-            border-radius: 25px;
+            color: #6b7280;
             font-weight: 600;
-            font-size: 1.1em;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            gap: 8px;
+            font-size: 14px;
+            transition: all 0.2s ease;
         }
 
-        .nav-item:hover {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        .nav-tab.active {
+            background: #fff;
+            color: #3b82f6;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
         }
 
-        .nav-item.active {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            box-shadow: 0 3px 10px rgba(102, 126, 234, 0.3);
-        }
-
-        /* 페이지 헤더 */
-        .page-header {
-            text-align: center;
-            margin: 30px 20px 40px;
-            color: white;
-        }
-
-        .page-header h2 {
-            font-size: 2.5em;
-            margin: 0 0 10px;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
-        }
-
-        .page-header .subtitle {
-            font-size: 1.2em;
-            opacity: 0.9;
-            text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+        /* 컨테이너 */
+        .container {
+            max-width: 428px;
+            margin: 0 auto;
+            background: #fff;
+            min-height: 100vh;
         }
 
         /* 메인 콘텐츠 */
-        .content-wrapper {
-            background: rgba(255, 255, 255, 0.95);
-            border-radius: 20px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-            margin-top: 20px;
-            margin-bottom: 40px;
+        .main-content {
             padding: 20px;
         }
 
-        .header-actions {
+        /* 요약 카드 */
+        .summary-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 20px;
+            padding: 24px;
+            margin-bottom: 24px;
+            color: white;
+        }
+
+        .summary-title {
+            font-size: 16px;
+            opacity: 0.9;
+            margin-bottom: 8px;
+        }
+
+        .summary-stats {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 25px;
-            flex-wrap: wrap;
-            gap: 15px;
         }
 
-        .btn {
-            padding: 12px 24px;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 28px;
+            font-weight: 700;
+            line-height: 1.2;
+        }
+
+        .stat-label {
             font-size: 14px;
+            opacity: 0.8;
+            margin-top: 4px;
+        }
+
+        /* 액션 버튼들 */
+        .action-buttons {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        .action-btn {
+            flex: 1;
+            padding: 16px;
+            border: none;
+            border-radius: 16px;
+            font-size: 16px;
             font-weight: 600;
-            transition: all 0.3s ease;
-            text-decoration: none;
-            display: inline-flex;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
             align-items: center;
+            justify-content: center;
             gap: 8px;
         }
 
         .btn-primary {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
-        }
-
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
-        }
-
-        .summary {
-            display: flex;
-            gap: 20px;
-            color: #555;
-            font-size: 14px;
-        }
-
-        .summary span {
-            background: rgba(255, 255, 255, 0.8);
-            padding: 8px 15px;
-            border-radius: 20px;
-            border: 1px solid rgba(0,0,0,0.05);
-        }
-
-        /* 테이블 스타일 */
-        .table-container {
-            overflow-x: auto;
-            border-radius: 12px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            background: white;
-            border-radius: 12px;
-            overflow: hidden;
-        }
-
-        th {
-            background: #111827;
-            color: white;
-            font-weight: 600;
-            text-align: left;
-            padding: 15px;
-            font-size: 14px;
-        }
-
-        td {
-            padding: 15px;
-            border-bottom: 1px solid #e5e7eb;
-            vertical-align: middle;
-        }
-
-        tr:hover {
-            background-color: #f8f9fa;
-        }
-
-        .status-badge {
-            padding: 4px 8px;
-            border-radius: 12px;
-            font-size: 12px;
-            font-weight: 600;
-            text-align: center;
-            min-width: 60px;
-        }
-
-        .status-계획 { background: #fef3c7; color: #f59e0b; }
-        .status-진행중 { background: #dbeafe; color: #3b82f6; }
-        .status-완료 { background: #dcfce7; color: #22c55e; }
-        .status-보류 { background: #f3f4f6; color: #6b7280; }
-
-        .amount {
-            font-weight: 600;
-            color: #059669;
-            text-align: right;
-        }
-
-        .actions {
-            display: flex;
-            gap: 5px;
-        }
-
-        .btn-small {
-            padding: 8px 15px;
-            font-size: 12px;
-            border-radius: 6px;
-            border: none;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            min-width: 70px;
-            font-weight: 600;
-            margin: 2px 0;
-        }
-
-        .btn-edit {
             background: #3b82f6;
             color: white;
         }
 
-        .btn-delete {
-            background: #ef4444;
-            color: white;
+        .btn-secondary {
+            background: #f3f4f6;
+            color: #4b5563;
         }
 
-        .btn-small:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+        .action-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        /* 필터 섹션 */
+        .filter-section {
+            margin-bottom: 20px;
+        }
+
+        .filter-row {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+
+        .filter-select {
+            flex: 1;
+            padding: 12px 16px;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            font-size: 14px;
+            background: white;
+        }
+
+        /* 아이템 리스트 */
+        .items-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .item-card {
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            border: 1px solid #f0f0f0;
+            transition: all 0.2s ease;
+        }
+
+        .item-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            border-color: #3b82f6;
+        }
+
+        .item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 12px;
+        }
+
+        .item-name {
+            font-size: 18px;
+            font-weight: 700;
+            color: #191f28;
+            flex: 1;
+        }
+
+        .item-amount {
+            font-size: 20px;
+            font-weight: 700;
+            color: #3b82f6;
+        }
+
+        .item-meta {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+
+        .status-badge {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .status-계획 { background: #fef3c7; color: #92400e; }
+        .status-진행중 { background: #dbeafe; color: #1d4ed8; }
+        .status-완료 { background: #d1fae5; color: #065f46; }
+
+        .item-type {
+            color: #6b7280;
+            font-size: 14px;
+        }
+
+        .item-details {
+            color: #6b7280;
+            font-size: 14px;
+            line-height: 1.5;
+            margin-bottom: 12px;
+        }
+
+        .item-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .action-btn-small {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-edit {
+            background: #f3f4f6;
+            color: #4b5563;
+        }
+
+        .btn-delete {
+            background: #fef2f2;
+            color: #dc2626;
         }
 
         /* 모달 스타일 */
         .modal {
             display: none;
             position: fixed;
-            z-index: 1000;
-            left: 0;
             top: 0;
+            left: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0,0,0,0.5);
-            backdrop-filter: blur(2px);
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
         }
 
         .modal-content {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
             background: white;
-            margin: 5% auto;
-            padding: 30px;
-            border-radius: 15px;
-            width: 90%;
-            max-width: 700px;
-            box-shadow: 0 25px 50px rgba(0,0,0,0.25);
+            border-radius: 20px 20px 0 0;
             max-height: 90vh;
             overflow-y: auto;
+            animation: slideUp 0.3s ease;
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(100%); }
+            to { transform: translateY(0); }
         }
 
         .modal-header {
+            padding: 20px 20px 16px;
+            border-bottom: 1px solid #f0f0f0;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 25px;
-            padding-bottom: 15px;
-            border-bottom: 2px solid #f1f3f4;
         }
 
-        .modal-header h3 {
-            font-size: 1.5rem;
-            color: #333;
+        .modal-title {
+            font-size: 20px;
             font-weight: 700;
         }
 
-        .close {
+        .close-btn {
             background: none;
             border: none;
-            font-size: 2rem;
-            color: #adb5bd;
+            font-size: 24px;
+            color: #9ca3af;
             cursor: pointer;
-            transition: all 0.3s ease;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
         }
 
-        .close:hover {
-            color: #dc3545;
-            background: rgba(220, 53, 69, 0.1);
+        .modal-body {
+            padding: 20px;
         }
 
-        .form-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-            margin-bottom: 20px;
-        }
-
+        /* 폼 스타일 */
         .form-group {
             margin-bottom: 20px;
         }
 
-        .form-group label {
+        .form-label {
             display: block;
-            margin-bottom: 8px;
+            font-size: 16px;
             font-weight: 600;
-            color: #555;
+            color: #374151;
+            margin-bottom: 8px;
         }
 
-        .form-group input,
-        .form-group select,
-        .form-group textarea {
+        .form-input {
             width: 100%;
-            padding: 12px 15px;
-            border: 2px solid #e9ecef;
-            border-radius: 8px;
-            font-size: 14px;
-            transition: all 0.3s ease;
-            font-family: inherit;
+            padding: 16px;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            font-size: 16px;
+            background: #fafafa;
+            transition: all 0.2s ease;
         }
 
-        .form-group input:focus,
-        .form-group select:focus,
-        .form-group textarea:focus {
+        .form-input:focus {
             outline: none;
-            border-color: #667eea;
-            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+            border-color: #3b82f6;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .form-select {
+            width: 100%;
+            padding: 16px;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            font-size: 16px;
+            background: white;
+        }
+
+        .form-textarea {
+            width: 100%;
+            padding: 16px;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            font-size: 16px;
+            background: #fafafa;
+            resize: vertical;
+            min-height: 100px;
         }
 
         .form-actions {
             display: flex;
-            gap: 15px;
-            margin-top: 30px;
-            justify-content: flex-end;
+            gap: 12px;
+            padding: 20px;
+            background: #f9fafb;
+            margin: 0 -20px -20px;
         }
 
-        .btn-secondary {
-            background: #6c757d;
-            color: white;
-        }
-
-        .btn-secondary:hover {
-            background: #5a6268;
-            transform: translateY(-2px);
-        }
-
-        /* PDF 출력 관련 스타일 */
-        .pdf-container {
-            background: white;
-            padding: 30px;
-            margin: 20px 0;
-            font-family: 'Malgun Gothic', sans-serif;
-            position: fixed;
-            top: -9999px;
-            left: -9999px;
-            width: 800px;
-        }
-
-        .pdf-header {
-            text-align: center;
-            margin-bottom: 30px;
-            border-bottom: 2px solid #333;
-            padding-bottom: 20px;
-        }
-
-        .pdf-title {
-            font-size: 24px;
-            font-weight: bold;
-            margin-bottom: 10px;
-        }
-
-        .pdf-subtitle {
+        .btn-full {
+            flex: 1;
+            padding: 16px;
+            border: none;
+            border-radius: 12px;
             font-size: 16px;
-            color: #666;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
         }
 
-        .pdf-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-            font-size: 12px;
-        }
-
-        .pdf-table th,
-        .pdf-table td {
-            border: 1px solid #ddd;
-            padding: 8px;
-            text-align: left;
-        }
-
-        .pdf-table th {
-            background-color: #f8f9fa;
-            font-weight: bold;
-        }
-
-        .pdf-summary {
-            margin-top: 20px;
-            padding: 15px;
-            background-color: #f8f9fa;
-            border-radius: 5px;
-            text-align: center;
-        }
-
-        .empty-state {
-            text-align: center;
-            padding: 60px 20px;
-            color: #6b7280;
-        }
-
-        .empty-state i {
-            font-size: 4rem;
-            margin-bottom: 20px;
-            opacity: 0.3;
-        }
-
-        /* 반응형 디자인 */
-        /* 세부 품목 스타일 */
+        /* 세부품목 섹션 */
         .details-section {
-            border: 2px solid #e9ecef;
-            border-radius: 8px;
-            padding: 15px;
-            background: #f8f9fa;
+            margin-top: 20px;
+            padding: 20px;
+            background: #f9fafb;
+            border-radius: 16px;
         }
 
         .details-header {
-            display: grid;
-            grid-template-columns: 2fr 1.5fr 0.8fr 0.8fr 1.2fr 1.2fr 1.2fr 0.8fr;
-            gap: 10px;
-            padding: 10px;
-            background: #e9ecef;
-            border-radius: 6px;
-            margin-bottom: 10px;
-            font-weight: 600;
-            font-size: 13px;
-            color: #555;
+            display: flex;
+            justify-content: space-between;
             align-items: center;
+            margin-bottom: 16px;
         }
 
-        .details-list {
-            min-height: 60px;
-            margin-bottom: 15px;
+        .details-title {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .detail-item {
+            background: white;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 12px;
+            border: 1px solid #e5e7eb;
         }
 
         .detail-row {
-            display: grid;
-            grid-template-columns: 2fr 1.5fr 0.8fr 0.8fr 1.2fr 1.2fr 1.2fr 0.8fr;
-            gap: 10px;
-            padding: 8px 10px;
-            background: white;
-            border-radius: 6px;
-            margin-bottom: 8px;
+            display: flex;
+            gap: 8px;
+            margin-bottom: 12px;
             align-items: center;
-            border: 1px solid #dee2e6;
         }
 
-        .detail-row input {
-            padding: 6px 8px;
-            border: 1px solid #ced4da;
-            border-radius: 4px;
-            font-size: 13px;
+        .detail-row:last-child {
+            margin-bottom: 0;
         }
 
-        .detail-row input:focus {
-            border-color: #667eea;
-            outline: none;
-            box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.1);
+        .detail-input {
+            flex: 1;
+            padding: 10px 12px;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 14px;
         }
 
-        .detail-total {
-            font-weight: 600;
-            color: #059669;
-            text-align: right;
-            padding: 6px 8px;
+        .detail-remove {
+            padding: 8px;
+            background: #fee2e2;
+            color: #dc2626;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
         }
 
-        .btn-add-detail {
-            background: #f8f9fa;
-            border: 2px dashed #ced4da;
-            color: #6c757d;
-            padding: 10px 15px;
-            border-radius: 6px;
+        .add-detail-btn {
+            width: 100%;
+            padding: 16px;
+            border: 2px dashed #d1d5db;
+            border-radius: 12px;
+            background: white;
+            color: #6b7280;
+            font-size: 16px;
             cursor: pointer;
             transition: all 0.2s ease;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            justify-content: center;
-            font-size: 14px;
-            width: 100%;
         }
 
-        .btn-add-detail:hover {
-            background: #e9ecef;
-            border-color: #adb5bd;
-            color: #495057;
+        .add-detail-btn:hover {
+            border-color: #3b82f6;
+            color: #3b82f6;
         }
 
-        .btn-remove-detail {
-            background: #dc3545;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            padding: 4px 8px;
-            cursor: pointer;
-            font-size: 12px;
+        /* 반응형 - 데스크톱 */
+        @media (min-width: 768px) {
+            .container {
+                max-width: 1200px;
+                background: transparent;
+            }
+
+            .main-content {
+                padding: 40px;
+            }
+
+            .action-buttons {
+                max-width: 600px;
+            }
+
+            .items-list {
+                display: grid;
+                grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+                gap: 20px;
+            }
+
+            .modal-content {
+                position: relative;
+                max-width: 600px;
+                margin: 5vh auto;
+                border-radius: 20px;
+                animation: none;
+            }
         }
 
-        .btn-remove-detail:hover {
-            background: #c82333;
-        }
-
-        .empty-details {
+        /* 빈 상태 */
+        .empty-state {
             text-align: center;
-            color: #6c757d;
-            font-style: italic;
-            padding: 20px;
+            padding: 60px 40px;
+            color: #6b7280;
         }
 
-        /* 데스크톱에서 모바일 카드 숨기기 */
-        .mobile-card {
-            display: none;
+        .empty-icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+            opacity: 0.5;
         }
 
-        .text-muted {
-            color: #6c757d !important;
-            font-size: 12px;
+        .empty-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 8px;
         }
 
-        @media (max-width: 768px) {
-            .nav-menu {
-                flex-direction: column;
-                gap: 10px;
-            }
-
-            .nav-item {
-                font-size: 1rem;
-                padding: 10px 15px;
-            }
-
-            .header-actions {
-                flex-direction: column;
-                align-items: stretch;
-            }
-
-            .summary {
-                justify-content: center;
-                flex-wrap: wrap;
-            }
-
-            .form-row {
-                grid-template-columns: 1fr;
-                gap: 15px;
-            }
-
-            .modal-content {
-                width: 95%;
-                margin: 10% auto;
-                padding: 20px;
-            }
-
-            table {
-                font-size: 13px;
-            }
-
-            th, td {
-                padding: 10px 8px;
-            }
-
-            .details-header {
-                display: none !important;
-            }
-            
-            /* 데스크톱 요소 숨기기 */
-            .desktop-input,
-            .desktop-total,
-            .desktop-btn {
-                display: none !important;
-            }
-            
-            /* 모바일 카드 표시 */
-            .mobile-card {
-                display: block !important;
-                background: white;
-                border: 1px solid #dee2e6;
-                border-radius: 8px;
-                padding: 15px;
-            }
-            
-            .detail-row {
-                display: block !important;
-                grid-template-columns: none !important;
-                background: transparent !important;
-                border: none !important;
-                padding: 0 !important;
-                margin-bottom: 15px !important;
-            }
-            
-            .mobile-card input {
-                width: 100% !important;
-                padding: 10px !important;
-                font-size: 14px !important;
-                border: 1px solid #ddd !important;
-                border-radius: 6px !important;
-                box-sizing: border-box !important;
-            }
-            
-            .mobile-total {
-                background: #e8f5e8 !important;
-                border: 1px solid #28a745 !important;
-                border-radius: 6px !important;
-                font-weight: bold !important;
-                text-align: right !important;
-                padding: 10px !important;
-                color: #155724 !important;
-                width: 100% !important;
-                box-sizing: border-box !important;
-            }
-            
-            .mobile-btn {
-                width: 100% !important;
-                font-size: 14px !important;
-                padding: 10px !important;
-                background: #dc3545 !important;
-                color: white !important;
-                border: none !important;
-                border-radius: 6px !important;
-            }
-            
-            .modal-content {
-                margin: 10px;
-                max-width: calc(100vw - 20px);
-                max-height: calc(100vh - 20px);
-                overflow-y: auto;
-            }
-            
-            #bulkInputText {
-                font-size: 12px;
-                min-height: 150px;
-            }
-            
-            .btn-add-detail {
-                font-size: 12px;
-                padding: 8px 12px;
-            }
+        .empty-description {
+            font-size: 14px;
+            line-height: 1.5;
         }
     </style>
 </head>
 <body>
-    <nav class="main-nav">
-        <div class="nav-brand">
-            <h1>🐻 사육곰 센터 관리 시스템</h1>
-        </div>
-        <div class="nav-menu">
-            <a href="index.html" class="nav-item">📅 일정 관리</a>
-            <a href="inventory.html" class="nav-item active">📋 사업 관리</a>
-        </div>
-    </nav>
-
     <div class="container">
-        <div class="page-header">
-            <h2>📋 사업 관리 시스템</h2>
-            <div class="subtitle">조달, 계약, 지출 건별 관리 시스템</div>
-        </div>
+        <!-- 네비게이션 -->
+        <nav class="nav-header">
+            <div class="nav-title">🐻 사육곰 센터</div>
+            <div class="nav-tabs">
+                <a href="index.html" class="nav-tab">📅 일정</a>
+                <a href="inventory.html" class="nav-tab active">💼 사업</a>
+            </div>
+        </nav>
 
-        <div class="content-wrapper">
-            <div class="header-actions">
-                <button id="exportPDF" class="btn btn-secondary" style="margin-right: 10px;">
-                    <i class="fas fa-file-pdf"></i> PDF 저장
-                </button>
-                <button id="addNewItem" class="btn btn-primary">
-                    <i class="fas fa-plus"></i> 새 건 추가
-                </button>
-                <div class="summary">
-                    <span>총 건수: <strong id="totalCount">0</strong>건</span>
-                    <span>총 금액: <strong id="totalAmount">0</strong>원</span>
+        <!-- 메인 콘텐츠 -->
+        <div class="main-content">
+            <!-- 요약 카드 -->
+            <div class="summary-card">
+                <div class="summary-title">사업 현황</div>
+                <div class="summary-stats">
+                    <div class="stat-item">
+                        <div class="stat-number" id="totalCount">0</div>
+                        <div class="stat-label">총 건수</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number" id="totalAmount">0원</div>
+                        <div class="stat-label">총 금액</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number" id="progressCount">0</div>
+                        <div class="stat-label">진행중</div>
+                    </div>
                 </div>
+            </div>
+
+            <!-- 액션 버튼들 -->
+            <div class="action-buttons">
+                <button class="action-btn btn-primary" onclick="openModal()">
+                    <i class="fas fa-plus"></i>
+                    새 건 추가
+                </button>
+                <button class="action-btn btn-secondary" onclick="generatePDF()">
+                    <i class="fas fa-file-pdf"></i>
+                    PDF 내보내기
+                </button>
             </div>
 
             <!-- 필터 섹션 -->
-            <div class="filter-section" style="margin-bottom: 20px; padding: 15px; background: white; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
-                <h3 style="margin-bottom: 15px; color: #333; font-size: 1.1rem;">
-                    <i class="fas fa-filter"></i> 필터
-                </h3>
-                <div style="display: flex; gap: 15px; flex-wrap: wrap; align-items: center;">
-                    <div class="filter-group">
-                        <label style="font-weight: 600; color: #555; margin-right: 8px;">구분:</label>
-                        <select id="filterType" style="padding: 8px 12px; border: 1px solid #ddd; border-radius: 5px; min-width: 100px;">
-                            <option value="">전체</option>
-                            <option value="조달">조달</option>
-                            <option value="계약">계약</option>
-                            <option value="지출">지출</option>
-                        </select>
-                    </div>
-                    <div class="filter-group">
-                        <label style="font-weight: 600; color: #555; margin-right: 8px;">상태:</label>
-                        <select id="filterStatus" style="padding: 8px 12px; border: 1px solid #ddd; border-radius: 5px; min-width: 100px;">
-                            <option value="">전체</option>
-                            <option value="계획">계획</option>
-                            <option value="진행중">진행중</option>
-                            <option value="완료">완료</option>
-                        </select>
-                    </div>
-                    <div class="filter-group">
-                        <label style="font-weight: 600; color: #555; margin-right: 8px;">설치 위치:</label>
-                        <select id="filterLocation" style="padding: 8px 12px; border: 1px solid #ddd; border-radius: 5px; min-width: 120px;">
-                            <option value="">전체</option>
-                            <!-- 동적으로 생성됩니다 -->
-                        </select>
-                    </div>
-                    <button id="clearFilters" class="btn-small" style="background: #dc3545; color: white; padding: 8px 15px; border: none; border-radius: 5px; cursor: pointer;">
-                        <i class="fas fa-times"></i> 초기화
-                    </button>
+            <div class="filter-section">
+                <div class="filter-row">
+                    <select class="filter-select" id="filterType" onchange="filterItems()">
+                        <option value="">전체 구분</option>
+                        <option value="조달">조달</option>
+                        <option value="계약">계약</option>
+                        <option value="지출">지출</option>
+                    </select>
+                    <select class="filter-select" id="filterStatus" onchange="filterItems()">
+                        <option value="">전체 상태</option>
+                        <option value="계획">계획</option>
+                        <option value="진행중">진행중</option>
+                        <option value="완료">완료</option>
+                    </select>
                 </div>
+                <select class="filter-select" id="filterLocation" onchange="filterItems()">
+                    <option value="">전체 위치</option>
+                </select>
             </div>
 
-            <div class="table-container">
-                <table id="inventoryTable">
-                    <thead>
-                        <tr>
-                            <th width="60">번호</th>
-                            <th width="80">구분</th>
-                            <th width="300">건 명칭</th>
-                            <th width="120">예상 금액</th>
-                            <th width="80">상태</th>
-                            <th width="100">등록일</th>
-                            <th width="120">설치 위치</th>
-                            <th width="100">수정</th>
-                        </tr>
-                    </thead>
-                    <tbody id="inventoryList">
-                        <tr>
-                            <td colspan="8" class="empty-state">
-                                <i class="fas fa-boxes"></i>
-                                <div>아직 등록된 건이 없습니다.</div>
-                                <div><small>위의 "새 건 추가" 버튼을 눌러 시작하세요.</small></div>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+            <!-- 아이템 리스트 -->
+            <div class="items-list" id="itemsList">
+                <div class="empty-state">
+                    <div class="empty-icon">📋</div>
+                    <div class="empty-title">아직 등록된 사업이 없습니다</div>
+                    <div class="empty-description">위의 "새 건 추가" 버튼을 눌러 첫 번째 사업을 등록해보세요.</div>
+                </div>
             </div>
         </div>
-    </div>
 
-    <!-- 물품 추가/수정 모달 -->
-    <div id="itemModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3 id="modalTitle">건 추가</h3>
-                <button class="close" onclick="closeModal()">&times;</button>
-            </div>
-            <form id="itemForm">
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="itemType">구분 *</label>
-                        <select id="itemType" required>
-                            <option value="">선택하세요</option>
-                            <option value="조달">조달</option>
-                            <option value="계약">계약</option>
-                            <option value="지출">지출</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="itemStatus">상태</label>
-                        <select id="itemStatus">
-                            <option value="계획">계획</option>
-                            <option value="진행중">진행중</option>
-                            <option value="완료">완료</option>
-                            <option value="보류">보류</option>
-                        </select>
-                    </div>
+        <!-- 모달 -->
+        <div id="itemModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 class="modal-title">새 건 추가</h3>
+                    <button type="button" class="close-btn" onclick="closeModal()">&times;</button>
                 </div>
-
-                <div class="form-group">
-                    <label for="itemName">건 명칭 *</label>
-                    <input type="text" id="itemName" required placeholder="예: 사육장 보수 공사, CT 스캐너 도입 건">
-                </div>
-
-                <div class="form-group">
-                    <label for="itemDetails">세부 품목</label>
-                    <div class="details-section">
-                        <div class="details-header">
-                            <span class="col-name">품명</span>
-                            <span class="col-spec">비고</span>
-                            <span class="col-qty">수량</span>
-                            <span class="col-unit">단위</span>
-                            <span class="col-price">단가(원)</span>
-                            <span class="col-total">금액(원)</span>
-                            <span class="col-location">설치위치</span>
-                            <span class="col-action">삭제</span>
+                <form id="itemForm" onsubmit="saveItem(event)">
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label class="form-label" for="itemType">구분</label>
+                            <select id="itemType" class="form-select" required>
+                                <option value="">선택하세요</option>
+                                <option value="조달">조달</option>
+                                <option value="계약">계약</option>
+                                <option value="지출">지출</option>
+                            </select>
                         </div>
-                        <div id="detailsList" class="details-list">
-                            <!-- 세부 품목들이 여기에 추가됩니다 -->
+
+                        <div class="form-group">
+                            <label class="form-label" for="itemStatus">상태</label>
+                            <select id="itemStatus" class="form-select" required>
+                                <option value="">선택하세요</option>
+                                <option value="계획">계획</option>
+                                <option value="진행중">진행중</option>
+                                <option value="완료">완료</option>
+                            </select>
                         </div>
-                        <div style="display: flex; gap: 10px; margin-top: 15px;">
-                            <button type="button" id="addDetailItem" class="btn-add-detail">
+
+                        <div class="form-group">
+                            <label class="form-label" for="itemName">건 명칭</label>
+                            <input type="text" id="itemName" class="form-input" placeholder="예: 사육장 철망 교체" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label" for="itemAmount">금액 (원)</label>
+                            <input type="number" id="itemAmount" class="form-input" placeholder="0" min="0" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label" for="itemLocation">설치 위치</label>
+                            <input type="text" id="itemLocation" class="form-input" placeholder="예: A동 사육장">
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label" for="itemNotes">비고</label>
+                            <textarea id="itemNotes" class="form-textarea" placeholder="추가 메모사항"></textarea>
+                        </div>
+
+                        <!-- 세부품목 섹션 -->
+                        <div class="details-section">
+                            <div class="details-header">
+                                <div class="details-title">세부 품목</div>
+                                <button type="button" class="action-btn-small btn-secondary" onclick="openBulkInputModal()">
+                                    <i class="fas fa-list"></i> 일괄입력
+                                </button>
+                            </div>
+                            <div id="detailsList"></div>
+                            <button type="button" class="add-detail-btn" onclick="addDetailRow()">
                                 <i class="fas fa-plus"></i> 세부 품목 추가
                             </button>
-                            <button type="button" id="bulkInput" class="btn-add-detail" style="background: #28a745;">
-                                <i class="fas fa-list"></i> 일괄 입력
-                            </button>
                         </div>
-                        
-                        <!-- 일괄 입력 모달 -->
-                        <div id="bulkInputModal" class="modal" style="display: none;">
-                            <div class="modal-content" style="max-width: 600px;">
-                                <div class="modal-header">
-                                    <h3><i class="fas fa-list"></i> 세부품목 일괄 입력</h3>
-                                    <button type="button" class="close-btn" onclick="closeBulkInputModal()">&times;</button>
-                                </div>
-                                <div class="modal-body">
-                                    <div style="margin-bottom: 15px; padding: 10px; background: #e3f2fd; border-radius: 5px; font-size: 13px;">
-                                        💡 <strong>입력 형식:</strong> 품명,규격,수량,단위,단가(원),금액(원),설치위치 (한 줄에 하나씩)<br>
-                                        <strong>예시:</strong><br>
-                                        철재블록파티션,800*45*1170,7,EA,130000,910000,A동<br>
-                                        직원의자,665*600*1150,9,EA,340000,3060000,사무실
-                                    </div>
-                                    <textarea id="bulkInputText" rows="10" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; font-family: monospace;" placeholder="품명,규격,수량,단위,단가(원),금액(원),설치위치
+                        <input type="hidden" id="itemDetails" value="">
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="btn-full btn-secondary" onclick="closeModal()">취소</button>
+                        <button type="submit" class="btn-full btn-primary">저장</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- 일괄 입력 모달 -->
+        <div id="bulkInputModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 class="modal-title">세부품목 일괄 입력</h3>
+                    <button type="button" class="close-btn" onclick="closeBulkInputModal()">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div style="margin-bottom: 16px; padding: 16px; background: #f0f9ff; border-radius: 12px; font-size: 14px;">
+                        💡 <strong>입력 형식:</strong> 품명,규격,수량,단위,단가(원),금액(원),설치위치<br><br>
+                        <strong>예시:</strong><br>
+                        철재블록파티션,800*45*1170,7,EA,130000,910000,A동<br>
+                        직원의자,665*600*1150,9,EA,340000,3060000,사무실
+                    </div>
+                    <textarea id="bulkInputText" class="form-textarea" rows="10" style="min-height: 200px; font-family: monospace;" placeholder="품명,규격,수량,단위,단가(원),금액(원),설치위치
 철재블록파티션,800*45*1170,7,EA,130000,910000,A동
 직원의자,665*600*1150,9,EA,340000,3060000,사무실
 ..."></textarea>
-                                    <div style="display: flex; gap: 10px; margin-top: 15px; justify-content: flex-end;">
-                                        <button type="button" class="btn btn-secondary" id="cancelBulkInput">취소</button>
-                                        <button type="button" class="btn btn-primary" id="submitBulkInput">
-                                            <i class="fas fa-plus"></i> 일괄 추가
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <input type="hidden" id="itemDetails" value="">
                 </div>
-
-                <div class="form-group">
-                    <label for="itemLocation">설치 위치</label>
-                    <input type="text" id="itemLocation" placeholder="설치 위치를 입력하세요">
-                </div>
-
-                <div class="form-group">
-                    <label for="itemNotes">비고</label>
-                    <textarea id="itemNotes" rows="3" placeholder="추가 메모사항"></textarea>
-                </div>
-
                 <div class="form-actions">
-                    <button type="submit" class="btn btn-primary">
-                        <i class="fas fa-save"></i> 저장
-                    </button>
-                    <button type="button" class="btn btn-secondary" onclick="closeModal()">
-                        <i class="fas fa-times"></i> 취소
-                    </button>
+                    <button type="button" class="btn-full btn-secondary" onclick="closeBulkInputModal()">취소</button>
+                    <button type="button" class="btn-full btn-primary" onclick="processBulkInput()">일괄 추가</button>
                 </div>
-            </form>
+            </div>
+        </div>
+
+        <!-- PDF 생성용 숨겨진 컨테이너 -->
+        <div id="pdfContainer" style="position: absolute; left: -9999px; top: -9999px;">
+            <!-- PDF 내용이 여기에 동적으로 채워집니다 -->
         </div>
     </div>
 
     <script>
-        let currentEditingItem = null;
+        // 전역 변수들
         let allItems = [];
         let filteredItems = [];
+        let currentEditingItem = null;
+        let detailItems = [];
 
-        // 페이지 로드시 초기화
-        window.addEventListener('DOMContentLoaded', () => {
+        // API 베이스 URL
+        const API_URL = '/.netlify/functions/inventory-api/inventory-api';
+
+        // 초기화
+        document.addEventListener('DOMContentLoaded', function() {
             loadItems();
-            setupEventListeners();
         });
 
-        function setupEventListeners() {
-            document.getElementById('addNewItem').addEventListener('click', openAddModal);
-            document.getElementById('exportPDF').addEventListener('click', generatePDF);
-            document.getElementById('itemForm').addEventListener('submit', saveItem);
-            document.getElementById('addDetailItem').addEventListener('click', addDetailRow);
-            document.getElementById('bulkInput').addEventListener('click', openBulkInputModal);
-            
-            // 모달이 DOM에 추가된 후 이벤트 리스너 등록
-            setTimeout(() => {
-                const cancelBtn = document.getElementById('cancelBulkInput');
-                const submitBtn = document.getElementById('submitBulkInput');
-                
-                if (cancelBtn) {
-                    cancelBtn.addEventListener('click', closeBulkInputModal);
+        // 아이템 로드
+        async function loadItems() {
+            try {
+                const response = await fetch(API_URL);
+                if (response.ok) {
+                    allItems = await response.json();
+                    filteredItems = [...allItems];
+                    displayItems();
+                    updateSummary();
+                    updateLocationFilter();
                 }
-                if (submitBtn) {
-                    submitBtn.addEventListener('click', processBulkInput);
-                }
-            }, 100);
+            } catch (error) {
+                console.error('Failed to load items:', error);
+                showMessage('데이터를 불러오는데 실패했습니다.', 'error');
+            }
+        }
+
+        // 아이템 표시
+        function displayItems() {
+            const itemsList = document.getElementById('itemsList');
             
-            // 필터 이벤트 리스너
-            document.getElementById('filterType').addEventListener('change', applyFilters);
-            document.getElementById('filterStatus').addEventListener('change', applyFilters);
-            document.getElementById('filterLocation').addEventListener('change', applyFilters);
-            document.getElementById('clearFilters').addEventListener('click', clearAllFilters);
-            
-            // 모달 외부 클릭시 닫기
-            window.onclick = function(event) {
-                const modal = document.getElementById('itemModal');
-                if (event.target === modal) {
-                    closeModal();
-                }
+            if (filteredItems.length === 0) {
+                itemsList.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon">📋</div>
+                        <div class="empty-title">아직 등록된 사업이 없습니다</div>
+                        <div class="empty-description">위의 "새 건 추가" 버튼을 눌러 첫 번째 사업을 등록해보세요.</div>
+                    </div>
+                `;
+                return;
             }
 
-            // ESC 키로 모달 닫기
-            document.addEventListener('keydown', function(event) {
-                if (event.key === 'Escape') {
-                    closeModal();
-                }
+            itemsList.innerHTML = filteredItems.map(item => `
+                <div class="item-card" onclick="openEditModal(${JSON.stringify(item).replace(/"/g, '&quot;')})">
+                    <div class="item-header">
+                        <div class="item-name">${item.name}</div>
+                        <div class="item-amount">${item.amount.toLocaleString()}원</div>
+                    </div>
+                    <div class="item-meta">
+                        <span class="status-badge status-${item.status}">${item.status}</span>
+                        <span class="item-type">${item.type}</span>
+                        <span class="item-type">${new Date(item.created_at).toLocaleDateString()}</span>
+                    </div>
+                    ${item.installation_location ? `<div class="item-details">📍 ${item.installation_location}</div>` : ''}
+                    ${item.notes ? `<div class="item-details">${item.notes}</div>` : ''}
+                    ${item.details ? `<div class="item-details">📝 세부품목 있음</div>` : ''}
+                    <div class="item-actions" onclick="event.stopPropagation()">
+                        <button class="action-btn-small btn-edit" onclick="openEditModal(${JSON.stringify(item).replace(/"/g, '&quot;')})">
+                            <i class="fas fa-edit"></i> 수정
+                        </button>
+                        <button class="action-btn-small btn-delete" onclick="deleteItem(${item.id})">
+                            <i class="fas fa-trash"></i> 삭제
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // 요약 업데이트
+        function updateSummary() {
+            const totalCount = filteredItems.length;
+            const totalAmount = filteredItems.reduce((sum, item) => sum + (item.amount || 0), 0);
+            const progressCount = filteredItems.filter(item => item.status === '진행중').length;
+            
+            document.getElementById('totalCount').textContent = totalCount;
+            document.getElementById('totalAmount').textContent = totalAmount.toLocaleString() + '원';
+            document.getElementById('progressCount').textContent = progressCount;
+        }
+
+        // 필터링
+        function filterItems() {
+            const typeFilter = document.getElementById('filterType').value;
+            const statusFilter = document.getElementById('filterStatus').value;
+            const locationFilter = document.getElementById('filterLocation').value;
+
+            filteredItems = allItems.filter(item => {
+                const typeMatch = !typeFilter || item.type === typeFilter;
+                const statusMatch = !statusFilter || item.status === statusFilter;
+                const locationMatch = !locationFilter || item.installation_location === locationFilter;
+                
+                return typeMatch && statusMatch && locationMatch;
+            });
+
+            displayItems();
+            updateSummary();
+        }
+
+        // 위치 필터 업데이트
+        function updateLocationFilter() {
+            const locationSelect = document.getElementById('filterLocation');
+            const locations = [...new Set(allItems
+                .map(item => item.installation_location)
+                .filter(location => location && location.trim())
+            )].sort();
+            
+            // 기존 옵션 제거
+            while (locationSelect.children.length > 1) {
+                locationSelect.removeChild(locationSelect.lastChild);
+            }
+            
+            // 새 옵션 추가
+            locations.forEach(location => {
+                const option = document.createElement('option');
+                option.value = location;
+                option.textContent = location;
+                locationSelect.appendChild(option);
             });
         }
 
-        let detailItems = [];
-
-        function openAddModal() {
-            document.getElementById('modalTitle').textContent = '건 추가';
+        // 모달 열기/닫기
+        function openModal() {
             document.getElementById('itemForm').reset();
-            document.getElementById('itemStatus').value = '계획';
-            document.getElementById('itemLocation').value = '';
+            document.getElementById('itemModal').style.display = 'block';
+            document.querySelector('.modal-title').textContent = '새 건 추가';
+            currentEditingItem = null;
             detailItems = [];
             updateDetailsDisplay();
-            currentEditingItem = null;
-            document.getElementById('itemModal').style.display = 'block';
         }
 
         function openEditModal(item) {
-            document.getElementById('modalTitle').textContent = '건 수정';
+            currentEditingItem = item;
             document.getElementById('itemType').value = item.type;
             document.getElementById('itemStatus').value = item.status;
             document.getElementById('itemName').value = item.name;
+            document.getElementById('itemAmount').value = item.amount;
             document.getElementById('itemLocation').value = item.installation_location || '';
             document.getElementById('itemNotes').value = item.notes || '';
             
-            // 세부 품목 파싱
-            detailItems = [];
-            if (item.details) {
-                try {
-                    detailItems = JSON.parse(item.details);
-                } catch (e) {
-                    // 기존 텍스트 형식인 경우 기본 변환
-                    const lines = item.details.split('\n').filter(line => line.trim());
-                    detailItems = lines.map(line => ({
-                        name: line.trim(),
-                        spec: '',
-                        quantity: 1,
-                        unit: '개',
-                        price: 0,
-                        total: 0
-                    }));
-                }
-            }
-            
+            // 세부품목 로드
+            detailItems = item.details ? JSON.parse(item.details) : [];
             updateDetailsDisplay();
-            currentEditingItem = item;
+            
+            document.querySelector('.modal-title').textContent = '건 수정';
             document.getElementById('itemModal').style.display = 'block';
         }
 
+        function closeModal() {
+            document.getElementById('itemModal').style.display = 'none';
+            currentEditingItem = null;
+            detailItems = [];
+        }
+
+        // 아이템 저장
+        async function saveItem(e) {
+            e.preventDefault();
+            
+            const itemData = {
+                type: document.getElementById('itemType').value,
+                status: document.getElementById('itemStatus').value,
+                name: document.getElementById('itemName').value,
+                amount: parseInt(document.getElementById('itemAmount').value) || 0,
+                quantity: 1,
+                details: document.getElementById('itemDetails').value,
+                notes: document.getElementById('itemNotes').value,
+                installation_location: document.getElementById('itemLocation').value,
+                created_at: currentEditingItem ? currentEditingItem.created_at : new Date().toISOString()
+            };
+
+            if (currentEditingItem) {
+                itemData.id = currentEditingItem.id;
+            }
+
+            try {
+                const method = currentEditingItem ? 'PUT' : 'POST';
+                const response = await fetch(API_URL, {
+                    method: method,
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(itemData)
+                });
+
+                if (response.ok) {
+                    showMessage(currentEditingItem ? '수정되었습니다!' : '추가되었습니다!', 'success');
+                    closeModal();
+                    loadItems();
+                } else {
+                    throw new Error('저장 실패');
+                }
+            } catch (error) {
+                showMessage('저장에 실패했습니다.', 'error');
+            }
+        }
+
+        // 아이템 삭제
+        async function deleteItem(id) {
+            if (!confirm('정말 삭제하시겠습니까?')) return;
+            
+            try {
+                const response = await fetch(API_URL, {
+                    method: 'DELETE',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ id: id })
+                });
+
+                if (response.ok) {
+                    showMessage('삭제되었습니다!', 'success');
+                    loadItems();
+                } else {
+                    throw new Error('삭제 실패');
+                }
+            } catch (error) {
+                showMessage('삭제에 실패했습니다.', 'error');
+            }
+        }
+
+        // 세부품목 관리
         function addDetailRow() {
             detailItems.push({
                 name: '',
@@ -986,106 +939,60 @@
             const item = detailItems[index];
             item.total = item.quantity * item.price;
             updateDetailsJSON();
-            // 해당 행의 total 값만 업데이트
-            const totalElement = document.querySelector(`#detailsList .detail-row:nth-child(${index + 1}) .detail-total`);
+            
+            // 해당 항목의 total 값만 업데이트
+            const totalElement = document.querySelector(`[data-total-index="${index}"]`);
             if (totalElement) {
-                totalElement.textContent = item.total.toLocaleString();
+                totalElement.textContent = item.total.toLocaleString() + '원';
             }
         }
 
         function updateDetailsDisplay() {
-            console.log('updateDetailsDisplay 호출됨, detailItems:', detailItems);
-            
             const detailsList = document.getElementById('detailsList');
             
             if (detailItems.length === 0) {
-                detailsList.innerHTML = '<div class="empty-details">세부 품목을 추가해주세요</div>';
+                detailsList.innerHTML = '<div style="text-align: center; color: #9ca3af; padding: 20px;">세부 품목을 추가해주세요</div>';
                 document.getElementById('itemDetails').value = '';
                 return;
             }
 
-            // 각 아이템의 total 값을 확인하고 수정
+            // 각 아이템 초기화
             detailItems.forEach((item, index) => {
                 if (item.total === undefined || item.total === null) {
                     item.total = (item.quantity || 0) * (item.price || 0);
-                    console.log(`아이템 ${index} total 수정됨:`, item.total);
                 }
-                if (item.spec === undefined) {
-                    item.spec = '';
-                }
-                if (item.location === undefined) {
-                    item.location = '';
-                }
+                if (item.spec === undefined) item.spec = '';
+                if (item.location === undefined) item.location = '';
             });
 
-            detailsList.innerHTML = detailItems.map((item, index) => {
-                const safeTotal = typeof item.total === 'number' ? item.total : 0;
-                console.log(`아이템 ${index} 렌더링:`, { total: item.total, safeTotal });
-                
-                return `
-                <div class="detail-row" data-desktop-row>
-                    <input type="text" class="desktop-input" placeholder="품명" value="${item.name || ''}" 
-                           onchange="detailItems[${index}].name = this.value; updateDetailsJSON()">
-                    <input type="text" class="desktop-input" placeholder="비고" value="${item.spec || ''}" 
-                           onchange="detailItems[${index}].spec = this.value; updateDetailsJSON()">
-                    <input type="number" class="desktop-input" placeholder="수량" value="${item.quantity || 1}" min="1" 
-                           onchange="detailItems[${index}].quantity = parseInt(this.value) || 1; updateDetailTotal(${index}); updateDetailsJSON()">
-                    <input type="text" class="desktop-input" placeholder="단위" value="${item.unit || ''}" 
-                           onchange="detailItems[${index}].unit = this.value; updateDetailsJSON()">
-                    <input type="number" class="desktop-input" placeholder="단가" value="${item.price || 0}" min="0" 
-                           onchange="detailItems[${index}].price = parseInt(this.value) || 0; updateDetailTotal(${index}); updateDetailsJSON()">
-                    <div class="detail-total desktop-total">${safeTotal.toLocaleString()}</div>
-                    <input type="text" class="desktop-input" placeholder="설치위치" value="${item.location || ''}" 
-                           onchange="detailItems[${index}].location = this.value; updateDetailsJSON()">
-                    <button type="button" class="btn-remove-detail desktop-btn" onclick="removeDetailRow(${index})">
-                        <i class="fas fa-trash"></i>
-                    </button>
-                    
-                    <!-- 모바일 카드 레이아웃 -->
-                    <div class="mobile-card">
-                        <div style="margin-bottom: 10px;">
-                            <label style="display: block; font-size: 12px; color: #6c757d; margin-bottom: 3px;">품명</label>
-                            <input type="text" placeholder="품명을 입력하세요" value="${item.name || ''}" 
-                                   onchange="detailItems[${index}].name = this.value; updateDetailsJSON()">
+            detailsList.innerHTML = detailItems.map((item, index) => `
+                <div class="detail-item">
+                    <div class="detail-row">
+                        <input type="text" class="detail-input" placeholder="품명" value="${item.name || ''}" 
+                               onchange="detailItems[${index}].name = this.value; updateDetailsJSON()">
+                        <input type="text" class="detail-input" placeholder="규격/비고" value="${item.spec || ''}" 
+                               onchange="detailItems[${index}].spec = this.value; updateDetailsJSON()">
+                    </div>
+                    <div class="detail-row">
+                        <input type="number" class="detail-input" placeholder="수량" value="${item.quantity || 1}" min="1" 
+                               onchange="detailItems[${index}].quantity = parseInt(this.value) || 1; updateDetailTotal(${index})">
+                        <input type="text" class="detail-input" placeholder="단위" value="${item.unit || ''}" 
+                               onchange="detailItems[${index}].unit = this.value; updateDetailsJSON()">
+                        <input type="number" class="detail-input" placeholder="단가" value="${item.price || 0}" min="0" 
+                               onchange="detailItems[${index}].price = parseInt(this.value) || 0; updateDetailTotal(${index})">
+                    </div>
+                    <div class="detail-row">
+                        <input type="text" class="detail-input" placeholder="설치위치" value="${item.location || ''}" 
+                               onchange="detailItems[${index}].location = this.value; updateDetailsJSON()">
+                        <div class="detail-input" data-total-index="${index}" style="background: #f0f9ff; color: #1d4ed8; font-weight: 600;">
+                            ${(item.total || 0).toLocaleString()}원
                         </div>
-                        <div style="margin-bottom: 10px;">
-                            <label style="display: block; font-size: 12px; color: #6c757d; margin-bottom: 3px;">규격/비고</label>
-                            <input type="text" placeholder="규격이나 비고를 입력하세요" value="${item.spec || ''}" 
-                                   onchange="detailItems[${index}].spec = this.value; updateDetailsJSON()">
-                        </div>
-                        <div style="display: flex; gap: 10px; margin-bottom: 10px;">
-                            <div style="flex: 1;">
-                                <label style="display: block; font-size: 12px; color: #6c757d; margin-bottom: 3px;">수량</label>
-                                <input type="number" placeholder="수량" value="${item.quantity || 1}" min="1" 
-                                       onchange="detailItems[${index}].quantity = parseInt(this.value) || 1; updateDetailTotal(${index}); updateDetailsJSON()">
-                            </div>
-                            <div style="flex: 1;">
-                                <label style="display: block; font-size: 12px; color: #6c757d; margin-bottom: 3px;">단위</label>
-                                <input type="text" placeholder="개, EA 등" value="${item.unit || ''}" 
-                                       onchange="detailItems[${index}].unit = this.value; updateDetailsJSON()">
-                            </div>
-                        </div>
-                        <div style="margin-bottom: 10px;">
-                            <label style="display: block; font-size: 12px; color: #6c757d; margin-bottom: 3px;">단가(원)</label>
-                            <input type="number" placeholder="단가를 입력하세요" value="${item.price || 0}" min="0" 
-                                   onchange="detailItems[${index}].price = parseInt(this.value) || 0; updateDetailTotal(${index}); updateDetailsJSON()">
-                        </div>
-                        <div style="margin-bottom: 10px;">
-                            <label style="display: block; font-size: 12px; color: #6c757d; margin-bottom: 3px;">금액(원)</label>
-                            <div class="detail-total mobile-total">${safeTotal.toLocaleString()}원</div>
-                        </div>
-                        <div style="margin-bottom: 15px;">
-                            <label style="display: block; font-size: 12px; color: #6c757d; margin-bottom: 3px;">설치위치</label>
-                            <input type="text" placeholder="설치 위치를 입력하세요" value="${item.location || ''}" 
-                                   onchange="detailItems[${index}].location = this.value; updateDetailsJSON()">
-                        </div>
-                        <button type="button" class="btn-remove-detail mobile-btn" onclick="removeDetailRow(${index})">
-                            <i class="fas fa-trash"></i> 삭제
+                        <button type="button" class="detail-remove" onclick="removeDetailRow(${index})">
+                            <i class="fas fa-trash"></i>
                         </button>
                     </div>
                 </div>
-                `;
-            }).join('');
+            `).join('');
 
             updateDetailsJSON();
         }
@@ -1094,339 +1001,29 @@
             document.getElementById('itemDetails').value = JSON.stringify(detailItems);
         }
 
-        function closeModal() {
-            document.getElementById('itemModal').style.display = 'none';
-            currentEditingItem = null;
-        }
-
-        async function saveItem(e) {
-            e.preventDefault();
-            
-            // 세부 품목에서 총 금액 계산
-            const totalAmount = detailItems.reduce((sum, item) => sum + (item.total || 0), 0);
-
-            const formData = {
-                type: document.getElementById('itemType').value,
-                status: document.getElementById('itemStatus').value,
-                name: document.getElementById('itemName').value,
-                amount: totalAmount, // 세부 품목 총액으로 자동 계산
-                quantity: 1, // 기본값
-                details: document.getElementById('itemDetails').value,
-                notes: document.getElementById('itemNotes').value,
-                installation_location: document.getElementById('itemLocation').value,
-                created_at: currentEditingItem ? currentEditingItem.created_at : new Date().toISOString()
-            };
-
-            try {
-                let response;
-                if (currentEditingItem) {
-                    // 수정
-                    response = await fetch('/.netlify/functions/inventory-api', {
-                        method: 'PUT',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({...formData, id: currentEditingItem.id})
-                    });
-                } else {
-                    // 추가
-                    response = await fetch('/.netlify/functions/inventory-api', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify(formData)
-                    });
-                }
-                
-                if (!response.ok) {
-                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-                }
-                
-                showMessage(
-                    currentEditingItem 
-                        ? '✅ 건이 성공적으로 수정되었습니다!' 
-                        : '✅ 건이 성공적으로 추가되었습니다!', 
-                    'success'
-                );
-                closeModal();
-                await loadItems();
-                
-            } catch (error) {
-                console.error('Error saving item:', error);
-                showMessage(`❌ 건 저장 실패: ${error.message}`, 'error');
-            }
-        }
-
-        async function deleteItem(id) {
-            if (!confirm('정말로 이 건을 삭제하시겠습니까?')) return;
-            
-            try {
-                const response = await fetch('/.netlify/functions/inventory-api', {
-                    method: 'DELETE',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ id })
-                });
-                
-                if (!response.ok) {
-                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-                }
-                
-                showMessage('✅ 건이 성공적으로 삭제되었습니다!', 'success');
-                await loadItems();
-                
-            } catch (error) {
-                console.error('Error deleting item:', error);
-                showMessage(`❌ 건 삭제 실패: ${error.message}`, 'error');
-            }
-        }
-
-        async function loadItems() {
-            try {
-                const response = await fetch('/.netlify/functions/inventory-api');
-                
-                if (!response.ok) {
-                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-                }
-                
-                allItems = await response.json();
-                filteredItems = [...allItems];
-                displayItems();
-                updateSummary();
-                updateLocationFilter();
-                
-            } catch (error) {
-                console.error('Error loading items:', error);
-                showMessage(`❌ 건 불러오기 실패: ${error.message}`, 'error');
-            }
-        }
-
-        function displayItems() {
-            const tbody = document.getElementById('inventoryList');
-            
-            if (filteredItems.length === 0) {
-                tbody.innerHTML = `
-                    <tr>
-                        <td colspan="8" class="empty-state">
-                            <i class="fas fa-boxes"></i>
-                            <div>아직 등록된 건이 없습니다.</div>
-                            <div><small>위의 "새 건 추가" 버튼을 눌러 시작하세요.</small></div>
-                        </td>
-                    </tr>
-                `;
-                return;
-            }
-
-            tbody.innerHTML = filteredItems.map((item, index) => `
-                <tr>
-                    <td>${index + 1}</td>
-                    <td>${item.type}</td>
-                    <td>
-                        <strong>${item.name}</strong>
-                        ${item.details ? '<br><small class="text-muted">세부품목 있음</small>' : ''}
-                    </td>
-                    <td class="amount">${item.amount.toLocaleString()}</td>
-                    <td><span class="status-badge status-${item.status}">${item.status}</span></td>
-                    <td>${new Date(item.created_at).toLocaleDateString()}</td>
-                    <td class="installation-location">${item.installation_location || '-'}</td>
-                    <td class="actions" style="text-align: center;">
-                        <button class="btn-small btn-edit" onclick="openEditModal(${JSON.stringify(item).replace(/"/g, '&quot;')})" title="수정">
-                            <i class="fas fa-edit"></i> 수정
-                        </button>
-                        <br><br>
-                        <button class="btn-small btn-delete" onclick="deleteItem(${item.id})" title="삭제" style="background: #dc3545;">
-                            <i class="fas fa-trash"></i> 삭제
-                        </button>
-                    </td>
-                </tr>
-            `).join('');
-        }
-
-        function updateSummary(items = filteredItems) {
-            const totalCount = items.length;
-            const totalAmount = items.reduce((sum, item) => sum + (item.amount || 0), 0);
-            
-            document.getElementById('totalCount').textContent = totalCount;
-            document.getElementById('totalAmount').textContent = totalAmount.toLocaleString();
-        }
-
-        function showMessage(message, type) {
-            // 기존 메시지 제거
-            const existingMessage = document.querySelector('.message');
-            if (existingMessage) {
-                existingMessage.remove();
-            }
-
-            const messageDiv = document.createElement('div');
-            messageDiv.className = `message ${type}`;
-            messageDiv.textContent = message;
-            messageDiv.style.cssText = `
-                position: fixed;
-                top: 30px;
-                right: 30px;
-                padding: 16px 24px;
-                border-radius: 12px;
-                font-weight: 500;
-                box-shadow: 0 8px 32px rgba(0,0,0,0.15);
-                z-index: 1001;
-                animation: slideInRight 0.4s ease;
-                max-width: 400px;
-                ${type === 'success' ? 'background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%); color: #155724; border: 1px solid #c3e6cb;' : 'background: linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%); color: #721c24; border: 1px solid #f5c6cb;'}
-            `;
-            
-            document.body.appendChild(messageDiv);
-            
-            setTimeout(() => {
-                if (messageDiv.parentNode) {
-                    messageDiv.remove();
-                }
-            }, 4000);
-        }
-
-        // PDF 생성 함수
-        async function generatePDF() {
-            try {
-                // PDF 컨테이너에 데이터 채우기
-                populatePDFData();
-                
-                // PDF 컨테이너를 임시로 표시
-                const pdfContainer = document.getElementById('pdfContainer');
-                pdfContainer.style.position = 'static';
-                pdfContainer.style.top = 'auto';
-                pdfContainer.style.left = 'auto';
-                
-                // html2canvas로 이미지 생성
-                const canvas = await html2canvas(pdfContainer, {
-                    scale: 2,
-                    useCORS: true,
-                    allowTaint: true
-                });
-                
-                // PDF 생성
-                const { jsPDF } = window.jspdf;
-                const pdf = new jsPDF('p', 'mm', 'a4');
-                
-                const imgWidth = 210; // A4 가로 크기 (mm)
-                const imgHeight = (canvas.height * imgWidth) / canvas.width;
-                
-                pdf.addImage(canvas.toDataURL('image/png'), 'PNG', 0, 0, imgWidth, imgHeight);
-                
-                // 파일명 생성
-                const today = new Date();
-                const fileName = `사업관리계획서_${today.getFullYear()}${(today.getMonth()+1).toString().padStart(2,'0')}${today.getDate().toString().padStart(2,'0')}.pdf`;
-                
-                // PDF 다운로드
-                pdf.save(fileName);
-                
-                // PDF 컨테이너 다시 숨기기
-                pdfContainer.style.position = 'fixed';
-                pdfContainer.style.top = '-9999px';
-                pdfContainer.style.left = '-9999px';
-                
-                showMessage('✅ PDF 파일이 성공적으로 생성되었습니다!', 'success');
-                
-            } catch (error) {
-                console.error('PDF 생성 오류:', error);
-                showMessage('❌ PDF 생성 중 오류가 발생했습니다.', 'error');
-            }
-        }
-
-        // PDF 데이터 채우기
-        function populatePDFData() {
-            // 현재 날짜 설정
-            const today = new Date();
-            document.getElementById('pdfDate').textContent = `${today.getFullYear()}년 ${today.getMonth()+1}월 ${today.getDate()}일`;
-            
-            // 테이블 데이터 생성
-            const tbody = document.getElementById('pdfTableBody');
-            tbody.innerHTML = '';
-            
-            let totalAmount = 0;
-            const statusCounts = { '계획': 0, '진행중': 0, '완료': 0 };
-            
-            allItems.forEach(item => {
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td>${item.type}</td>
-                    <td>${item.status}</td>
-                    <td>${item.name}</td>
-                    <td style="text-align: right">${item.amount.toLocaleString()}원</td>
-                    <td>${item.installation_location || '-'}</td>
-                    <td style="font-size: 10px">${item.notes ? item.notes.substring(0, 50) + (item.notes.length > 50 ? '...' : '') : '-'}</td>
-                `;
-                tbody.appendChild(row);
-                
-                totalAmount += item.amount;
-                statusCounts[item.status] = (statusCounts[item.status] || 0) + 1;
-            });
-            
-            // 요약 정보 생성
-            const summaryDiv = document.getElementById('pdfSummary');
-            summaryDiv.innerHTML = `
-                <div style="display: flex; justify-content: space-between; align-items: center;">
-                    <div>
-                        <strong>총 건수:</strong> ${allItems.length}건 | 
-                        <strong>계획:</strong> ${statusCounts['계획']}건 | 
-                        <strong>진행중:</strong> ${statusCounts['진행중']}건 | 
-                        <strong>완료:</strong> ${statusCounts['완료']}건
-                    </div>
-                    <div>
-                        <strong style="font-size: 18px; color: #d63384;">총 예상금액: ${totalAmount.toLocaleString()}원</strong>
-                    </div>
-                </div>
-            `;
-        }
-
-        // 일괄 입력 모달 열기
+        // 일괄 입력 모달
         function openBulkInputModal() {
             document.getElementById('bulkInputModal').style.display = 'block';
-            document.getElementById('bulkInputText').focus();
-            
-            // 모달이 열릴 때 이벤트 리스너 재등록
-            setTimeout(() => {
-                const cancelBtn = document.getElementById('cancelBulkInput');
-                const submitBtn = document.getElementById('submitBulkInput');
-                
-                if (cancelBtn && !cancelBtn.hasEventListener) {
-                    cancelBtn.addEventListener('click', closeBulkInputModal);
-                    cancelBtn.hasEventListener = true;
-                }
-                if (submitBtn && !submitBtn.hasEventListener) {
-                    submitBtn.addEventListener('click', processBulkInput);
-                    submitBtn.hasEventListener = true;
-                }
-            }, 50);
         }
 
-        // 일괄 입력 모달 닫기
         function closeBulkInputModal() {
             document.getElementById('bulkInputModal').style.display = 'none';
             document.getElementById('bulkInputText').value = '';
         }
 
-        // 일괄 입력 처리
         function processBulkInput() {
-            console.log('processBulkInput 함수 호출됨');
-            
             const inputText = document.getElementById('bulkInputText').value.trim();
-            console.log('입력 텍스트:', inputText);
             
             if (!inputText) {
-                showMessage('❌ 입력할 데이터가 없습니다.', 'error');
+                showMessage('입력할 데이터가 없습니다.', 'error');
                 return;
             }
             
             const lines = inputText.split('\n').filter(line => line.trim());
-            console.log('처리할 라인 수:', lines.length);
-            
             let addedCount = 0;
             
-            lines.forEach((line, index) => {
-                console.log(`라인 ${index + 1}:`, line);
+            lines.forEach(line => {
                 const columns = line.split(',').map(col => col.trim());
-                console.log('컬럼들:', columns);
                 
                 if (columns.length >= 7) {
                     const [name, spec, quantity, unit, price, amount, location] = columns;
@@ -1438,119 +1035,135 @@
                         
                         const item = {
                             name: name,
-                            spec: spec, // 규격 필드
+                            spec: spec,
                             quantity: numQuantity,
                             unit: unit,
                             price: numPrice,
-                            total: numAmount, // 금액 사용
-                            location: location // 설치위치 추가
+                            total: numAmount,
+                            location: location
                         };
                         
-                        console.log('추가할 아이템:', item);
                         detailItems.push(item);
                         addedCount++;
-                    } else {
-                        console.log('빈 데이터가 있어 건너뜀:', { name, spec, quantity, unit, price, amount, location });
                     }
-                } else {
-                    console.log('컬럼 수가 부족함 (7개 필요):', columns.length);
                 }
             });
-            
-            console.log('총 추가된 아이템 수:', addedCount);
-            console.log('현재 detailItems 배열:', detailItems);
             
             if (addedCount > 0) {
                 updateDetailsDisplay();
                 closeBulkInputModal();
-                showMessage(`✅ ${addedCount}개의 세부품목이 추가되었습니다!`, 'success');
+                showMessage(`${addedCount}개 품목이 추가되었습니다!`, 'success');
             } else {
-                showMessage('❌ 추가할 수 있는 유효한 데이터가 없습니다. 형식을 확인해주세요.', 'error');
+                showMessage('올바른 형식의 데이터가 없습니다.', 'error');
             }
         }
 
-        // 필터 적용
-        function applyFilters() {
-            const typeFilter = document.getElementById('filterType').value;
-            const statusFilter = document.getElementById('filterStatus').value;
-            const locationFilter = document.getElementById('filterLocation').value;
-
-            filteredItems = allItems.filter(item => {
-                const typeMatch = !typeFilter || item.type === typeFilter;
-                const statusMatch = !statusFilter || item.status === statusFilter;
-                const locationMatch = !locationFilter || item.installation_location === locationFilter;
+        // PDF 생성
+        async function generatePDF() {
+            showMessage('PDF를 생성하고 있습니다...', 'info');
+            
+            try {
+                const { jsPDF } = window.jspdf;
+                const pdf = new jsPDF('p', 'mm', 'a4');
                 
-                return typeMatch && statusMatch && locationMatch;
-            });
-
-            displayItems();
-            updateSummary(filteredItems);
-        }
-
-        // 모든 필터 초기화
-        function clearAllFilters() {
-            document.getElementById('filterType').value = '';
-            document.getElementById('filterStatus').value = '';
-            document.getElementById('filterLocation').value = '';
-            
-            filteredItems = [...allItems];
-            displayItems();
-            updateSummary(filteredItems);
-        }
-
-        // 설치 위치 필터 옵션 업데이트
-        function updateLocationFilter() {
-            const locationSelect = document.getElementById('filterLocation');
-            const locations = [...new Set(allItems
-                .map(item => item.installation_location)
-                .filter(location => location && location.trim())
-            )].sort();
-            
-            // 기존 옵션 제거 (첫 번째 "전체" 옵션 제외)
-            while (locationSelect.children.length > 1) {
-                locationSelect.removeChild(locationSelect.lastChild);
+                // 한글 폰트 설정 (기본 폰트 사용)
+                pdf.setFont('helvetica');
+                
+                // 제목
+                pdf.setFontSize(20);
+                pdf.text('사육곰 센터 사업 관리 보고서', 20, 30);
+                
+                // 현재 날짜
+                pdf.setFontSize(12);
+                pdf.text('Generated: ' + new Date().toLocaleDateString(), 20, 45);
+                
+                // 요약 정보
+                pdf.setFontSize(14);
+                pdf.text('Summary', 20, 65);
+                pdf.setFontSize(11);
+                pdf.text(`Total Items: ${allItems.length}`, 20, 75);
+                pdf.text(`Total Amount: ${allItems.reduce((sum, item) => sum + item.amount, 0).toLocaleString()} KRW`, 20, 85);
+                
+                // 항목 리스트
+                let yPos = 100;
+                pdf.setFontSize(14);
+                pdf.text('Items List', 20, yPos);
+                yPos += 15;
+                
+                allItems.forEach((item, index) => {
+                    if (yPos > 250) {
+                        pdf.addPage();
+                        yPos = 30;
+                    }
+                    
+                    pdf.setFontSize(11);
+                    pdf.text(`${index + 1}. ${item.name}`, 20, yPos);
+                    pdf.text(`Type: ${item.type}`, 25, yPos + 8);
+                    pdf.text(`Status: ${item.status}`, 25, yPos + 16);
+                    pdf.text(`Amount: ${item.amount.toLocaleString()} KRW`, 25, yPos + 24);
+                    if (item.installation_location) {
+                        pdf.text(`Location: ${item.installation_location}`, 25, yPos + 32);
+                        yPos += 40;
+                    } else {
+                        yPos += 35;
+                    }
+                });
+                
+                // PDF 저장
+                pdf.save(`사업관리보고서_${new Date().toISOString().split('T')[0]}.pdf`);
+                showMessage('PDF가 생성되었습니다!', 'success');
+                
+            } catch (error) {
+                console.error('PDF 생성 오류:', error);
+                showMessage('PDF 생성에 실패했습니다.', 'error');
             }
-            
-            // 새 옵션 추가
-            locations.forEach(location => {
-                const option = document.createElement('option');
-                option.value = location;
-                option.textContent = location;
-                locationSelect.appendChild(option);
-            });
         }
+
+        // 메시지 표시
+        function showMessage(message, type) {
+            // 기존 메시지 제거
+            const existingMessage = document.querySelector('.toast-message');
+            if (existingMessage) {
+                existingMessage.remove();
+            }
+
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'toast-message';
+            messageDiv.textContent = message;
+            messageDiv.style.cssText = `
+                position: fixed;
+                top: 20px;
+                left: 50%;
+                transform: translateX(-50%);
+                padding: 16px 24px;
+                border-radius: 12px;
+                font-weight: 600;
+                box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+                z-index: 9999;
+                animation: slideDown 0.3s ease;
+                max-width: 90vw;
+                text-align: center;
+                ${type === 'success' ? 'background: #10b981; color: white;' : 
+                  type === 'error' ? 'background: #ef4444; color: white;' : 
+                  'background: #3b82f6; color: white;'}
+            `;
+            
+            document.body.appendChild(messageDiv);
+            
+            setTimeout(() => {
+                if (messageDiv.parentNode) {
+                    messageDiv.style.animation = 'slideUp 0.3s ease';
+                    setTimeout(() => messageDiv.remove(), 300);
+                }
+            }, 3000);
+        }
+
+        // 모달 외부 클릭 시 닫기
+        document.addEventListener('click', function(e) {
+            if (e.target.classList.contains('modal')) {
+                e.target.style.display = 'none';
+            }
+        });
     </script>
-
-    <!-- PDF 출력용 숨겨진 컨테이너 -->
-    <div id="pdfContainer" class="pdf-container">
-        <div class="pdf-header">
-            <div class="pdf-title">사육곰 센터 사업관리 계획서</div>
-            <div class="pdf-subtitle">조달 · 계약 · 지출 관리 현황</div>
-            <div style="margin-top: 15px; font-size: 14px;">
-                작성일: <span id="pdfDate"></span>
-            </div>
-        </div>
-        
-        <table class="pdf-table" id="pdfTable">
-            <thead>
-                <tr>
-                    <th width="60">구분</th>
-                    <th width="60">상태</th>
-                    <th width="280">건 명칭</th>
-                    <th width="100">예상금액</th>
-                    <th width="120">설치위치</th>
-                    <th width="120">비고</th>
-                </tr>
-            </thead>
-            <tbody id="pdfTableBody">
-                <!-- PDF용 데이터가 여기에 삽입됩니다 -->
-            </tbody>
-        </table>
-        
-        <div class="pdf-summary" id="pdfSummary">
-            <!-- 요약 정보가 여기에 삽입됩니다 -->
-        </div>
-    </div>
-
 </body>
 </html>
