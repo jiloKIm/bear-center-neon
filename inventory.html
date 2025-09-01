@@ -216,12 +216,15 @@
         }
 
         .btn-small {
-            padding: 6px 10px;
+            padding: 8px 15px;
             font-size: 12px;
             border-radius: 6px;
             border: none;
             cursor: pointer;
             transition: all 0.2s ease;
+            min-width: 70px;
+            font-weight: 600;
+            margin: 2px 0;
         }
 
         .btn-edit {
@@ -675,11 +678,12 @@
                             <th width="80">상태</th>
                             <th width="100">등록일</th>
                             <th width="120">설치 위치</th>
+                            <th width="100">수정</th>
                         </tr>
                     </thead>
                     <tbody id="inventoryList">
                         <tr>
-                            <td colspan="7" class="empty-state">
+                            <td colspan="8" class="empty-state">
                                 <i class="fas fa-boxes"></i>
                                 <div>아직 등록된 건이 없습니다.</div>
                                 <div><small>위의 "새 건 추가" 버튼을 눌러 시작하세요.</small></div>
@@ -1091,7 +1095,7 @@
             if (filteredItems.length === 0) {
                 tbody.innerHTML = `
                     <tr>
-                        <td colspan="7" class="empty-state">
+                        <td colspan="8" class="empty-state">
                             <i class="fas fa-boxes"></i>
                             <div>아직 등록된 건이 없습니다.</div>
                             <div><small>위의 "새 건 추가" 버튼을 눌러 시작하세요.</small></div>
@@ -1113,12 +1117,13 @@
                     <td><span class="status-badge status-${item.status}">${item.status}</span></td>
                     <td>${new Date(item.created_at).toLocaleDateString()}</td>
                     <td class="installation-location">${item.installation_location || '-'}</td>
-                    <td class="actions">
-                        <button class="btn-small btn-edit" onclick="openEditModal(${JSON.stringify(item).replace(/"/g, '&quot;')})">
-                            <i class="fas fa-edit"></i>
+                    <td class="actions" style="text-align: center;">
+                        <button class="btn-small btn-edit" onclick="openEditModal(${JSON.stringify(item).replace(/"/g, '&quot;')})" title="수정">
+                            <i class="fas fa-edit"></i> 수정
                         </button>
-                        <button class="btn-small btn-delete" onclick="deleteItem(${item.id})">
-                            <i class="fas fa-trash"></i>
+                        <br><br>
+                        <button class="btn-small btn-delete" onclick="deleteItem(${item.id})" title="삭제" style="background: #dc3545;">
+                            <i class="fas fa-trash"></i> 삭제
                         </button>
                     </td>
                 </tr>
