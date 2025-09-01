@@ -768,8 +768,8 @@
 직원의자,9,EA,340000
 ..."></textarea>
                                     <div style="display: flex; gap: 10px; margin-top: 15px; justify-content: flex-end;">
-                                        <button type="button" class="btn btn-secondary" onclick="closeBulkInputModal()">취소</button>
-                                        <button type="button" class="btn btn-primary" onclick="processBulkInput()">
+                                        <button type="button" class="btn btn-secondary" id="cancelBulkInput">취소</button>
+                                        <button type="button" class="btn btn-primary" id="submitBulkInput">
                                             <i class="fas fa-plus"></i> 일괄 추가
                                         </button>
                                     </div>
@@ -819,6 +819,19 @@
             document.getElementById('itemForm').addEventListener('submit', saveItem);
             document.getElementById('addDetailItem').addEventListener('click', addDetailRow);
             document.getElementById('bulkInput').addEventListener('click', openBulkInputModal);
+            
+            // 모달이 DOM에 추가된 후 이벤트 리스너 등록
+            setTimeout(() => {
+                const cancelBtn = document.getElementById('cancelBulkInput');
+                const submitBtn = document.getElementById('submitBulkInput');
+                
+                if (cancelBtn) {
+                    cancelBtn.addEventListener('click', closeBulkInputModal);
+                }
+                if (submitBtn) {
+                    submitBtn.addEventListener('click', processBulkInput);
+                }
+            }, 100);
             
             // 필터 이벤트 리스너
             document.getElementById('filterType').addEventListener('change', applyFilters);
@@ -1233,6 +1246,21 @@
         function openBulkInputModal() {
             document.getElementById('bulkInputModal').style.display = 'block';
             document.getElementById('bulkInputText').focus();
+            
+            // 모달이 열릴 때 이벤트 리스너 재등록
+            setTimeout(() => {
+                const cancelBtn = document.getElementById('cancelBulkInput');
+                const submitBtn = document.getElementById('submitBulkInput');
+                
+                if (cancelBtn && !cancelBtn.hasEventListener) {
+                    cancelBtn.addEventListener('click', closeBulkInputModal);
+                    cancelBtn.hasEventListener = true;
+                }
+                if (submitBtn && !submitBtn.hasEventListener) {
+                    submitBtn.addEventListener('click', processBulkInput);
+                    submitBtn.hasEventListener = true;
+                }
+            }, 50);
         }
 
         // 일괄 입력 모달 닫기
