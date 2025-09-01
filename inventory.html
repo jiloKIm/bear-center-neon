@@ -529,6 +529,11 @@
             padding: 20px;
         }
 
+        /* 데스크톱에서 모바일 카드 숨기기 */
+        .mobile-card {
+            display: none;
+        }
+
         .text-muted {
             color: #6c757d !important;
             font-size: 12px;
@@ -574,52 +579,64 @@
                 padding: 10px 8px;
             }
 
-            .details-section::before {
-                display: none;
-            }
-            
             .details-header {
-                display: none;
+                display: none !important;
             }
             
-            .detail-row {
-                display: block;
+            /* 데스크톱 요소 숨기기 */
+            .desktop-input,
+            .desktop-total,
+            .desktop-btn {
+                display: none !important;
+            }
+            
+            /* 모바일 카드 표시 */
+            .mobile-card {
+                display: block !important;
                 background: white;
                 border: 1px solid #dee2e6;
                 border-radius: 8px;
                 padding: 15px;
-                margin-bottom: 15px;
-                position: relative;
             }
             
-            .detail-row input {
-                width: 100%;
-                padding: 10px;
-                font-size: 14px;
-                border: 1px solid #ddd;
-                border-radius: 6px;
-                box-sizing: border-box;
+            .detail-row {
+                display: block !important;
+                grid-template-columns: none !important;
+                background: transparent !important;
+                border: none !important;
+                padding: 0 !important;
+                margin-bottom: 15px !important;
             }
             
-            .detail-row .detail-total {
-                background: #e8f5e8;
-                border: 1px solid #28a745;
-                border-radius: 6px;
-                font-weight: bold;
-                text-align: right;
-                padding: 10px;
-                color: #155724;
+            .mobile-card input {
+                width: 100% !important;
+                padding: 10px !important;
+                font-size: 14px !important;
+                border: 1px solid #ddd !important;
+                border-radius: 6px !important;
+                box-sizing: border-box !important;
             }
             
-            .detail-row .btn-remove-detail {
-                width: 100%;
-                font-size: 14px;
-                padding: 10px;
-                background: #dc3545;
-                color: white;
-                border: none;
-                border-radius: 6px;
-                margin-top: 10px;
+            .mobile-total {
+                background: #e8f5e8 !important;
+                border: 1px solid #28a745 !important;
+                border-radius: 6px !important;
+                font-weight: bold !important;
+                text-align: right !important;
+                padding: 10px !important;
+                color: #155724 !important;
+                width: 100% !important;
+                box-sizing: border-box !important;
+            }
+            
+            .mobile-btn {
+                width: 100% !important;
+                font-size: 14px !important;
+                padding: 10px !important;
+                background: #dc3545 !important;
+                color: white !important;
+                border: none !important;
+                border-radius: 6px !important;
             }
             
             .modal-content {
@@ -1006,46 +1023,66 @@
                 console.log(`아이템 ${index} 렌더링:`, { total: item.total, safeTotal });
                 
                 return `
-                <div class="detail-row">
-                    <div style="margin-bottom: 10px;">
-                        <label style="display: block; font-size: 12px; color: #6c757d; margin-bottom: 3px;">품명</label>
-                        <input type="text" placeholder="품명을 입력하세요" value="${item.name || ''}" 
-                               onchange="detailItems[${index}].name = this.value; updateDetailsJSON()">
-                    </div>
-                    <div style="margin-bottom: 10px;">
-                        <label style="display: block; font-size: 12px; color: #6c757d; margin-bottom: 3px;">규격/비고</label>
-                        <input type="text" placeholder="규격이나 비고를 입력하세요" value="${item.spec || ''}" 
-                               onchange="detailItems[${index}].spec = this.value; updateDetailsJSON()">
-                    </div>
-                    <div style="display: flex; gap: 10px; margin-bottom: 10px;">
-                        <div style="flex: 1;">
-                            <label style="display: block; font-size: 12px; color: #6c757d; margin-bottom: 3px;">수량</label>
-                            <input type="number" placeholder="수량" value="${item.quantity || 1}" min="1" 
-                                   onchange="detailItems[${index}].quantity = parseInt(this.value) || 1; updateDetailTotal(${index}); updateDetailsJSON()">
-                        </div>
-                        <div style="flex: 1;">
-                            <label style="display: block; font-size: 12px; color: #6c757d; margin-bottom: 3px;">단위</label>
-                            <input type="text" placeholder="개, EA 등" value="${item.unit || ''}" 
-                                   onchange="detailItems[${index}].unit = this.value; updateDetailsJSON()">
-                        </div>
-                    </div>
-                    <div style="margin-bottom: 10px;">
-                        <label style="display: block; font-size: 12px; color: #6c757d; margin-bottom: 3px;">단가(원)</label>
-                        <input type="number" placeholder="단가를 입력하세요" value="${item.price || 0}" min="0" 
-                               onchange="detailItems[${index}].price = parseInt(this.value) || 0; updateDetailTotal(${index}); updateDetailsJSON()">
-                    </div>
-                    <div style="margin-bottom: 10px;">
-                        <label style="display: block; font-size: 12px; color: #6c757d; margin-bottom: 3px;">금액(원)</label>
-                        <div class="detail-total">${safeTotal.toLocaleString()}원</div>
-                    </div>
-                    <div style="margin-bottom: 15px;">
-                        <label style="display: block; font-size: 12px; color: #6c757d; margin-bottom: 3px;">설치위치</label>
-                        <input type="text" placeholder="설치 위치를 입력하세요" value="${item.location || ''}" 
-                               onchange="detailItems[${index}].location = this.value; updateDetailsJSON()">
-                    </div>
-                    <button type="button" class="btn-remove-detail" onclick="removeDetailRow(${index})">
-                        <i class="fas fa-trash"></i> 삭제
+                <div class="detail-row" data-desktop-row>
+                    <input type="text" class="desktop-input" placeholder="품명" value="${item.name || ''}" 
+                           onchange="detailItems[${index}].name = this.value; updateDetailsJSON()">
+                    <input type="text" class="desktop-input" placeholder="비고" value="${item.spec || ''}" 
+                           onchange="detailItems[${index}].spec = this.value; updateDetailsJSON()">
+                    <input type="number" class="desktop-input" placeholder="수량" value="${item.quantity || 1}" min="1" 
+                           onchange="detailItems[${index}].quantity = parseInt(this.value) || 1; updateDetailTotal(${index}); updateDetailsJSON()">
+                    <input type="text" class="desktop-input" placeholder="단위" value="${item.unit || ''}" 
+                           onchange="detailItems[${index}].unit = this.value; updateDetailsJSON()">
+                    <input type="number" class="desktop-input" placeholder="단가" value="${item.price || 0}" min="0" 
+                           onchange="detailItems[${index}].price = parseInt(this.value) || 0; updateDetailTotal(${index}); updateDetailsJSON()">
+                    <div class="detail-total desktop-total">${safeTotal.toLocaleString()}</div>
+                    <input type="text" class="desktop-input" placeholder="설치위치" value="${item.location || ''}" 
+                           onchange="detailItems[${index}].location = this.value; updateDetailsJSON()">
+                    <button type="button" class="btn-remove-detail desktop-btn" onclick="removeDetailRow(${index})">
+                        <i class="fas fa-trash"></i>
                     </button>
+                    
+                    <!-- 모바일 카드 레이아웃 -->
+                    <div class="mobile-card">
+                        <div style="margin-bottom: 10px;">
+                            <label style="display: block; font-size: 12px; color: #6c757d; margin-bottom: 3px;">품명</label>
+                            <input type="text" placeholder="품명을 입력하세요" value="${item.name || ''}" 
+                                   onchange="detailItems[${index}].name = this.value; updateDetailsJSON()">
+                        </div>
+                        <div style="margin-bottom: 10px;">
+                            <label style="display: block; font-size: 12px; color: #6c757d; margin-bottom: 3px;">규격/비고</label>
+                            <input type="text" placeholder="규격이나 비고를 입력하세요" value="${item.spec || ''}" 
+                                   onchange="detailItems[${index}].spec = this.value; updateDetailsJSON()">
+                        </div>
+                        <div style="display: flex; gap: 10px; margin-bottom: 10px;">
+                            <div style="flex: 1;">
+                                <label style="display: block; font-size: 12px; color: #6c757d; margin-bottom: 3px;">수량</label>
+                                <input type="number" placeholder="수량" value="${item.quantity || 1}" min="1" 
+                                       onchange="detailItems[${index}].quantity = parseInt(this.value) || 1; updateDetailTotal(${index}); updateDetailsJSON()">
+                            </div>
+                            <div style="flex: 1;">
+                                <label style="display: block; font-size: 12px; color: #6c757d; margin-bottom: 3px;">단위</label>
+                                <input type="text" placeholder="개, EA 등" value="${item.unit || ''}" 
+                                       onchange="detailItems[${index}].unit = this.value; updateDetailsJSON()">
+                            </div>
+                        </div>
+                        <div style="margin-bottom: 10px;">
+                            <label style="display: block; font-size: 12px; color: #6c757d; margin-bottom: 3px;">단가(원)</label>
+                            <input type="number" placeholder="단가를 입력하세요" value="${item.price || 0}" min="0" 
+                                   onchange="detailItems[${index}].price = parseInt(this.value) || 0; updateDetailTotal(${index}); updateDetailsJSON()">
+                        </div>
+                        <div style="margin-bottom: 10px;">
+                            <label style="display: block; font-size: 12px; color: #6c757d; margin-bottom: 3px;">금액(원)</label>
+                            <div class="detail-total mobile-total">${safeTotal.toLocaleString()}원</div>
+                        </div>
+                        <div style="margin-bottom: 15px;">
+                            <label style="display: block; font-size: 12px; color: #6c757d; margin-bottom: 3px;">설치위치</label>
+                            <input type="text" placeholder="설치 위치를 입력하세요" value="${item.location || ''}" 
+                                   onchange="detailItems[${index}].location = this.value; updateDetailsJSON()">
+                        </div>
+                        <button type="button" class="btn-remove-detail mobile-btn" onclick="removeDetailRow(${index})">
+                            <i class="fas fa-trash"></i> 삭제
+                        </button>
+                    </div>
                 </div>
                 `;
             }).join('');
