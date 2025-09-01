@@ -192,19 +192,16 @@
         }
 
         .event-item {
-            font-size: 10px;
-            padding: 2px 3px;
-            border-radius: 3px;
-            white-space: normal;
-            word-wrap: break-word;
-            word-break: break-word;
-            overflow-wrap: break-word;
-            hyphens: auto;
+            font-size: 9px;
+            padding: 1px 2px;
+            border-radius: 2px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
             text-align: center;
-            line-height: 1.2;
+            line-height: 1.1;
             margin-bottom: 1px;
             font-weight: 600;
-            max-height: none;
         }
 
         /* 사육곰 관련 - 주황/갈색 계열 */
@@ -545,11 +542,12 @@
             }
             
             .day-cell {
-                min-height: 140px;
+                min-height: 80px;
+                max-height: 120px;
                 height: auto;
                 font-size: 13px;
                 padding: 4px 2px;
-                overflow: visible;
+                overflow: hidden;
             }
             
             .day-number {
@@ -558,17 +556,14 @@
             }
             
             .event-item {
-                font-size: 9px;
-                padding: 2px 2px;
-                margin-bottom: 1px;
-                line-height: 1.1;
+                font-size: 8px;
+                padding: 1px 1px;
+                margin-bottom: 0.5px;
+                line-height: 1.0;
                 font-weight: 600;
-                white-space: normal;
-                word-wrap: break-word;
-                word-break: break-word;
-                overflow-wrap: break-word;
-                hyphens: auto;
-                max-height: none;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
             }
             
             .sidebar {
@@ -603,11 +598,12 @@
             }
             
             .day-cell {
-                min-height: 120px;
+                min-height: 70px;
+                max-height: 100px;
                 height: auto;
                 font-size: 12px;
-                padding: 3px 1px;
-                overflow: visible;
+                padding: 2px 1px;
+                overflow: hidden;
             }
             
             .day-number {
@@ -915,8 +911,8 @@
                         const eventsContainer = document.createElement('div');
                         eventsContainer.className = 'day-events';
                         
-                        // 모든 이벤트 표시
-                        dayEvents.forEach(event => {
+                        // 최대 3개까지만 표시
+                        dayEvents.slice(0, 3).forEach(event => {
                             const eventElement = document.createElement('div');
                             eventElement.className = `event-item event-${event.category}`;
                             
@@ -927,6 +923,14 @@
                             eventsContainer.appendChild(eventElement);
                         });
                         
+                        // 더 많은 이벤트가 있으면 표시
+                        if (dayEvents.length > 3) {
+                            const moreElement = document.createElement('div');
+                            moreElement.className = 'event-item';
+                            moreElement.style.cssText = 'background: #f3f4f6; color: #6b7280; font-size: 7px; padding: 1px;';
+                            moreElement.textContent = `+${dayEvents.length - 3}개`;
+                            eventsContainer.appendChild(moreElement);
+                        }
                         
                         dayCell.appendChild(eventsContainer);
                     }
