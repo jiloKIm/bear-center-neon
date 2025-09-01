@@ -703,9 +703,25 @@
                         <div id="detailsList" class="details-list">
                             <!-- 세부 품목들이 여기에 추가됩니다 -->
                         </div>
-                        <button type="button" id="addDetailItem" class="btn-add-detail">
-                            <i class="fas fa-plus"></i> 세부 품목 추가
-                        </button>
+                        <div style="display: flex; gap: 10px; margin-top: 15px;">
+                            <button type="button" id="addDetailItem" class="btn-add-detail">
+                                <i class="fas fa-plus"></i> 세부 품목 추가
+                            </button>
+                            <button type="button" id="importCSV" class="btn-add-detail" style="background: #28a745;">
+                                <i class="fas fa-file-csv"></i> CSV 일괄입력
+                            </button>
+                            <button type="button" id="downloadTemplate" class="btn-add-detail" style="background: #6c757d;">
+                                <i class="fas fa-download"></i> 템플릿 다운로드
+                            </button>
+                        </div>
+                        <input type="file" id="csvFileInput" accept=".csv" style="display: none;">
+                        <div class="csv-help" style="margin-top: 10px; padding: 10px; background: #f8f9fa; border-radius: 5px; font-size: 12px; color: #666;">
+                            💡 <strong>CSV 일괄입력 방법:</strong><br>
+                            1. '템플릿 다운로드' 버튼으로 예시 파일 다운로드<br>
+                            2. Excel에서 열어서 품목명, 수량, 단위, 단가 입력<br>
+                            3. CSV 파일로 저장 후 'CSV 일괄입력' 버튼으로 업로드<br>
+                            <em>형식: 품목명,수량,단위,단가 (쉼표로 구분)</em>
+                        </div>
                     </div>
                     <input type="hidden" id="itemDetails" value="">
                 </div>
@@ -747,6 +763,9 @@
             document.getElementById('exportPDF').addEventListener('click', generatePDF);
             document.getElementById('itemForm').addEventListener('submit', saveItem);
             document.getElementById('addDetailItem').addEventListener('click', addDetailRow);
+            document.getElementById('importCSV').addEventListener('click', () => document.getElementById('csvFileInput').click());
+            document.getElementById('downloadTemplate').addEventListener('click', downloadCSVTemplate);
+            document.getElementById('csvFileInput').addEventListener('change', handleCSVImport);
             
             // 모달 외부 클릭시 닫기
             window.onclick = function(event) {
@@ -1147,6 +1166,93 @@
                     </div>
                 </div>
             `;
+        }
+
+        // CSV 템플릿 다운로드
+        function downloadCSVTemplate() {
+            const csvContent = [
+                '품목명,수량,단위,단가',
+                '철망 설치,1,식,500000',
+                '안전장치,10,개,50000',
+                '설치비,1,식,200000'
+            ].join('\n');
+            
+            const blob = new Blob(['\ufeff' + csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = '세부품목_템플릿.csv';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            
+            showMessage('📥 CSV 템플릿이 다운로드되었습니다!', 'success');
+        }
+
+        // CSV 파일 가져오기
+        function handleCSVImport(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            if (!file.name.toLowerCase().endsWith('.csv')) {
+                showMessage('❌ CSV 파일만 업로드 가능합니다.', 'error');
+                return;
+            }
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    parseCSVData(e.target.result);
+                } catch (error) {
+                    console.error('CSV 파싱 오류:', error);
+                    showMessage('❌ CSV 파일 형식이 올바르지 않습니다.', 'error');
+                }
+            };
+            reader.readAsText(file, 'UTF-8');
+            
+            // 파일 입력 초기화
+            event.target.value = '';
+        }
+
+        // CSV 데이터 파싱 및 세부품목에 추가
+        function parseCSVData(csvText) {
+            const lines = csvText.split('\n').filter(line => line.trim());
+            if (lines.length < 2) {
+                showMessage('❌ 올바른 CSV 데이터가 없습니다.', 'error');
+                return;
+            }
+            
+            // 헤더 제거 (첫 번째 줄)
+            const dataLines = lines.slice(1);
+            let addedCount = 0;
+            
+            dataLines.forEach(line => {
+                const columns = line.split(',').map(col => col.trim().replace(/"/g, ''));
+                
+                if (columns.length >= 4) {
+                    const [name, quantity, unit, price] = columns;
+                    
+                    if (name && quantity && unit && price) {
+                        const numQuantity = parseInt(quantity) || 1;
+                        const numPrice = parseInt(price.replace(/[^0-9]/g, '')) || 0;
+                        
+                        detailItems.push({
+                            name: name,
+                            quantity: numQuantity,
+                            unit: unit,
+                            price: numPrice
+                        });
+                        
+                        addedCount++;
+                    }
+                }
+            });
+            
+            if (addedCount > 0) {
+                updateDetailsDisplay();
+                showMessage(`✅ ${addedCount}개의 세부품목이 추가되었습니다!`, 'success');
+            } else {
+                showMessage('❌ 추가할 수 있는 유효한 데이터가 없습니다.', 'error');
+            }
         }
     </script>
 
