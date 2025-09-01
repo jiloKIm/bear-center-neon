@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>🐻 사육곰 센터 사업 관리</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
         * {
             margin: 0;
@@ -352,6 +354,63 @@
             transform: translateY(-2px);
         }
 
+        /* PDF 출력 관련 스타일 */
+        .pdf-container {
+            background: white;
+            padding: 30px;
+            margin: 20px 0;
+            font-family: 'Malgun Gothic', sans-serif;
+            position: fixed;
+            top: -9999px;
+            left: -9999px;
+            width: 800px;
+        }
+
+        .pdf-header {
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #333;
+            padding-bottom: 20px;
+        }
+
+        .pdf-title {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .pdf-subtitle {
+            font-size: 16px;
+            color: #666;
+        }
+
+        .pdf-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            font-size: 12px;
+        }
+
+        .pdf-table th,
+        .pdf-table td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+
+        .pdf-table th {
+            background-color: #f8f9fa;
+            font-weight: bold;
+        }
+
+        .pdf-summary {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-radius: 5px;
+            text-align: center;
+        }
+
         .empty-state {
             text-align: center;
             padding: 60px 20px;
@@ -556,6 +615,9 @@
 
         <div class="content-wrapper">
             <div class="header-actions">
+                <button id="exportPDF" class="btn btn-secondary" style="margin-right: 10px;">
+                    <i class="fas fa-file-pdf"></i> PDF 저장
+                </button>
                 <button id="addNewItem" class="btn btn-primary">
                     <i class="fas fa-plus"></i> 새 건 추가
                 </button>
@@ -682,6 +744,7 @@
 
         function setupEventListeners() {
             document.getElementById('addNewItem').addEventListener('click', openAddModal);
+            document.getElementById('exportPDF').addEventListener('click', generatePDF);
             document.getElementById('itemForm').addEventListener('submit', saveItem);
             document.getElementById('addDetailItem').addEventListener('click', addDetailRow);
             
@@ -991,6 +1054,132 @@
                 }
             }, 4000);
         }
+
+        // PDF 생성 함수
+        async function generatePDF() {
+            try {
+                // PDF 컨테이너에 데이터 채우기
+                populatePDFData();
+                
+                // PDF 컨테이너를 임시로 표시
+                const pdfContainer = document.getElementById('pdfContainer');
+                pdfContainer.style.position = 'static';
+                pdfContainer.style.top = 'auto';
+                pdfContainer.style.left = 'auto';
+                
+                // html2canvas로 이미지 생성
+                const canvas = await html2canvas(pdfContainer, {
+                    scale: 2,
+                    useCORS: true,
+                    allowTaint: true
+                });
+                
+                // PDF 생성
+                const { jsPDF } = window.jspdf;
+                const pdf = new jsPDF('p', 'mm', 'a4');
+                
+                const imgWidth = 210; // A4 가로 크기 (mm)
+                const imgHeight = (canvas.height * imgWidth) / canvas.width;
+                
+                pdf.addImage(canvas.toDataURL('image/png'), 'PNG', 0, 0, imgWidth, imgHeight);
+                
+                // 파일명 생성
+                const today = new Date();
+                const fileName = `사업관리계획서_${today.getFullYear()}${(today.getMonth()+1).toString().padStart(2,'0')}${today.getDate().toString().padStart(2,'0')}.pdf`;
+                
+                // PDF 다운로드
+                pdf.save(fileName);
+                
+                // PDF 컨테이너 다시 숨기기
+                pdfContainer.style.position = 'fixed';
+                pdfContainer.style.top = '-9999px';
+                pdfContainer.style.left = '-9999px';
+                
+                showMessage('✅ PDF 파일이 성공적으로 생성되었습니다!', 'success');
+                
+            } catch (error) {
+                console.error('PDF 생성 오류:', error);
+                showMessage('❌ PDF 생성 중 오류가 발생했습니다.', 'error');
+            }
+        }
+
+        // PDF 데이터 채우기
+        function populatePDFData() {
+            // 현재 날짜 설정
+            const today = new Date();
+            document.getElementById('pdfDate').textContent = `${today.getFullYear()}년 ${today.getMonth()+1}월 ${today.getDate()}일`;
+            
+            // 테이블 데이터 생성
+            const tbody = document.getElementById('pdfTableBody');
+            tbody.innerHTML = '';
+            
+            let totalAmount = 0;
+            const statusCounts = { '계획': 0, '진행중': 0, '완료': 0 };
+            
+            allItems.forEach(item => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${item.type}</td>
+                    <td>${item.status}</td>
+                    <td>${item.name}</td>
+                    <td style="text-align: right">${item.amount.toLocaleString()}원</td>
+                    <td>${item.installation_location || '-'}</td>
+                    <td style="font-size: 10px">${item.notes ? item.notes.substring(0, 50) + (item.notes.length > 50 ? '...' : '') : '-'}</td>
+                `;
+                tbody.appendChild(row);
+                
+                totalAmount += item.amount;
+                statusCounts[item.status] = (statusCounts[item.status] || 0) + 1;
+            });
+            
+            // 요약 정보 생성
+            const summaryDiv = document.getElementById('pdfSummary');
+            summaryDiv.innerHTML = `
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <strong>총 건수:</strong> ${allItems.length}건 | 
+                        <strong>계획:</strong> ${statusCounts['계획']}건 | 
+                        <strong>진행중:</strong> ${statusCounts['진행중']}건 | 
+                        <strong>완료:</strong> ${statusCounts['완료']}건
+                    </div>
+                    <div>
+                        <strong style="font-size: 18px; color: #d63384;">총 예상금액: ${totalAmount.toLocaleString()}원</strong>
+                    </div>
+                </div>
+            `;
+        }
     </script>
+
+    <!-- PDF 출력용 숨겨진 컨테이너 -->
+    <div id="pdfContainer" class="pdf-container">
+        <div class="pdf-header">
+            <div class="pdf-title">사육곰 센터 사업관리 계획서</div>
+            <div class="pdf-subtitle">조달 · 계약 · 지출 관리 현황</div>
+            <div style="margin-top: 15px; font-size: 14px;">
+                작성일: <span id="pdfDate"></span>
+            </div>
+        </div>
+        
+        <table class="pdf-table" id="pdfTable">
+            <thead>
+                <tr>
+                    <th width="80">구분</th>
+                    <th width="80">상태</th>
+                    <th width="200">건 명칭</th>
+                    <th width="100">예상금액</th>
+                    <th width="120">설치위치</th>
+                    <th width="150">비고</th>
+                </tr>
+            </thead>
+            <tbody id="pdfTableBody">
+                <!-- PDF용 데이터가 여기에 삽입됩니다 -->
+            </tbody>
+        </table>
+        
+        <div class="pdf-summary" id="pdfSummary">
+            <!-- 요약 정보가 여기에 삽입됩니다 -->
+        </div>
+    </div>
+
 </body>
 </html>
