@@ -1,0 +1,17 @@
+{
+  "name": "bear-center-neon",
+  "version": "1.0.0",
+  "description": "사육곰 센터 관리 시스템 - Neon + Netlify Functions",
+  "main": "index.html",
+  "scripts": {
+    "dev": "netlify dev",
+    "build": "echo 'No build required'",
+    "deploy": "netlify deploy --prod"
+  },
+  "dependencies": {
+    "@neondatabase/serverless": "^0.10.1"
+  },
+  "devDependencies": {
+    "netlify-cli": "^17.0.0"
+  }
+}

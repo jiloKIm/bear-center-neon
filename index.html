@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🐻 사육곰 센터 일정 관리</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+        input, select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        button {
+            background: #007bff;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-right: 10px;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        .events-list {
+            margin-top: 30px;
+        }
+        .event-item {
+            background: #f8f9fa;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            border-left: 4px solid #007bff;
+        }
+        .event-date {
+            font-weight: bold;
+            color: #666;
+        }
+        .event-title {
+            font-size: 18px;
+            margin: 5px 0;
+        }
+        .event-category {
+            color: #888;
+            font-size: 14px;
+        }
+        .loading {
+            text-align: center;
+            color: #666;
+        }
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+        .success {
+            background: #d4edda;
+            color: #155724;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🐻 사육곰 센터 일정 관리 시스템</h1>
+        
+        <form id="eventForm">
+            <div class="form-group">
+                <label for="date">날짜:</label>
+                <input type="date" id="date" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="title">제목:</label>
+                <input type="text" id="title" placeholder="일정 제목을 입력하세요" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="category">카테고리:</label>
+                <select id="category" required>
+                    <option value="">카테고리를 선택하세요</option>
+                    <option value="인사">인사</option>
+                    <option value="협약MOU">협약 / MOU</option>
+                    <option value="외부업체방문">외부 업체 방문</option>
+                    <option value="조달설치">조달 / 설치</option>
+                    <option value="gom입식and개소">곰 입식 & 개소</option>
+                    <option value="출장시공">출장 / 시공</option>
+                </select>
+            </div>
+            
+            <button type="submit">📅 일정 추가</button>
+            <button type="button" onclick="loadEvents()">🔄 새로고침</button>
+        </form>
+        
+        <div id="message"></div>
+        
+        <div class="events-list">
+            <h2>📋 등록된 일정</h2>
+            <div id="eventsList" class="loading">일정을 불러오는 중...</div>
+        </div>
+    </div>
+
+    <script>
+        // 페이지 로드시 일정 불러오기
+        window.addEventListener('DOMContentLoaded', loadEvents);
+        
+        // 폼 제출 처리
+        document.getElementById('eventForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const formData = {
+                date_value: document.getElementById('date').value,
+                title: document.getElementById('title').value,
+                category: document.getElementById('category').value
+            };
+            
+            try {
+                showMessage('일정을 저장하는 중...', 'loading');
+                
+                const response = await fetch('/.netlify/functions/calendar-api', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(formData)
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                const result = await response.json();
+                showMessage('✅ 일정이 성공적으로 추가되었습니다!', 'success');
+                
+                // 폼 초기화
+                document.getElementById('eventForm').reset();
+                
+                // 일정 목록 새로고침
+                await loadEvents();
+                
+            } catch (error) {
+                console.error('Error adding event:', error);
+                showMessage(`❌ 일정 추가 실패: ${error.message}`, 'error');
+            }
+        });
+        
+        // 일정 목록 불러오기
+        async function loadEvents() {
+            try {
+                document.getElementById('eventsList').innerHTML = '<div class="loading">일정을 불러오는 중...</div>';
+                
+                const response = await fetch('/.netlify/functions/calendar-api');
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                const events = await response.json();
+                displayEvents(events);
+                
+            } catch (error) {
+                console.error('Error loading events:', error);
+                document.getElementById('eventsList').innerHTML = 
+                    `<div class="error">❌ 일정 불러오기 실패: ${error.message}</div>`;
+            }
+        }
+        
+        // 일정 목록 표시
+        function displayEvents(events) {
+            const container = document.getElementById('eventsList');
+            
+            if (events.length === 0) {
+                container.innerHTML = '<div class="loading">등록된 일정이 없습니다.</div>';
+                return;
+            }
+            
+            container.innerHTML = events.map(event => `
+                <div class="event-item">
+                    <div class="event-date">${event.date_value}</div>
+                    <div class="event-title">${event.title}</div>
+                    <div class="event-category">${getCategoryName(event.category)}</div>
+                </div>
+            `).join('');
+        }
+        
+        // 카테고리 이름 변환
+        function getCategoryName(category) {
+            const categoryMap = {
+                '인사': '👥 인사',
+                '협약MOU': '📋 협약 / MOU',
+                '외부업체방문': '🏢 외부 업체 방문',
+                '조달설치': '🔧 조달 / 설치',
+                'gom입식and개소': '🐻 곰 입식 & 개소',
+                '출장시공': '🚗 출장 / 시공'
+            };
+            return categoryMap[category] || category;
+        }
+        
+        // 메시지 표시
+        function showMessage(message, type) {
+            const messageDiv = document.getElementById('message');
+            messageDiv.innerHTML = `<div class="${type}">${message}</div>`;
+            
+            if (type === 'success') {
+                setTimeout(() => {
+                    messageDiv.innerHTML = '';
+                }, 3000);
+            }
+        }
+    </script>
+</body>
+</html>
