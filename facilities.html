@@ -13,145 +13,74 @@
   <div class="nav-menu">
     <a href="index.html" class="nav-item">📅 일정 관리</a>
     <a href="inventory.html" class="nav-item">📦 물품 관리</a>
-    <a href="office-layout.html" class="nav-item">🏢 청사 관리</a>
     <a href="facilities.html" class="nav-item active">🏗️ 센터시설</a>
   </div>
 </nav>
 
 <div class="page-header">
   <h2>🏗️ 센터시설 관리</h2>
-  <div class="subtitle">사육곰 센터 시설 현황 및 층별 관리 시스템</div>
+  <div class="subtitle">사육곰 센터 시설 현황 및 관리 시스템</div>
 </div>
 
 <div class="main-content">
-  <div class="facility-tabs">
-    <button class="tab-btn active" onclick="showTab('floor1')">1층 시설</button>
-    <button class="tab-btn" onclick="showTab('floor2')">2층 시설</button>
-    <button class="tab-btn" onclick="showTab('layout')">층별 전도</button>
-  </div>
-
-  <div id="floor1" class="tab-content active">
-    <h3>1층 의료시설</h3>
-    <div class="facility-grid">
-      <div class="facility-card">
-        <h4>🏥 진료실</h4>
-        <div class="image-container">
-          <img src="센터시설/1층/진료실.png" alt="진료실" onclick="openModal('센터시설/1층/진료실.png', '진료실')">
-        </div>
-        <p>사육곰 진료 및 건강검진 시설</p>
-      </div>
-      
-      <div class="facility-card">
-        <h4>🔬 CT실</h4>
-        <div class="image-container">
-          <img src="센터시설/1층/CT실.png" alt="CT실" onclick="openModal('센터시설/1층/CT실.png', 'CT실')">
-        </div>
-        <p>정밀 진단을 위한 CT 촬영 시설</p>
-      </div>
-      
-      <div class="facility-card">
-        <h4>💊 약제실</h4>
-        <div class="image-container">
-          <img src="센터시설/1층/약제실.png" alt="약제실" onclick="openModal('센터시설/1층/약제실.png', '약제실')">
-        </div>
-        <p>의약품 보관 및 관리 시설</p>
+  <div class="facility-grid">
+    <div class="facility-card">
+      <h3>🏠 사육장</h3>
+      <p>사육곰 거주 공간</p>
+      <div class="facility-stats">
+        <span>총 개수: 12개</span>
+        <span>가동률: 75%</span>
       </div>
     </div>
-  </div>
-
-  <div id="floor2" class="tab-content">
-    <h3>2층 관리시설</h3>
-    <div class="facility-grid">
-      <div class="facility-card">
-        <h4>🏢 사무실</h4>
-        <div class="image-container">
-          <img src="센터시설/2층/사무실.jpg" alt="사무실" onclick="openModal('센터시설/2층/사무실.jpg', '사무실')">
-        </div>
-        <p>행정 업무 및 관리 업무 공간</p>
-      </div>
-      
-      <div class="facility-card">
-        <h4>☕ 탕비실</h4>
-        <div class="image-container">
-          <img src="센터시설/2층/탕비실.jpg" alt="탕비실" onclick="openModal('센터시설/2층/탕비실.jpg', '탕비실')">
-        </div>
-        <p>직원 휴게 및 급식 공간</p>
+    
+    <div class="facility-card">
+      <h3>🏥 의료실</h3>
+      <p>건강 관리 및 치료 시설</p>
+      <div class="facility-stats">
+        <span>면적: 120㎡</span>
+        <span>상태: 양호</span>
       </div>
     </div>
-  </div>
-
-  <div id="layout" class="tab-content">
-    <h3>센터 층별 전도</h3>
-    <div class="layout-grid">
-      <div class="layout-card">
-        <h4>1층 전도</h4>
-        <div class="image-container large">
-          <img src="센터시설/1층전도.png" alt="1층 전도" onclick="openModal('센터시설/1층전도.png', '1층 전도')">
-        </div>
-      </div>
-      
-      <div class="layout-card">
-        <h4>2층 전도</h4>
-        <div class="image-container large">
-          <img src="센터시설/2층전도.png" alt="2층 전도" onclick="openModal('센터시설/2층전도.png', '2층 전도')">
-        </div>
+    
+    <div class="facility-card">
+      <h3>🍽️ 급식실</h3>
+      <p>사료 준비 및 공급 시설</p>
+      <div class="facility-stats">
+        <span>면적: 80㎡</span>
+        <span>상태: 정상</span>
       </div>
     </div>
-  </div>
-</div>
-
-<!-- Image Modal -->
-<div id="imageModal" class="modal">
-  <div class="modal-content">
-    <span class="close" onclick="closeModal()">&times;</span>
-    <img id="modalImage" src="" alt="">
-    <div id="modalCaption"></div>
+    
+    <div class="facility-card">
+      <h3>🚰 급수시설</h3>
+      <p>물 공급 및 정화 시설</p>
+      <div class="facility-stats">
+        <span>용량: 5,000L</span>
+        <span>상태: 정상</span>
+      </div>
+    </div>
+    
+    <div class="facility-card">
+      <h3>🗄️ 창고</h3>
+      <p>물품 보관 시설</p>
+      <div class="facility-stats">
+        <span>면적: 200㎡</span>
+        <span>사용률: 65%</span>
+      </div>
+    </div>
+    
+    <div class="facility-card">
+      <h3>🏢 관리사무소</h3>
+      <p>행정 업무 및 관리 시설</p>
+      <div class="facility-stats">
+        <span>면적: 150㎡</span>
+        <span>상태: 양호</span>
+      </div>
+    </div>
   </div>
 </div>
 
 <style>
-.facility-tabs {
-  display: flex;
-  gap: 10px;
-  margin-bottom: 20px;
-  border-bottom: 2px solid #e0e6ed;
-}
-
-.tab-btn {
-  padding: 12px 24px;
-  border: none;
-  background: transparent;
-  font-size: 16px;
-  font-weight: 600;
-  cursor: pointer;
-  border-bottom: 3px solid transparent;
-  transition: all 0.3s ease;
-}
-
-.tab-btn.active {
-  color: #667eea;
-  border-bottom-color: #667eea;
-  background: rgba(102, 126, 234, 0.1);
-}
-
-.tab-btn:hover {
-  background: rgba(102, 126, 234, 0.05);
-}
-
-.tab-content {
-  display: none;
-}
-
-.tab-content.active {
-  display: block;
-  animation: fadeIn 0.3s ease;
-}
-
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-
 .facility-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
@@ -159,14 +88,7 @@
   margin-top: 20px;
 }
 
-.layout-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
-  gap: 30px;
-  margin-top: 20px;
-}
-
-.facility-card, .layout-card {
+.facility-card {
   background: white;
   border-radius: 12px;
   padding: 20px;
@@ -174,143 +96,37 @@
   transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
-.facility-card:hover, .layout-card:hover {
+.facility-card:hover {
   transform: translateY(-5px);
   box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
 }
 
-.facility-card h4, .layout-card h4 {
+.facility-card h3 {
   color: #333;
-  margin-bottom: 15px;
+  margin-bottom: 10px;
   font-size: 1.2em;
 }
 
 .facility-card p {
   color: #666;
-  margin-top: 10px;
-  font-size: 0.95em;
+  margin-bottom: 15px;
 }
 
-.image-container {
-  width: 100%;
-  height: 200px;
-  overflow: hidden;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: transform 0.3s ease;
-}
-
-.image-container.large {
-  height: 300px;
-}
-
-.image-container:hover {
-  transform: scale(1.02);
-}
-
-.image-container img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  border-radius: 8px;
-}
-
-.modal {
-  display: none;
-  position: fixed;
-  z-index: 1000;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.9);
-}
-
-.modal.show {
+.facility-stats {
   display: flex;
-  align-items: center;
-  justify-content: center;
+  flex-direction: column;
+  gap: 8px;
 }
 
-.modal .modal-content {
-  position: relative;
-  max-width: 90%;
-  max-height: 90%;
-}
-
-.modal .modal-content img {
-  width: 100%;
-  height: auto;
-  border-radius: 8px;
-}
-
-.modal .close {
-  position: absolute;
-  top: -40px;
-  right: 0;
-  color: white;
-  font-size: 35px;
-  font-weight: bold;
-  cursor: pointer;
-}
-
-.modal .close:hover {
-  opacity: 0.7;
-}
-
-#modalCaption {
-  color: white;
-  text-align: center;
-  padding: 10px;
-  font-size: 18px;
-  font-weight: 600;
+.facility-stats span {
+  background: #f8f9ff;
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 0.9em;
+  color: #555;
+  border-left: 3px solid #667eea;
 }
 </style>
-
-<script>
-function showTab(tabName) {
-  // Hide all tab contents
-  const tabContents = document.querySelectorAll('.tab-content');
-  tabContents.forEach(content => {
-    content.classList.remove('active');
-  });
-  
-  // Remove active class from all tabs
-  const tabBtns = document.querySelectorAll('.tab-btn');
-  tabBtns.forEach(btn => {
-    btn.classList.remove('active');
-  });
-  
-  // Show selected tab content
-  document.getElementById(tabName).classList.add('active');
-  
-  // Add active class to clicked tab
-  event.target.classList.add('active');
-}
-
-function openModal(imageSrc, caption) {
-  const modal = document.getElementById('imageModal');
-  const modalImg = document.getElementById('modalImage');
-  const modalCaption = document.getElementById('modalCaption');
-  
-  modal.classList.add('show');
-  modalImg.src = imageSrc;
-  modalCaption.textContent = caption;
-}
-
-function closeModal() {
-  const modal = document.getElementById('imageModal');
-  modal.classList.remove('show');
-}
-
-// Close modal when clicking outside the image
-window.onclick = function(event) {
-  const modal = document.getElementById('imageModal');
-  if (event.target == modal) {
-    modal.classList.remove('show');
-  }
-}
-</script>
 
 </body>
 </html>
