@@ -13,10 +13,12 @@
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: #f6f8fb;
-            color: #1a1a1a;
-            line-height: 1.6;
+            font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, 'Helvetica Neue', 'Segoe UI', sans-serif;
+            background: #f8fafc;
+            color: #191f28;
+            line-height: 1.5;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
         }
 
         /* 토스 스타일 네비게이션 */
@@ -33,9 +35,10 @@
         }
 
         .nav-title {
-            font-size: 20px;
+            font-size: 18px;
             font-weight: 700;
             color: #191f28;
+            letter-spacing: -0.02em;
         }
 
         .nav-tabs {
@@ -66,7 +69,7 @@
         .container {
             max-width: 428px;
             margin: 0 auto;
-            background: #fff;
+            background: #f8fafc;
             min-height: 100vh;
         }
 
@@ -82,24 +85,29 @@
         }
 
         .current-date {
-            font-size: 24px;
-            font-weight: 700;
+            font-size: 28px;
+            font-weight: 800;
             color: #191f28;
             margin-bottom: 4px;
+            letter-spacing: -0.03em;
         }
 
         .current-day {
-            font-size: 16px;
+            font-size: 15px;
             color: #6b7280;
+            font-weight: 500;
+            letter-spacing: -0.01em;
         }
 
-        /* 월간 미니 캘린더 */
+        /* 월간 미니 캘린더 - 토스 스타일 */
         .mini-calendar {
             background: white;
-            border-radius: 20px;
-            padding: 20px;
+            border-radius: 24px;
+            padding: 24px;
+            margin: 16px;
             margin-bottom: 24px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+            border: 1px solid #f1f5f9;
         }
 
         .calendar-header {
@@ -110,9 +118,10 @@
         }
 
         .calendar-title {
-            font-size: 18px;
+            font-size: 20px;
             font-weight: 700;
             color: #191f28;
+            letter-spacing: -0.02em;
         }
 
         .nav-btn {
@@ -154,29 +163,30 @@
             justify-content: flex-start;
             font-size: 14px;
             font-weight: 500;
-            border-radius: 12px;
+            border-radius: 16px;
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: all 0.2s cubic-bezier(0.4, 0.0, 0.2, 1);
             position: relative;
             padding: 8px 4px;
             overflow: visible;
             background: white;
-            border: 1px solid #e2e8f0;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+            border: 1px solid #f1f5f9;
+            box-shadow: none;
         }
 
         .day-cell:hover {
             background: #f8fafc;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.12);
-            border-color: #cbd5e1;
+            transform: scale(1.02);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            border-color: #e2e8f0;
         }
 
         .day-cell.today {
-            background: #007aff;
+            background: #3182f6;
             color: white;
-            font-weight: 600;
-            box-shadow: 0 2px 8px rgba(0,122,255,0.3);
+            font-weight: 700;
+            box-shadow: 0 4px 12px rgba(49, 130, 246, 0.3);
+            border: 1px solid #3182f6;
         }
 
         .day-cell.has-event {
@@ -221,54 +231,162 @@
             transition: all 0.2s ease;
         }
 
-        /* 사육곰 관련 - 주황/갈색 계열 - 대비 향상 */
-        .event-곰입식and개소 { background: #fed7aa; color: #9a3412; font-weight: 700; border: 1px solid #f97316; }
-        .event-사육관리 { background: #bbf7d0; color: #166534; font-weight: 700; border: 1px solid #22c55e; }
-        .event-의료검진 { background: #bfdbfe; color: #1e40af; font-weight: 700; border: 1px solid #3b82f6; }
+        /* 토스 스타일 카테고리 색상 시스템 */
         
-        /* 외부업체/방문 - 파란색 계열 - 대비 향상 */
-        .event-외부업체방문 { background: #c7d2fe; color: #312e81; font-weight: 700; border: 1px solid #6366f1; }
-        .event-출장 { background: #e9d5ff; color: #581c87; font-weight: 700; border: 1px solid #a855f7; }
-        .event-시공 { background: #fed7aa; color: #9a3412; font-weight: 700; border: 1px solid #f97316; }
-        .event-시설점검 { background: #93c5fd; color: #1e3a8a; font-weight: 700; border: 1px solid #3b82f6; }
-        .event-공사작업 { background: #fbbf24; color: #92400e; font-weight: 700; border: 1px solid #f59e0b; }
+        /* 🐻 사육곰 관련 - 따뜻한 오렌지/브라운 */
+        .event-곰입식and개소 { 
+            background: linear-gradient(135deg, #fef7ed 0%, #fed7aa 100%); 
+            color: #c2410c; 
+            font-weight: 600; 
+            border: 1px solid #fb923c;
+            box-shadow: 0 1px 3px rgba(251, 146, 60, 0.2);
+        }
+        .event-사육관리 { 
+            background: linear-gradient(135deg, #f0fdf4 0%, #bbf7d0 100%); 
+            color: #15803d; 
+            font-weight: 600; 
+            border: 1px solid #22c55e;
+            box-shadow: 0 1px 3px rgba(34, 197, 94, 0.2);
+        }
+        .event-의료검진 { 
+            background: linear-gradient(135deg, #eff6ff 0%, #bfdbfe 100%); 
+            color: #1d4ed8; 
+            font-weight: 600; 
+            border: 1px solid #3b82f6;
+            box-shadow: 0 1px 3px rgba(59, 130, 246, 0.2);
+        }
         
-        /* 행정업무 - 녹색 계열 - 대비 향상 */
-        .event-인사 { background: #a7f3d0; color: #064e3b; font-weight: 700; border: 1px solid #10b981; }
-        .event-회의 { background: #99f6e4; color: #134e4a; font-weight: 700; border: 1px solid #14b8a6; }
-        .event-교육훈련 { background: #d8b4fe; color: #581c87; font-weight: 700; border: 1px solid #a855f7; }
+        /* 🏢 외부업체/시설 - 쿨톤 블루/퍼플 */
+        .event-외부업체방문 { 
+            background: linear-gradient(135deg, #f0f9ff 0%, #c7d2fe 100%); 
+            color: #4338ca; 
+            font-weight: 600; 
+            border: 1px solid #6366f1;
+            box-shadow: 0 1px 3px rgba(99, 102, 241, 0.2);
+        }
+        .event-출장 { 
+            background: linear-gradient(135deg, #faf5ff 0%, #e9d5ff 100%); 
+            color: #7c3aed; 
+            font-weight: 600; 
+            border: 1px solid #a855f7;
+            box-shadow: 0 1px 3px rgba(168, 85, 247, 0.2);
+        }
+        .event-시공 { 
+            background: linear-gradient(135deg, #fff7ed 0%, #fed7aa 100%); 
+            color: #ea580c; 
+            font-weight: 600; 
+            border: 1px solid #f97316;
+            box-shadow: 0 1px 3px rgba(249, 115, 22, 0.2);
+        }
+        .event-시설점검 { 
+            background: linear-gradient(135deg, #dbeafe 0%, #93c5fd 100%); 
+            color: #1e40af; 
+            font-weight: 600; 
+            border: 1px solid #3b82f6;
+            box-shadow: 0 1px 3px rgba(59, 130, 246, 0.2);
+        }
+        .event-공사작업 { 
+            background: linear-gradient(135deg, #fffbeb 0%, #fde68a 100%); 
+            color: #d97706; 
+            font-weight: 600; 
+            border: 1px solid #f59e0b;
+            box-shadow: 0 1px 3px rgba(245, 158, 11, 0.2);
+        }
         
-        /* 협약/법무 - 보라/분홍 계열 - 대비 향상 */
-        .event-협약MOU { background: #bae6fd; color: #0c4a6e; font-weight: 700; border: 1px solid #0ea5e9; }
-        .event-법무검토 { background: #fecaca; color: #991b1b; font-weight: 700; border: 1px solid #ef4444; }
-        .event-감사 { background: #cbd5e1; color: #334155; font-weight: 700; border: 1px solid #64748b; }
+        /* 📋 행정업무 - 프레시 그린/티얼 */
+        .event-인사 { 
+            background: linear-gradient(135deg, #ecfdf5 0%, #a7f3d0 100%); 
+            color: #047857; 
+            font-weight: 600; 
+            border: 1px solid #10b981;
+            box-shadow: 0 1px 3px rgba(16, 185, 129, 0.2);
+        }
+        .event-회의 { 
+            background: linear-gradient(135deg, #f0fdfa 0%, #99f6e4 100%); 
+            color: #0f766e; 
+            font-weight: 600; 
+            border: 1px solid #14b8a6;
+            box-shadow: 0 1px 3px rgba(20, 184, 166, 0.2);
+        }
+        .event-교육훈련 { 
+            background: linear-gradient(135deg, #faf5ff 0%, #d8b4fe 100%); 
+            color: #7c3aed; 
+            font-weight: 600; 
+            border: 1px solid #a855f7;
+            box-shadow: 0 1px 3px rgba(168, 85, 247, 0.2);
+        }
         
-        /* 예산/재정 - 청록색 계열 - 대비 향상 */
-        .event-예산편성 { background: #fef08a; color: #a16207; font-weight: 700; border: 1px solid #eab308; }
-        .event-구매조달 { background: #fde047; color: #a16207; font-weight: 700; border: 1px solid #facc15; }
-        .event-결산 { background: #fdba74; color: #9a3412; font-weight: 700; border: 1px solid #fb923c; }
+        /* 📜 협약/법무 - 소프트 핑크/그레이 */
+        .event-협약MOU { 
+            background: linear-gradient(135deg, #f0f9ff 0%, #bae6fd 100%); 
+            color: #0284c7; 
+            font-weight: 600; 
+            border: 1px solid #0ea5e9;
+            box-shadow: 0 1px 3px rgba(14, 165, 233, 0.2);
+        }
+        .event-법무검토 { 
+            background: linear-gradient(135deg, #fef2f2 0%, #fecaca 100%); 
+            color: #dc2626; 
+            font-weight: 600; 
+            border: 1px solid #ef4444;
+            box-shadow: 0 1px 3px rgba(239, 68, 68, 0.2);
+        }
+        .event-감사 { 
+            background: linear-gradient(135deg, #f8fafc 0%, #cbd5e1 100%); 
+            color: #475569; 
+            font-weight: 600; 
+            border: 1px solid #64748b;
+            box-shadow: 0 1px 3px rgba(100, 116, 139, 0.2);
+        }
         
-        /* 긴급/중요 - 빨간색 계열 */
+        /* 💰 예산/재정 - 골든 옐로우 */
+        .event-예산편성 { 
+            background: linear-gradient(135deg, #fefce8 0%, #fef08a 100%); 
+            color: #ca8a04; 
+            font-weight: 600; 
+            border: 1px solid #eab308;
+            box-shadow: 0 1px 3px rgba(234, 179, 8, 0.2);
+        }
+        .event-구매조달 { 
+            background: linear-gradient(135deg, #fffbeb 0%, #fde047 100%); 
+            color: #a16207; 
+            font-weight: 600; 
+            border: 1px solid #facc15;
+            box-shadow: 0 1px 3px rgba(250, 204, 21, 0.2);
+        }
+        .event-결산 { 
+            background: linear-gradient(135deg, #fff7ed 0%, #fdba74 100%); 
+            color: #c2410c; 
+            font-weight: 600; 
+            border: 1px solid #fb923c;
+            box-shadow: 0 1px 3px rgba(251, 146, 60, 0.2);
+        }
+        
+        /* 🚨 긴급/중요 - 브라이트 레드 + 스페셜 애니메이션 */
         .event-긴급상황 { 
-            background: #fef2f2; 
+            background: linear-gradient(135deg, #fef2f2 0%, #fecaca 100%); 
             color: #dc2626; 
             font-weight: 700;
-            border: 1px solid #f87171;
-            animation: pulse 2s infinite;
+            border: 2px solid #ef4444;
+            animation: pulse-glow 2s ease-in-out infinite;
+            box-shadow: 0 2px 8px rgba(239, 68, 68, 0.3);
         }
         .event-응급처치 { 
-            background: #fee2e2; 
+            background: linear-gradient(135deg, #fee2e2 0%, #fca5a5 100%); 
             color: #b91c1c; 
             font-weight: 700;
-            border: 1px solid #fca5a5;
+            border: 2px solid #f87171;
+            box-shadow: 0 2px 6px rgba(248, 113, 113, 0.3);
         }
 
-        @keyframes pulse {
+        @keyframes pulse-glow {
             0%, 100% { 
-                box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4);
+                box-shadow: 0 2px 8px rgba(239, 68, 68, 0.3), 0 0 0 0 rgba(239, 68, 68, 0.4);
+                transform: scale(1);
             }
             50% { 
-                box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.1);
+                box-shadow: 0 4px 16px rgba(239, 68, 68, 0.4), 0 0 0 4px rgba(239, 68, 68, 0.2);
+                transform: scale(1.02);
             }
         }
 
@@ -276,37 +394,43 @@
             color: #d1d5db;
         }
 
-        /* 오늘의 일정 */
+        /* 오늘의 일정 - 토스 스타일 */
         .today-events {
             background: white;
-            border-radius: 20px;
+            border-radius: 24px;
             padding: 24px;
+            margin: 16px;
             margin-bottom: 24px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+            border: 1px solid #f1f5f9;
         }
 
         .today-title {
-            font-size: 18px;
+            font-size: 20px;
             font-weight: 700;
             color: #191f28;
-            margin-bottom: 16px;
+            margin-bottom: 20px;
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 10px;
+            letter-spacing: -0.02em;
         }
 
         .event-card {
-            background: #f8f9fa;
-            border-radius: 16px;
-            padding: 16px;
-            margin-bottom: 12px;
-            border-left: 4px solid #3b82f6;
-            transition: all 0.2s ease;
+            background: #fafbfc;
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 16px;
+            border-left: 4px solid #3182f6;
+            transition: all 0.2s cubic-bezier(0.4, 0.0, 0.2, 1);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+            border: 1px solid #f8fafc;
         }
 
         .event-card:hover {
-            transform: translateX(4px);
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            transform: translateX(6px) translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+            border-color: #e2e8f0;
         }
 
         .event-title {
@@ -325,46 +449,36 @@
             margin-bottom: 8px;
         }
 
-        /* 사육곰 관련 - 주황/갈색 계열 */
-        .category-곰입식and개소 { background: #fef3c7; color: #d97706; font-weight: 700; }
-        .category-사육관리 { background: #dcfce7; color: #16a34a; font-weight: 700; }
-        .category-의료검진 { background: #dbeafe; color: #2563eb; font-weight: 700; }
-        
-        /* 외부업체/방문 - 파란색 계열 */
-        .category-외부업체방문 { background: #e0e7ff; color: #4338ca; font-weight: 700; }
-        .category-출장 { background: #f3e8ff; color: #7c3aed; font-weight: 700; }
-        .category-시공 { background: #fed7aa; color: #ea580c; font-weight: 700; }
-        .category-시설점검 { background: #bfdbfe; color: #1e40af; font-weight: 700; }
-        .category-공사작업 { background: #fde68a; color: #d97706; font-weight: 700; }
-        
-        /* 행정업무 - 녹색 계열 */
-        .category-인사 { background: #ecfdf5; color: #059669; font-weight: 700; }
-        .category-회의 { background: #e6fffa; color: #0d9488; font-weight: 700; }
-        .category-교육훈련 { background: #ede9fe; color: #8b5cf6; font-weight: 700; }
-        
-        /* 협약/법무 - 보라/분홍 계열 */
-        .category-협약MOU { background: #e0f2fe; color: #0369a1; font-weight: 700; }
-        .category-법무검토 { background: #fee2e2; color: #dc2626; font-weight: 700; }
-        .category-감사 { background: #f1f5f9; color: #475569; font-weight: 700; }
-        
-        /* 예산/재정 - 청록색 계열 */
-        .category-예산편성 { background: #cffafe; color: #0891b2; }
-        .category-구매조달 { background: #a7f3d0; color: #059669; }
-        .category-결산 { background: #bfdbfe; color: #0369a1; }
-        
-        /* 긴급/중요 - 빨간색 계열 */
+        /* 토스 스타일 카테고리 라벨 - 이벤트 색상과 동일 */
+        .category-곰입식and개소 { background: linear-gradient(135deg, #fef7ed 0%, #fed7aa 100%); color: #c2410c; font-weight: 600; }
+        .category-사육관리 { background: linear-gradient(135deg, #f0fdf4 0%, #bbf7d0 100%); color: #15803d; font-weight: 600; }
+        .category-의료검진 { background: linear-gradient(135deg, #eff6ff 0%, #bfdbfe 100%); color: #1d4ed8; font-weight: 600; }
+        .category-외부업체방문 { background: linear-gradient(135deg, #f0f9ff 0%, #c7d2fe 100%); color: #4338ca; font-weight: 600; }
+        .category-출장 { background: linear-gradient(135deg, #faf5ff 0%, #e9d5ff 100%); color: #7c3aed; font-weight: 600; }
+        .category-시공 { background: linear-gradient(135deg, #fff7ed 0%, #fed7aa 100%); color: #ea580c; font-weight: 600; }
+        .category-시설점검 { background: linear-gradient(135deg, #dbeafe 0%, #93c5fd 100%); color: #1e40af; font-weight: 600; }
+        .category-공사작업 { background: linear-gradient(135deg, #fffbeb 0%, #fde68a 100%); color: #d97706; font-weight: 600; }
+        .category-인사 { background: linear-gradient(135deg, #ecfdf5 0%, #a7f3d0 100%); color: #047857; font-weight: 600; }
+        .category-회의 { background: linear-gradient(135deg, #f0fdfa 0%, #99f6e4 100%); color: #0f766e; font-weight: 600; }
+        .category-교육훈련 { background: linear-gradient(135deg, #faf5ff 0%, #d8b4fe 100%); color: #7c3aed; font-weight: 600; }
+        .category-협약MOU { background: linear-gradient(135deg, #f0f9ff 0%, #bae6fd 100%); color: #0284c7; font-weight: 600; }
+        .category-법무검토 { background: linear-gradient(135deg, #fef2f2 0%, #fecaca 100%); color: #dc2626; font-weight: 600; }
+        .category-감사 { background: linear-gradient(135deg, #f8fafc 0%, #cbd5e1 100%); color: #475569; font-weight: 600; }
+        .category-예산편성 { background: linear-gradient(135deg, #fefce8 0%, #fef08a 100%); color: #ca8a04; font-weight: 600; }
+        .category-구매조달 { background: linear-gradient(135deg, #fffbeb 0%, #fde047 100%); color: #a16207; font-weight: 600; }
+        .category-결산 { background: linear-gradient(135deg, #fff7ed 0%, #fdba74 100%); color: #c2410c; font-weight: 600; }
         .category-긴급상황 { 
-            background: #fecaca; 
+            background: linear-gradient(135deg, #fef2f2 0%, #fecaca 100%); 
             color: #dc2626; 
             font-weight: 700;
-            border: 1px solid #f87171;
-            animation: pulse 2s infinite;
+            border: 1px solid #ef4444;
+            animation: pulse-glow 2s ease-in-out infinite;
         }
         .category-응급처치 { 
-            background: #fed7d7; 
+            background: linear-gradient(135deg, #fee2e2 0%, #fca5a5 100%); 
             color: #b91c1c; 
             font-weight: 700;
-            border: 1px solid #fca5a5;
+            border: 1px solid #f87171;
         }
 
         /* 액션 버튼 */
@@ -374,19 +488,19 @@
             right: 24px;
             width: 56px;
             height: 56px;
-            background: #3b82f6;
+            background: #3182f6;
             border: none;
             border-radius: 28px;
             color: white;
             font-size: 24px;
             cursor: pointer;
-            box-shadow: 0 8px 24px rgba(59, 130, 246, 0.3);
-            transition: all 0.2s ease;
+            box-shadow: 0 4px 12px rgba(49, 130, 246, 0.4), 0 2px 4px rgba(49, 130, 246, 0.3);
+            transition: all 0.2s cubic-bezier(0.4, 0.0, 0.2, 1);
         }
 
         .action-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 12px 32px rgba(59, 130, 246, 0.4);
+            transform: translateY(-2px) scale(1.05);
+            box-shadow: 0 8px 20px rgba(49, 130, 246, 0.5), 0 4px 8px rgba(49, 130, 246, 0.3);
         }
 
         /* 모달 */
@@ -535,20 +649,24 @@
             line-height: 1.5;
         }
 
-        /* 모바일 최적화 */
+        /* 모바일 최적화 - 토스 스타일 */
         @media (max-width: 768px) {
             .container {
-                padding: 8px;
+                padding: 0;
+                background: #f8fafc;
             }
             
             .main-content {
-                padding: 12px;
-                gap: 16px;
+                padding: 16px;
+                gap: 20px;
             }
             
             .mini-calendar {
-                padding: 16px;
-                margin-bottom: 20px;
+                padding: 20px;
+                margin: 12px;
+                margin-bottom: 24px;
+                border-radius: 24px;
+                box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
             }
             
             .calendar-grid {
@@ -559,31 +677,31 @@
                 min-height: 120px;
                 height: auto;
                 font-size: 14px;
-                padding: 8px 4px;
+                padding: 10px 6px;
                 overflow: hidden;
                 display: flex;
                 flex-direction: column;
                 justify-content: flex-start;
                 align-items: center;
                 text-align: center;
-                border-radius: 12px;
+                border-radius: 16px;
                 background: white;
-                box-shadow: 0 2px 4px rgba(0,0,0,0.08);
-                transition: all 0.2s ease;
-                border: 1px solid #e2e8f0;
+                box-shadow: none;
+                transition: all 0.2s cubic-bezier(0.4, 0.0, 0.2, 1);
+                border: 1px solid #f1f5f9;
             }
             
             .day-cell:active {
-                transform: scale(0.98);
-                box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+                transform: scale(0.97);
+                box-shadow: 0 1px 3px rgba(0,0,0,0.12);
             }
             
             .day-number {
                 font-size: 18px;
-                margin-bottom: 4px;
-                font-weight: 700;
+                margin-bottom: 6px;
+                font-weight: 800;
                 color: #1e293b;
-                text-shadow: 0 1px 2px rgba(0,0,0,0.05);
+                letter-spacing: -0.01em;
             }
             
             .day-cell.today .day-number {
@@ -621,7 +739,10 @@
             }
             
             .today-events {
-                padding: 20px 16px;
+                padding: 24px 20px;
+                margin: 12px;
+                border-radius: 24px;
+                box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
             }
             
             .action-btn {
@@ -834,9 +955,10 @@
             }
 
             .mini-calendar {
-                padding: 30px;
+                padding: 32px;
                 border-radius: 24px;
-                box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+                box-shadow: 0 2px 8px rgba(0,0,0,0.12), 0 4px 16px rgba(0,0,0,0.08);
+                border: 1px solid #f1f5f9;
             }
 
             .calendar-grid {
@@ -856,9 +978,9 @@
             }
 
             .day-cell:hover {
-                transform: translateY(-2px);
-                box-shadow: 0 8px 25px rgba(0,0,0,0.15);
-                border-color: #cbd5e1;
+                transform: scale(1.03) translateY(-1px);
+                box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+                border-color: #e2e8f0;
             }
 
             .day-number {
@@ -894,9 +1016,10 @@
             }
 
             .today-events {
-                padding: 30px;
+                padding: 32px;
                 border-radius: 24px;
-                box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+                box-shadow: 0 2px 8px rgba(0,0,0,0.12), 0 4px 16px rgba(0,0,0,0.08);
+                border: 1px solid #f1f5f9;
             }
 
             .event-card {
