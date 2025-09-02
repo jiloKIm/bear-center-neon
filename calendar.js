@@ -75,21 +75,26 @@ eventForm.onsubmit = async function(e) {
   if (!title) return;
   
   try {
+    // 날짜를 YYYY-MM-DD 형식으로 변환
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, '0');
+    const day = String(currentDate).padStart(2, '0');
+    const fullDate = `${year}-${month}-${day}`;
+    
+    console.log('📅 저장할 날짜:', fullDate, '(원본:', currentDate, ')');
+    
     if (editingEvent) {
       // 기존 이벤트 수정
       const eventId = editingEvent.dataset.eventId;
-      await saveEvent(currentDate, title, category, eventId);
+      await saveEvent(fullDate, title, category, eventId);
     } else {
       // 새 이벤트 추가
-      await saveEvent(currentDate, title, category);
+      await saveEvent(fullDate, title, category);
     }
     
     // 항상 전체 이벤트를 다시 로드하여 UI를 업데이트
-    if (window.getSql && window.getSql()) {
-      await loadEvents();
-    } else {
-      loadEventsFromStorage();
-    }
+    await loadEvents();
     
     closeModal();
   } catch (error) {
@@ -112,11 +117,7 @@ deleteBtn.onclick = async function() {
       await deleteEvent(eventId);
       
       // 전체 이벤트를 다시 로드하여 UI를 업데이트
-      if (window.getSql && window.getSql()) {
-        await loadEvents();
-      } else {
-        loadEventsFromStorage();
-      }
+      await loadEvents();
       
       closeModal();
     } catch (error) {
