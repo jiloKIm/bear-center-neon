@@ -24,11 +24,12 @@ async function testConnection() {
       return true;
     } else {
       console.error('❌ Netlify Functions 연결 실패');
-      throw new Error('API 서버에 연결할 수 없습니다');
+      return false;
     }
   } catch (error) {
     console.error('❌ API 연결 실패:', error.message);
-    throw new Error('API 서버에 연결할 수 없습니다: ' + error.message);
+    console.log('🔄 로컬 개발 환경 감지, localStorage 사용');
+    return false;
   }
 }
 
