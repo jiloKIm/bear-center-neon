@@ -143,7 +143,9 @@
         .calendar-grid {
             display: grid;
             grid-template-columns: repeat(7, 1fr);
-            gap: 2px;
+            gap: 3px;
+            max-width: 100%;
+            margin: 0 auto;
         }
 
         .day-header {
@@ -155,29 +157,30 @@
         }
 
         .day-cell {
-            min-height: 100px;
-            height: auto;
+            width: 100%;
+            height: 110px;
+            min-height: 110px;
+            max-height: 110px;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: flex-start;
-            font-size: 14px;
+            font-size: 13px;
             font-weight: 500;
-            border-radius: 16px;
+            border-radius: 12px;
             cursor: pointer;
-            transition: all 0.2s cubic-bezier(0.4, 0.0, 0.2, 1);
+            transition: background-color 0.2s ease, border-color 0.2s ease;
             position: relative;
             padding: 8px 4px;
-            overflow: visible;
+            overflow: hidden;
             background: white;
             border: 1px solid #f1f5f9;
-            box-shadow: none;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+            aspect-ratio: unset;
         }
 
         .day-cell:hover {
             background: #f8fafc;
-            transform: scale(1.02);
-            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
             border-color: #e2e8f0;
         }
 
@@ -198,9 +201,11 @@
 
         .day-number {
             font-weight: 700;
-            margin-bottom: 4px;
-            font-size: 16px;
+            margin-bottom: 3px;
+            font-size: 15px;
             color: #1e293b;
+            letter-spacing: -0.01em;
+            flex-shrink: 0;
         }
 
         .day-events {
@@ -208,27 +213,32 @@
             flex: 1;
             display: flex;
             flex-direction: column;
-            gap: 0.5px;
+            gap: 1px;
             align-items: center;
+            max-height: 70px;
+            overflow: hidden;
         }
 
         .event-item {
-            font-size: 11px;
-            padding: 3px 6px;
-            border-radius: 6px;
+            font-size: 9px;
+            padding: 2px 4px;
+            border-radius: 4px;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
             text-align: center;
-            line-height: 1.2;
-            margin-bottom: 2px;
+            line-height: 1.1;
+            margin-bottom: 1px;
             font-weight: 600;
-            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
-            min-height: 18px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.08);
+            min-height: 14px;
+            max-height: 14px;
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: all 0.2s ease;
+            transition: none;
+            width: calc(100% - 2px);
+            flex-shrink: 0;
         }
 
         /* 토스 스타일 카테고리 색상 시스템 */
@@ -422,14 +432,13 @@
             padding: 20px;
             margin-bottom: 16px;
             border-left: 4px solid #3182f6;
-            transition: all 0.2s cubic-bezier(0.4, 0.0, 0.2, 1);
+            transition: background-color 0.2s ease, border-color 0.2s ease;
             box-shadow: 0 1px 3px rgba(0,0,0,0.06);
             border: 1px solid #f8fafc;
         }
 
         .event-card:hover {
-            transform: translateX(6px) translateY(-1px);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+            background: #f1f5f9;
             border-color: #e2e8f0;
         }
 
@@ -495,12 +504,12 @@
             font-size: 24px;
             cursor: pointer;
             box-shadow: 0 4px 12px rgba(49, 130, 246, 0.4), 0 2px 4px rgba(49, 130, 246, 0.3);
-            transition: all 0.2s cubic-bezier(0.4, 0.0, 0.2, 1);
+            transition: background-color 0.2s ease, box-shadow 0.2s ease;
         }
 
         .action-btn:hover {
-            transform: translateY(-2px) scale(1.05);
-            box-shadow: 0 8px 20px rgba(49, 130, 246, 0.5), 0 4px 8px rgba(49, 130, 246, 0.3);
+            background: #2563eb;
+            box-shadow: 0 6px 16px rgba(49, 130, 246, 0.4);
         }
 
         /* 모달 */
@@ -649,7 +658,7 @@
             line-height: 1.5;
         }
 
-        /* 모바일 최적화 - 토스 스타일 */
+        /* 범용 반응형 최적화 - 모든 디바이스 통합 */
         @media (max-width: 768px) {
             .container {
                 padding: 0;
@@ -657,391 +666,59 @@
             }
             
             .main-content {
-                padding: 16px;
-                gap: 20px;
+                padding: 12px;
+                gap: 16px;
             }
             
             .mini-calendar {
-                padding: 20px;
-                margin: 12px;
-                margin-bottom: 24px;
-                border-radius: 24px;
+                padding: 16px;
+                margin: 8px;
+                margin-bottom: 20px;
+                border-radius: 20px;
                 box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
             }
             
-            .calendar-grid {
-                gap: 3px;
-            }
-            
-            .day-cell {
-                min-height: 120px;
-                height: auto;
-                font-size: 14px;
-                padding: 10px 6px;
-                overflow: hidden;
-                display: flex;
-                flex-direction: column;
-                justify-content: flex-start;
-                align-items: center;
-                text-align: center;
-                border-radius: 16px;
-                background: white;
-                box-shadow: none;
-                transition: all 0.2s cubic-bezier(0.4, 0.0, 0.2, 1);
-                border: 1px solid #f1f5f9;
-            }
-            
-            .day-cell:active {
-                transform: scale(0.97);
-                box-shadow: 0 1px 3px rgba(0,0,0,0.12);
-            }
-            
-            .day-number {
-                font-size: 18px;
-                margin-bottom: 6px;
-                font-weight: 800;
-                color: #1e293b;
-                letter-spacing: -0.01em;
-            }
-            
-            .day-cell.today .day-number {
-                color: white;
-                text-shadow: 0 1px 2px rgba(0,0,0,0.2);
-            }
-            
-            .day-events {
-                width: 100%;
-                flex: 1;
-                display: flex;
-                flex-direction: column;
-                gap: 1px;
-                align-items: center;
-            }
-            
-            .event-item {
-                font-size: 11px;
-                padding: 3px 6px;
-                margin-bottom: 1px;
-                line-height: 1.2;
-                font-weight: 600;
-                white-space: nowrap;
-                overflow: hidden;
-                text-overflow: ellipsis;
-                width: calc(100% - 2px);
-                text-align: center;
-                border-radius: 6px;
-                box-shadow: 0 1px 2px rgba(0,0,0,0.1);
-                border: 1px solid rgba(255,255,255,0.5);
-                min-height: 18px;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-            }
-            
             .today-events {
-                padding: 24px 20px;
-                margin: 12px;
-                border-radius: 24px;
+                padding: 20px 16px;
+                margin: 8px;
+                border-radius: 20px;
                 box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
             }
             
             .action-btn {
-                width: 60px;
-                height: 60px;
+                width: 56px;
+                height: 56px;
                 bottom: 20px;
                 right: 20px;
-                font-size: 26px;
-                box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
-            }
-            
-            .action-btn:active {
-                transform: translateY(-1px) scale(0.95);
+                font-size: 24px;
             }
         }
         
-        /* 초소형 모바일 최적화 */
-        @media (max-width: 480px) {
-            .container {
-                padding: 4px;
-            }
-            
-            .main-content {
-                padding: 8px;
-                gap: 12px;
-            }
-            
-            .calendar-title {
-                font-size: 18px;
-                font-weight: 700;
-            }
-            
-            .mini-calendar {
-                padding: 12px;
-                margin-bottom: 16px;
-                border-radius: 16px;
-                background: white;
-                box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-            }
-            
-            .calendar-grid {
-                gap: 2px;
-            }
-            
-            .day-cell {
-                min-height: 100px;
-                height: auto;
-                font-size: 13px;
-                padding: 6px 3px;
-                overflow: hidden;
-                display: flex;
-                flex-direction: column;
-                justify-content: flex-start;
-                align-items: center;
-                text-align: center;
-                border-radius: 10px;
-                background: white;
-                box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-                transition: all 0.2s ease;
-                border: 1px solid #e5e7eb;
-            }
-            
-            .day-cell:active {
-                transform: scale(0.97);
-                box-shadow: 0 1px 2px rgba(0,0,0,0.1);
-            }
-            
-            .day-number {
-                font-size: 16px;
-                margin-bottom: 3px;
-                font-weight: 700;
-                color: #1e293b;
-            }
-            
-            .day-cell.today .day-number {
-                color: white;
-                font-weight: 800;
-            }
-            
-            .event-item {
-                font-size: 10px;
-                padding: 2px 4px;
-                line-height: 1.1;
-                font-weight: 600;
-                white-space: nowrap;
-                overflow: hidden;
-                text-overflow: ellipsis;
-                width: calc(100% - 2px);
-                text-align: center;
-                border-radius: 5px;
-                min-height: 16px;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                box-shadow: 0 1px 2px rgba(0,0,0,0.08);
-                border: 1px solid rgba(255,255,255,0.4);
-            }
-            
-            .day-header {
-                font-size: 12px;
-                padding: 8px 2px;
-                font-weight: 600;
-                color: #64748b;
-            }
-            
-            .nav-title {
-                font-size: 18px;
-            }
-            
-            .nav-tab {
-                padding: 6px 12px;
-                font-size: 13px;
-            }
-            
-            .current-date {
-                font-size: 22px;
-            }
-            
-            .current-day {
-                font-size: 15px;
-            }
-        }
 
-        /* 태블릿 최적화 */
-        @media (min-width: 481px) and (max-width: 768px) {
-            .container {
-                padding: 12px;
-                max-width: 768px;
-            }
-            
-            .main-content {
-                padding: 20px;
-                gap: 24px;
-            }
-            
-            .mini-calendar {
-                padding: 24px;
-                margin-bottom: 24px;
-            }
-            
-            .calendar-grid {
-                gap: 4px;
-            }
-            
-            .day-cell {
-                min-height: 110px;
-                height: auto;
-                padding: 8px 6px;
-                border-radius: 14px;
-                box-shadow: 0 2px 6px rgba(0,0,0,0.08);
-            }
-            
-            .day-cell:hover {
-                transform: translateY(-1px);
-                box-shadow: 0 4px 12px rgba(0,0,0,0.12);
-            }
-            
-            .day-number {
-                font-size: 18px;
-                margin-bottom: 4px;
-                font-weight: 700;
-            }
-            
-            .event-item {
-                font-size: 11px;
-                padding: 3px 6px;
-                min-height: 18px;
-                border-radius: 6px;
-            }
-            
-            .calendar-title {
-                font-size: 20px;
-                font-weight: 700;
-            }
-            
-            .today-events {
-                padding: 24px;
-            }
-            
-            .action-btn {
-                width: 58px;
-                height: 58px;
-                font-size: 25px;
-            }
-        }
 
-        /* 반응형 - 데스크톱 */
+        /* 데스크톱 최적화 */
         @media (min-width: 769px) {
             .container {
-                max-width: 1400px;
+                max-width: 1200px;
                 background: transparent;
             }
 
             .main-content {
-                padding: 40px;
+                padding: 32px;
                 display: grid;
                 grid-template-columns: 1fr 1fr;
-                gap: 40px;
+                gap: 32px;
                 align-items: start;
             }
 
-            .left-column {
-                display: flex;
-                flex-direction: column;
-            }
-
-            .right-column {
-                display: flex;
-                flex-direction: column;
-            }
-
             .mini-calendar {
-                padding: 32px;
-                border-radius: 24px;
-                box-shadow: 0 2px 8px rgba(0,0,0,0.12), 0 4px 16px rgba(0,0,0,0.08);
-                border: 1px solid #f1f5f9;
-            }
-
-            .calendar-grid {
-                gap: 6px;
-            }
-
-            .day-cell {
-                min-height: 140px;
-                height: auto;
-                padding: 10px 8px;
-                overflow: visible;
-                border-radius: 16px;
-                box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-                border: 1px solid #e2e8f0;
-                transition: all 0.3s ease;
-                cursor: pointer;
-            }
-
-            .day-cell:hover {
-                transform: scale(1.03) translateY(-1px);
-                box-shadow: 0 4px 16px rgba(0,0,0,0.12);
-                border-color: #e2e8f0;
-            }
-
-            .day-number {
-                font-size: 20px;
-                margin-bottom: 6px;
-                font-weight: 700;
-                color: #1e293b;
-            }
-
-            .day-cell.today .day-number {
-                color: white;
-                text-shadow: 0 1px 3px rgba(0,0,0,0.3);
-            }
-
-            .event-item {
-                font-size: 12px;
-                padding: 4px 8px;
-                margin-bottom: 2px;
-                line-height: 1.3;
-                border-radius: 8px;
-                box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-                min-height: 20px;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                transition: all 0.2s ease;
-                cursor: pointer;
-            }
-
-            .event-item:hover {
-                transform: scale(1.02);
-                box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+                padding: 24px;
+                border-radius: 20px;
             }
 
             .today-events {
-                padding: 32px;
-                border-radius: 24px;
-                box-shadow: 0 2px 8px rgba(0,0,0,0.12), 0 4px 16px rgba(0,0,0,0.08);
-                border: 1px solid #f1f5f9;
-            }
-
-            .event-card {
-                padding: 20px;
+                padding: 24px;
                 border-radius: 20px;
-                margin-bottom: 16px;
-                border-left: 6px solid #3b82f6;
-                box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-                transition: all 0.3s ease;
-            }
-
-            .event-card:hover {
-                transform: translateX(6px);
-                box-shadow: 0 6px 20px rgba(0,0,0,0.12);
-            }
-
-            .modal-content {
-                position: relative;
-                max-width: 500px;
-                margin: 5vh auto;
-                border-radius: 20px;
-                animation: none;
             }
 
             .action-btn {
@@ -1049,33 +726,9 @@
                 bottom: auto;
                 right: auto;
                 margin-top: 20px;
-                width: 64px;
-                height: 64px;
+                width: 56px;
+                height: 56px;
                 font-size: 24px;
-                box-shadow: 0 6px 20px rgba(59, 130, 246, 0.3);
-            }
-
-            .action-btn:hover {
-                transform: translateY(-3px);
-                box-shadow: 0 12px 30px rgba(59, 130, 246, 0.4);
-            }
-
-            .calendar-title {
-                font-size: 24px;
-                font-weight: 700;
-            }
-
-            .nav-btn {
-                padding: 12px;
-                border-radius: 12px;
-                font-size: 20px;
-                transition: all 0.3s ease;
-            }
-
-            .nav-btn:hover {
-                background: #f1f5f9;
-                color: #3b82f6;
-                transform: scale(1.1);
             }
         }
     </style>
