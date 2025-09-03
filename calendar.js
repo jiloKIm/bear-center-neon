@@ -217,11 +217,10 @@ function createConnection(fromEvent, toEvent) {
 // 이벤트 위치 계산
 function getEventPosition(event) {
   const rect = event.getBoundingClientRect();
-  const containerRect = mainContent.getBoundingClientRect();
   
   return {
-    x: rect.left + rect.width / 2 - containerRect.left,
-    y: rect.top + rect.height / 2 - containerRect.top,
+    x: rect.left + rect.width / 2,
+    y: rect.top + rect.height / 2,
     element: event
   };
 }
@@ -235,16 +234,49 @@ function drawConnection(connection) {
   const toX = connection.to.x;
   const toY = connection.to.y;
   
-  // 베지어 곡선으로 부드러운 화살표 생성
+  // 부드러운 베지어 곡선으로 연결
+  const dx = toX - fromX;
+  const dy = toY - fromY;
+  const distance = Math.sqrt(dx * dx + dy * dy);
+  
+  // 곡선의 제어점 계산
+  const controlOffset = Math.min(distance * 0.3, 50);
   const midX = (fromX + toX) / 2;
   const midY = (fromY + toY) / 2;
-  const controlOffset = 30;
   
-  const pathData = `M ${fromX} ${fromY} Q ${midX} ${midY - controlOffset} ${toX} ${toY}`;
+  // 수직 방향으로 곡선 생성
+  const controlX1 = fromX + dx * 0.3;
+  const controlY1 = fromY - controlOffset;
+  const controlX2 = toX - dx * 0.3;
+  const controlY2 = toY - controlOffset;
+  
+  const pathData = `M ${fromX} ${fromY} C ${controlX1} ${controlY1}, ${controlX2} ${controlY2}, ${toX} ${toY}`;
   
   path.setAttribute('d', pathData);
   path.classList.add('arrow-line');
   path.setAttribute('marker-end', 'url(#arrowhead)');
+  
+  // 연결선에 호버 효과 추가
+  path.addEventListener('mouseenter', function() {
+    this.setAttribute('marker-end', 'url(#arrowheadBig)');
+  });
+  
+  path.addEventListener('mouseleave', function() {
+    this.setAttribute('marker-end', 'url(#arrowhead)');
+  });
+  
+  // 연결선 생성 애니메이션
+  const pathLength = path.getTotalLength();
+  path.style.strokeDasharray = pathLength + ' ' + pathLength;
+  path.style.strokeDashoffset = pathLength;
+  path.animate([
+    { strokeDashoffset: pathLength },
+    { strokeDashoffset: 0 }
+  ], {
+    duration: 800,
+    easing: 'ease-out',
+    fill: 'forwards'
+  });
   
   connectionSvg.appendChild(path);
 }

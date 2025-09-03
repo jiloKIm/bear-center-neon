@@ -323,39 +323,82 @@ td {
 }
 
 .arrow-line {
-  stroke: #4f46e5;
-  stroke-width: 2;
+  stroke: url(#connectionGradient);
+  stroke-width: 3;
   fill: none;
   marker-end: url(#arrowhead);
-  opacity: 0.8;
+  opacity: 0.9;
+  filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.3));
+  transition: all 0.3s ease;
+  animation: flowAnimation 2s ease-in-out infinite;
+}
+
+.arrow-line:hover {
+  stroke-width: 4;
+  opacity: 1;
+  filter: drop-shadow(3px 3px 6px rgba(0,0,0,0.4));
 }
 
 .arrow-line.connecting {
-  stroke: #06b6d4;
-  stroke-width: 3;
-  stroke-dasharray: 5,5;
-  animation: dash 1s linear infinite;
+  stroke: url(#connectingGradient);
+  stroke-width: 4;
+  stroke-dasharray: 8,4;
+  animation: dash 1.5s linear infinite, pulse 1s ease-in-out infinite;
 }
 
 @keyframes dash {
   to {
-    stroke-dashoffset: -10;
+    stroke-dashoffset: -12;
+  }
+}
+
+@keyframes flowAnimation {
+  0%, 100% {
+    stroke-dasharray: 0,0;
+  }
+  50% {
+    stroke-dasharray: 5,5;
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 0.7;
+  }
+  50% {
+    opacity: 1;
   }
 }
 
 .connection-mode .event {
   cursor: crosshair;
   position: relative;
+  transition: all 0.3s ease;
 }
 
 .connection-mode .event:hover {
-  outline: 2px solid #4f46e5;
-  outline-offset: 2px;
+  outline: 3px solid #4f46e5;
+  outline-offset: 3px;
+  transform: scale(1.05);
+  box-shadow: 0 4px 12px rgba(79, 70, 229, 0.4);
+  z-index: 10;
 }
 
 .event.connected-source {
-  outline: 2px solid #06b6d4;
-  outline-offset: 2px;
+  outline: 3px solid #06b6d4;
+  outline-offset: 3px;
+  animation: sourceGlow 1.5s ease-in-out infinite;
+  transform: scale(1.05);
+  z-index: 10;
+}
+
+@keyframes sourceGlow {
+  0%, 100% {
+    box-shadow: 0 0 8px rgba(6, 182, 212, 0.6);
+  }
+  50% {
+    box-shadow: 0 0 16px rgba(6, 182, 212, 0.8);
+  }
 }
 
 .workflow-controls {
