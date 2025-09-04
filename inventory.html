@@ -536,7 +536,12 @@
                     </select>
                 </div>
                 <select class="filter-select" id="filterLocation" onchange="filterItems()">
-                    <option value="">전체 위치</option>
+                    <option value="">전체 카테고리</option>
+                    <option value="인건비">인건비</option>
+                    <option value="재료비">재료비</option>
+                    <option value="경비">경비</option>
+                    <option value="사무실조성">사무실조성</option>
+                    <option value="진료실조성">진료실조성</option>
                 </select>
             </div>
 
@@ -590,8 +595,15 @@
                         </div>
 
                         <div class="form-group">
-                            <label class="form-label" for="itemLocation">설치 위치</label>
-                            <input type="text" id="itemLocation" class="form-input" placeholder="예: A동 사육장">
+                            <label class="form-label" for="itemLocation">예산 카테고리</label>
+                            <select id="itemLocation" class="form-select" required>
+                                <option value="">선택하세요</option>
+                                <option value="인건비">인건비</option>
+                                <option value="재료비">재료비</option>
+                                <option value="경비">경비</option>
+                                <option value="사무실조성">사무실조성</option>
+                                <option value="진료실조성">진료실조성</option>
+                            </select>
                         </div>
 
                         <div class="form-group">
@@ -711,7 +723,7 @@
                         <span class="item-type">${item.type}</span>
                         <span class="item-type">${new Date(item.created_at).toLocaleDateString()}</span>
                     </div>
-                    ${item.installation_location ? `<div class="item-details">📍 ${item.installation_location}</div>` : ''}
+                    ${item.installation_location ? `<div class="item-details">💰 ${item.installation_location}</div>` : ''}
                     ${item.notes ? `<div class="item-details">${item.notes}</div>` : ''}
                     ${item.details ? `<div class="item-details">📝 세부품목 있음</div>` : ''}
                     <div class="item-actions" onclick="event.stopPropagation()">
@@ -755,26 +767,9 @@
             updateSummary();
         }
 
-        // 위치 필터 업데이트
+        // 위치 필터 업데이트 (예산 카테고리로 변경됨)
         function updateLocationFilter() {
-            const locationSelect = document.getElementById('filterLocation');
-            const locations = [...new Set(allItems
-                .map(item => item.installation_location)
-                .filter(location => location && location.trim())
-            )].sort();
-            
-            // 기존 옵션 제거
-            while (locationSelect.children.length > 1) {
-                locationSelect.removeChild(locationSelect.lastChild);
-            }
-            
-            // 새 옵션 추가
-            locations.forEach(location => {
-                const option = document.createElement('option');
-                option.value = location;
-                option.textContent = location;
-                locationSelect.appendChild(option);
-            });
+            // 예산 카테고4리는 이미 HTML에 정의되어 있으므로 아무것도 하지 않음
         }
 
         // 모달 열기/닫기
