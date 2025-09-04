@@ -555,28 +555,47 @@
         loadMemos();
     });
 
-    // 메모 로드
-    function loadMemos() {
+    // 메모 로드 (데이터베이스에서)
+    async function loadMemos() {
+        try {
+            const response = await fetch('/.netlify/functions/memo-api');
+            if (response.ok) {
+                allMemos = await response.json();
+                filteredMemos = [...allMemos];
+                displayMemos();
+                console.log('데이터베이스에서 로드:', allMemos.length, '개');
+            } else {
+                throw new Error('API 오류');
+            }
+        } catch (error) {
+            console.error('데이터베이스 로드 실패:', error);
+            // localStorage 폴백
+            loadMemosFromStorage();
+        }
+    }
+    
+    // localStorage 폴백 로드
+    function loadMemosFromStorage() {
         try {
             const savedMemos = localStorage.getItem('bearCenterMemos');
             allMemos = savedMemos ? JSON.parse(savedMemos) : [];
             filteredMemos = [...allMemos];
             displayMemos();
+            showMessage('오프라인 모드: 로컬 데이터 사용', 'warning');
         } catch (error) {
-            console.error('Failed to load memos:', error);
+            console.error('로컬 로드 실패:', error);
             allMemos = [];
             filteredMemos = [];
             displayMemos();
         }
     }
 
-    // 메모 저장
-    function saveMemos() {
+    // 로컬 저장 (폴백용)
+    function saveMemosToStorage() {
         try {
             localStorage.setItem('bearCenterMemos', JSON.stringify(allMemos));
         } catch (error) {
-            console.error('Failed to save memos:', error);
-            showMessage('메모 저장에 실패했습니다.', 'error');
+            console.error('localStorage 저장 실패:', error);
         }
     }
 
@@ -686,42 +705,110 @@
         currentEditingMemo = null;
     }
 
-    // 메모 저장
-    function saveMemo(e) {
+    // 메모 저장 (데이터베이스에)
+    async function saveMemo(e) {
         e.preventDefault();
         
         const memoData = {
             category: document.getElementById('memoCategory').value,
             title: document.getElementById('memoTitle').value,
-            content: document.getElementById('memoContent').value,
-            created_at: currentEditingMemo ? currentEditingMemo.created_at : new Date().toISOString(),
-            updated_at: new Date().toISOString()
+            content: document.getElementById('memoContent').value
         };
 
+        try {
+            let response;
+            if (currentEditingMemo) {
+                // 수정
+                memoData.id = currentEditingMemo.id;
+                memoData.organized_content = currentEditingMemo.organized_content;
+                memoData.keywords = currentEditingMemo.keywords;
+                memoData.summary = currentEditingMemo.summary;
+                
+                response = await fetch('/.netlify/functions/memo-api', {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(memoData)
+                });
+            } else {
+                // 새로 생성
+                response = await fetch('/.netlify/functions/memo-api', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(memoData)
+                });
+            }
+
+            if (response.ok) {
+                const savedMemo = await response.json();
+                
+                if (currentEditingMemo) {
+                    const index = allMemos.findIndex(m => m.id === currentEditingMemo.id);
+                    allMemos[index] = savedMemo;
+                } else {
+                    allMemos.unshift(savedMemo);
+                }
+                
+                filterMemos();
+                closeModal();
+                showMessage(currentEditingMemo ? '메모가 수정되었습니다!' : '멤모가 저장되었습니다!', 'success');
+            } else {
+                throw new Error('데이터베이스 저장 실패');
+            }
+        } catch (error) {
+            console.error('데이터베이스 저장 실패:', error);
+            // localStorage 폴백
+            saveMemoToStorage(memoData);
+        }
+    }
+    
+    // 로컬 저장 폴백
+    function saveMemoToStorage(memoData) {
         if (currentEditingMemo) {
             memoData.id = currentEditingMemo.id;
             memoData.organized_content = currentEditingMemo.organized_content;
+            memoData.created_at = currentEditingMemo.created_at;
+            memoData.updated_at = new Date().toISOString();
             const index = allMemos.findIndex(m => m.id === currentEditingMemo.id);
             allMemos[index] = memoData;
         } else {
             memoData.id = Date.now();
-            allMemos.push(memoData);
+            memoData.created_at = new Date().toISOString();
+            memoData.updated_at = new Date().toISOString();
+            allMemos.unshift(memoData);
         }
-
-        saveMemos();
+        
+        saveMemosToStorage();
         filterMemos();
         closeModal();
-        showMessage(currentEditingMemo ? '메모가 수정되었습니다!' : '메모가 저장되었습니다!', 'success');
+        showMessage('오프라인 저장: ' + (currentEditingMemo ? '수정 완료!' : '새 멤모 저장!'), 'warning');
     }
 
-    // 메모 삭제
-    function deleteMemo(id) {
+    // 메모 삭제 (데이터베이스에서)
+    async function deleteMemo(id) {
         if (!confirm('정말 삭제하시겠습니까?')) return;
         
-        allMemos = allMemos.filter(memo => memo.id !== id);
-        saveMemos();
-        filterMemos();
-        showMessage('메모가 삭제되었습니다!', 'success');
+        try {
+            const response = await fetch('/.netlify/functions/memo-api', {
+                method: 'DELETE',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id: id })
+            });
+
+            if (response.ok) {
+                allMemos = allMemos.filter(memo => memo.id !== id);
+                filterMemos();
+                showMessage('멤모가 삭제되었습니다!', 'success');
+            } else {
+                throw new Error('데이터베이스 삭제 실패');
+            }
+        } catch (error) {
+            console.error('데이터베이스 삭제 실패:', error);
+            // localStorage 폴백
+            allMemos = allMemos.filter(memo => memo.id !== id);
+            saveMemosToStorage();
+            filterMemos();
+            showMessage('오프라인 삭제: 메모가 삭제되었습니다!', 'warning');
+        }
     }
 
     // AI 정리 기능 (단일 메모)
@@ -1024,8 +1111,11 @@
 
         try {
             const result = await organizeText(memo.content, memo.category, 'extract_keywords');
+            
+            // 데이터베이스에 업데이트
+            await updateMemoInDatabase(id, { keywords: result });
+            
             memo.keywords = result;
-            saveMemos();
             filterMemos();
             showMessage('키워드 분석이 완료되었습니다!', 'success');
         } catch (error) {
@@ -1041,13 +1131,42 @@
 
         try {
             const result = await organizeText(memo.content, memo.category, 'summarize');
+            
+            // 데이터베이스에 업데이트
+            await updateMemoInDatabase(id, { summary: result });
+            
             memo.summary = result;
-            saveMemos();
             filterMemos();
             showMessage('메모 요약이 완료되었습니다!', 'success');
         } catch (error) {
             console.error('요약 실패:', error);
             showMessage('요약에 실패했습니다.', 'error');
+        }
+    }
+    
+    // 데이터베이스 메모 업데이트 함수
+    async function updateMemoInDatabase(id, updateData) {
+        try {
+            const response = await fetch('/.netlify/functions/memo-api', {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id, ...updateData })
+            });
+
+            if (!response.ok) {
+                throw new Error('데이터베이스 업데이트 실패');
+            }
+            
+            return await response.json();
+        } catch (error) {
+            console.error('데이터베이스 업데이트 오류:', error);
+            // 로컬 저장 폴백
+            const memo = allMemos.find(m => m.id === id);
+            if (memo) {
+                Object.assign(memo, updateData);
+                saveMemosToStorage();
+            }
+            throw error;
         }
     }
 

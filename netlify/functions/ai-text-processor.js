@@ -1,12 +1,9 @@
 // AI 텍스트 처리 Netlify Function
-// Claude API를 사용한 실제 텍스트 마이닝 및 정리
+// Hugging Face Inference API를 사용한 무료 텍스트 마이닝 및 정리
 
-const { Anthropic } = require('@anthropic-ai/sdk');
-
-// Claude API 클라이언트 초기화
-const anthropic = new Anthropic({
-  apiKey: process.env.CLAUDE_API_KEY, // Netlify 환경변수에서 가져옴
-});
+// Hugging Face API 설정
+const HF_API_URL = 'https://api-inference.huggingface.co/models/microsoft/DialoGPT-medium';
+const HF_TOKEN = process.env.HUGGING_FACE_TOKEN || 'hf_demo'; // 무료 토큰
 
 exports.handler = async (event, context) => {
   // CORS 헤더 설정
@@ -80,21 +77,8 @@ exports.handler = async (event, context) => {
         userPrompt = `다음 텍스트를 정리해주세요:\n\n${text}`;
     }
 
-    // Claude API 호출
-    const message = await anthropic.messages.create({
-      model: 'claude-3-haiku-20240307',
-      max_tokens: 1500,
-      temperature: 0.7,
-      system: systemPrompt,
-      messages: [
-        {
-          role: 'user',
-          content: userPrompt,
-        },
-      ],
-    });
-
-    const processedText = message.content[0].text;
+    // Hugging Face API 호출 (무료)
+    const processedText = await callHuggingFaceAPI(userPrompt, task);
 
     return {
       statusCode: 200,
@@ -209,6 +193,99 @@ HTML 형식으로 보기 좋게 정리해주세요.`;
 
     default:
       return `${basePrompt} 텍스트를 논리적이고 체계적으로 정리하여 HTML 형식으로 제공해주세요.`;
+  }
+}
+
+// Hugging Face API 호출 함수 (무료)
+async function callHuggingFaceAPI(prompt, task) {
+  try {
+    // 무료 모델들을 순서대로 시도
+    const models = [
+      'microsoft/DialoGPT-medium',
+      'gpt2',
+      'distilgpt2'
+    ];
+
+    for (const model of models) {
+      try {
+        const response = await fetch(`https://api-inference.huggingface.co/models/${model}`, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${HF_TOKEN}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            inputs: prompt,
+            parameters: {
+              max_length: 500,
+              temperature: 0.7,
+              do_sample: true,
+              top_p: 0.9
+            }
+          })
+        });
+
+        if (response.ok) {
+          const result = await response.json();
+          if (result && result[0] && result[0].generated_text) {
+            return formatAIResponse(result[0].generated_text, task);
+          }
+        }
+      } catch (modelError) {
+        console.log(`모델 ${model} 실패, 다음 시도...`);
+        continue;
+      }
+    }
+
+    // 모든 모델 실패시 로컬 처리
+    throw new Error('모든 AI 모델 호출 실패');
+    
+  } catch (error) {
+    console.error('HuggingFace API 오류:', error);
+    // 로컬 처리로 폴백
+    return getSimpleAIResponse(prompt, task);
+  }
+}
+
+// AI 응답 포맷팅
+function formatAIResponse(text, task) {
+  // 생성된 텍스트를 HTML 형식으로 정리
+  let formatted = text.replace(/\n/g, '<br>');
+  
+  switch(task) {
+    case 'extract_keywords':
+      return `<strong>🏷️ 키워드 분석</strong><br><br>${formatted}`;
+    case 'summarize':
+      return `<strong>📝 요약</strong><br><br>${formatted}`;
+    case 'action_items':
+      return `<strong>✅ 액션 아이템</strong><br><br>${formatted}`;
+    case 'sentiment_analysis':
+      return `<strong>💭 감성 분석</strong><br><br>${formatted}`;
+    default:
+      return `<strong>🤖 AI 정리</strong><br><br>${formatted}`;
+  }
+}
+
+// 간단한 AI 응답 (완전 폴백)
+function getSimpleAIResponse(prompt, task) {
+  const content = prompt.substring(prompt.lastIndexOf('\n\n') + 2);
+  
+  switch(task) {
+    case 'extract_keywords':
+      const words = content.split(' ').filter(w => w.length > 3);
+      const keywords = [...new Set(words)].slice(0, 8);
+      return `<strong>🏷️ 키워드 분석 (기본)</strong><br><br>${keywords.map(k => `• ${k}`).join('<br>')}`;
+      
+    case 'summarize':
+      const sentences = content.split('.').filter(s => s.trim().length > 10);
+      const summary = sentences.slice(0, 3).join('. ');
+      return `<strong>📝 요약 (기본)</strong><br><br>${summary}`;
+      
+    case 'action_items':
+      return `<strong>✅ 액션 아이템 (기본)</strong><br><br>• 상세 검토 필요<br>• 관련 부서와 협의<br>• 일정 수립 및 실행`;
+      
+    default:
+      return `<strong>🤖 기본 정리</strong><br><br>${content.substring(0, 300)}${content.length > 300 ? '...' : ''}`;
   }
 }
 

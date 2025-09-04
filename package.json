@@ -12,7 +12,7 @@
   "author": "Bear Center Team",
   "license": "MIT",
   "dependencies": {
-    "@anthropic-ai/sdk": "^0.24.3"
+    "pg": "^8.11.3"
   },
   "devDependencies": {
     "netlify-cli": "^17.0.0"
