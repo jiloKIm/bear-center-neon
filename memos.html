@@ -395,6 +395,21 @@
             100% { transform: rotate(360deg); }
         }
 
+        /* AI 도구 스타일 */
+        .ai-tools {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+        }
+        
+        .ai-tools .action-btn {
+            flex: 1;
+            min-width: 140px;
+            font-size: 14px;
+            padding: 12px 16px;
+        }
+
         /* 반응형 - 데스크톱 */
         @media (min-width: 768px) {
             .modal-content {
@@ -500,10 +515,24 @@
                 </div>
 
                 <div id="organizeSection" style="display: none;">
-                    <button type="button" class="action-btn btn-secondary" onclick="organizeMemo()" id="organizeBtn">
-                        <i class="fas fa-robot"></i>
-                        AI로 정리하기
-                    </button>
+                    <div class="ai-tools">
+                        <button type="button" class="action-btn btn-secondary" onclick="organizeMemo()" id="organizeBtn">
+                            <i class="fas fa-robot"></i>
+                            AI 정리
+                        </button>
+                        <button type="button" class="action-btn btn-secondary" onclick="extractKeywords()" id="keywordsBtn">
+                            <i class="fas fa-tags"></i>
+                            키워드 추출
+                        </button>
+                        <button type="button" class="action-btn btn-secondary" onclick="summarizeMemo()" id="summaryBtn">
+                            <i class="fas fa-compress-alt"></i>
+                            요약
+                        </button>
+                        <button type="button" class="action-btn btn-secondary" onclick="extractActionItems()" id="actionBtn">
+                            <i class="fas fa-tasks"></i>
+                            할일 추출
+                        </button>
+                    </div>
                     <div id="aiResult"></div>
                 </div>
             </div>
@@ -582,6 +611,12 @@
                     ${!memo.organized_content ? `
                         <button class="action-btn-small btn-organize" onclick="organizeSingleMemo(${memo.id})" id="organizeBtn${memo.id}">
                             <i class="fas fa-robot"></i> AI 정리
+                        </button>
+                        <button class="action-btn-small btn-organize" onclick="analyzeKeywords(${memo.id})" title="키워드 추출">
+                            <i class="fas fa-tags"></i>
+                        </button>
+                        <button class="action-btn-small btn-organize" onclick="summarizeSingleMemo(${memo.id})" title="요약">
+                            <i class="fas fa-compress-alt"></i>
                         </button>
                     ` : ''}
                     <button class="action-btn-small btn-edit" onclick="openEditModal(${JSON.stringify(memo).replace(/"/g, '&quot;')})">
@@ -749,63 +784,271 @@
         }
     }
 
-    // AI 텍스트 정리 함수 (실제로는 서버 API 호출)
-    async function organizeText(content, category) {
-        // 실제로는 Claude API나 다른 AI 서비스를 호출
-        // 여기서는 시뮬레이션으로 구현
+    // 실제 AI API를 사용한 텍스트 마이닝 및 정리
+    async function organizeText(content, category, task = 'organize') {
+        try {
+            const response = await fetch('/.netlify/functions/ai-text-processor', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    text: content,
+                    category: category,
+                    task: task
+                })
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const result = await response.json();
+            
+            if (result.success) {
+                return result.processedText;
+            } else if (result.fallback) {
+                // AI 서비스 오류 시 폴백 사용
+                showMessage('AI 서비스를 사용할 수 없어 기본 내용으로 표시합니다.', 'warning');
+                return result.fallback;
+            } else {
+                throw new Error(result.error || '알 수 없는 오류입니다.');
+            }
+        } catch (error) {
+            console.error('AI 정리 오류:', error);
+            // 네트워크 오류 또는 API 오류 시 로컬 폴백 사용
+            return getLocalFallback(content, category, task);
+        }
+    }
+    
+    // 로컬 폴백 함수 (네트워크 오류 시)
+    function getLocalFallback(content, category, task) {
+        let organized = `<div style="background: #fef3c7; padding: 12px; border-radius: 8px; margin-bottom: 16px; border-left: 4px solid #f59e0b;">
+            <strong>⚠️ 오프라인 모드</strong><br>
+            AI 서비스에 연결할 수 없어 기본 정리로 표시합니다.
+        </div>`;
         
-        return new Promise((resolve) => {
-            setTimeout(() => {
-                let organized = '';
+        switch(task) {
+            case 'extract_keywords':
+                organized += `<strong>🏷️ 키워드 추출 (기본)</strong><br><br>`;
+                const words = content.split(' ').filter(word => word.length > 2);
+                const keywords = [...new Set(words)].slice(0, 10);
+                organized += keywords.map(keyword => `• ${keyword}`).join('<br>');
+                break;
                 
-                switch(category) {
-                    case '요구사항':
-                        organized = `<strong>📋 요구사항 정리</strong><br><br>
-                        <strong>• 주요 요구사항:</strong><br>
-                        ${content.split('.').slice(0, 3).join('.<br>')}<br><br>
-                        <strong>• 우선순위:</strong><br>
-                        - 높음: 필수 기능<br>
-                        - 중간: 추가 기능<br>
-                        - 낮음: 개선 사항<br><br>
-                        <strong>• 예상 일정:</strong> 검토 필요`;
-                        break;
-                        
-                    case '업체':
-                        organized = `<strong>🏢 업체 정보 정리</strong><br><br>
-                        <strong>• 업체명:</strong> [업체명 추출 필요]<br>
-                        <strong>• 연락처:</strong> [연락처 정리 필요]<br>
-                        <strong>• 제공 서비스:</strong><br>
-                        ${content.substring(0, 200)}...<br><br>
-                        <strong>• 특이사항:</strong><br>
-                        - 계약 조건 검토 필요<br>
-                        - 견적 비교 필요`;
-                        break;
-                        
-                    case '계약':
-                        organized = `<strong>📄 계약 사항 정리</strong><br><br>
-                        <strong>• 계약 내용:</strong><br>
-                        ${content.substring(0, 300)}...<br><br>
-                        <strong>• 주요 조건:</strong><br>
-                        - 금액: 확인 필요<br>
-                        - 기간: 협의 필요<br>
-                        - 조건: 검토 필요<br><br>
-                        <strong>• 다음 단계:</strong> 법무 검토 및 결재`;
-                        break;
-                        
-                    default:
-                        organized = `<strong>💡 아이디어 정리</strong><br><br>
-                        <strong>• 핵심 아이디어:</strong><br>
-                        ${content.split('.').slice(0, 2).join('.<br>')}<br><br>
-                        <strong>• 실행 방안:</strong><br>
-                        - 단계적 접근<br>
-                        - 예산 검토<br>
-                        - 일정 수립<br><br>
-                        <strong>• 기대 효과:</strong> 추가 분석 필요`;
-                }
+            case 'summarize':
+                organized += `<strong>📝 요약 (기본)</strong><br><br>`;
+                const sentences = content.split('.').filter(s => s.trim().length > 0);
+                organized += sentences.slice(0, 3).map(s => `• ${s.trim()}`).join('<br>');
+                break;
                 
-                resolve(organized);
-            }, 2000); // 2초 시뮬레이션
-        });
+            default:
+                organized += getBasicOrganization(content, category);
+        }
+        
+        return organized;
+    }
+    
+    // 기본 정리 함수
+    function getBasicOrganization(content, category) {
+        let organized = '';
+        
+        switch(category) {
+            case '요구사항':
+                organized = `<strong>📋 요구사항 기본 정리</strong><br><br>
+                <strong>• 내용:</strong><br>
+                ${content.substring(0, 300)}${content.length > 300 ? '...' : ''}<br><br>
+                <strong>• 확인 필요:</strong> 세부 사항 검토<br>
+                <strong>• 다음 단계:</strong> 요구사항 분석 및 우선순위 설정`;
+                break;
+                
+            case '업체':
+                organized = `<strong>🏢 업체 기본 정리</strong><br><br>
+                <strong>• 기록 내용:</strong><br>
+                ${content.substring(0, 300)}${content.length > 300 ? '...' : ''}<br><br>
+                <strong>• 수집 필요 정보:</strong> 업체명, 연락처, 서비스 내용<br>
+                <strong>• 다음 단계:</strong> 업체 비교 분석 및 견적 요청`;
+                break;
+                
+            default:
+                organized = `<strong>💡 기본 정리</strong><br><br>
+                <strong>• 내용:</strong><br>
+                ${content.substring(0, 400)}${content.length > 400 ? '...' : ''}<br><br>
+                <strong>• 카테고리:</strong> ${category}<br>
+                <strong>• 작성일:</strong> ${new Date().toLocaleDateString()}`;
+        }
+        
+        return organized;
+    }
+    
+    // 고급 AI 기능들
+    
+    // 키워드 추출
+    async function extractKeywords() {
+        const content = document.getElementById('memoContent').value;
+        const category = document.getElementById('memoCategory').value;
+        
+        if (!content.trim()) {
+            showMessage('분석할 내용을 입력해주세요.', 'error');
+            return;
+        }
+
+        const button = document.getElementById('keywordsBtn');
+        const originalText = button.innerHTML;
+        button.innerHTML = '<div class="loading"><div class="spinner"></div>키워드 추출중...</div>';
+        button.disabled = true;
+
+        try {
+            const result = await organizeText(content, category, 'extract_keywords');
+            document.getElementById('aiResult').innerHTML = `
+                <div class="ai-result">
+                    <div class="ai-result-header">
+                        <i class="fas fa-tags"></i>
+                        키워드 분석 결과
+                    </div>
+                    <div class="ai-result-content">${result}</div>
+                </div>
+            `;
+        } catch (error) {
+            console.error('키워드 추출 실패:', error);
+            showMessage('키워드 추출에 실패했습니다.', 'error');
+        } finally {
+            button.innerHTML = originalText;
+            button.disabled = false;
+        }
+    }
+    
+    // 메모 요약
+    async function summarizeMemo() {
+        const content = document.getElementById('memoContent').value;
+        const category = document.getElementById('memoCategory').value;
+        
+        if (!content.trim()) {
+            showMessage('요약할 내용을 입력해주세요.', 'error');
+            return;
+        }
+
+        const button = document.getElementById('summaryBtn');
+        const originalText = button.innerHTML;
+        button.innerHTML = '<div class="loading"><div class="spinner"></div>요약중...</div>';
+        button.disabled = true;
+
+        try {
+            const result = await organizeText(content, category, 'summarize');
+            document.getElementById('aiResult').innerHTML = `
+                <div class="ai-result">
+                    <div class="ai-result-header">
+                        <i class="fas fa-compress-alt"></i>
+                        요약 결과
+                    </div>
+                    <div class="ai-result-content">${result}</div>
+                </div>
+            `;
+        } catch (error) {
+            console.error('요약 실패:', error);
+            showMessage('요약에 실패했습니다.', 'error');
+        } finally {
+            button.innerHTML = originalText;
+            button.disabled = false;
+        }
+    }
+    
+    // 할일 추출
+    async function extractActionItems() {
+        const content = document.getElementById('memoContent').value;
+        const category = document.getElementById('memoCategory').value;
+        
+        if (!content.trim()) {
+            showMessage('분석할 내용을 입력해주세요.', 'error');
+            return;
+        }
+
+        const button = document.getElementById('actionBtn');
+        const originalText = button.innerHTML;
+        button.innerHTML = '<div class="loading"><div class="spinner"></div>할일 추출중...</div>';
+        button.disabled = true;
+
+        try {
+            const result = await organizeText(content, category, 'action_items');
+            document.getElementById('aiResult').innerHTML = `
+                <div class="ai-result">
+                    <div class="ai-result-header">
+                        <i class="fas fa-tasks"></i>
+                        액션 아이템 추출 결과
+                    </div>
+                    <div class="ai-result-content">${result}</div>
+                </div>
+            `;
+        } catch (error) {
+            console.error('할일 추출 실패:', error);
+            showMessage('할일 추출에 실패했습니다.', 'error');
+        } finally {
+            button.innerHTML = originalText;
+            button.disabled = false;
+        }
+    }
+    
+    // 감성 분석
+    async function analyzeSentiment() {
+        const content = document.getElementById('memoContent').value;
+        const category = document.getElementById('memoCategory').value;
+        
+        if (!content.trim()) {
+            showMessage('분석할 내용을 입력해주세요.', 'error');
+            return;
+        }
+
+        try {
+            const result = await organizeText(content, category, 'sentiment_analysis');
+            document.getElementById('aiResult').innerHTML = `
+                <div class="ai-result">
+                    <div class="ai-result-header">
+                        <i class="fas fa-heart"></i>
+                        감성 분석 결과
+                    </div>
+                    <div class="ai-result-content">${result}</div>
+                </div>
+            `;
+        } catch (error) {
+            console.error('감성 분석 실패:', error);
+            showMessage('감성 분석에 실패했습니다.', 'error');
+        }
+    }
+    
+    // 개별 메모 AI 분석 함수들
+    
+    // 개별 메모 키워드 분석
+    async function analyzeKeywords(id) {
+        const memo = allMemos.find(m => m.id === id);
+        if (!memo) return;
+
+        try {
+            const result = await organizeText(memo.content, memo.category, 'extract_keywords');
+            memo.keywords = result;
+            saveMemos();
+            filterMemos();
+            showMessage('키워드 분석이 완료되었습니다!', 'success');
+        } catch (error) {
+            console.error('키워드 분석 실패:', error);
+            showMessage('키워드 분석에 실패했습니다.', 'error');
+        }
+    }
+    
+    // 개별 메모 요약
+    async function summarizeSingleMemo(id) {
+        const memo = allMemos.find(m => m.id === id);
+        if (!memo) return;
+
+        try {
+            const result = await organizeText(memo.content, memo.category, 'summarize');
+            memo.summary = result;
+            saveMemos();
+            filterMemos();
+            showMessage('메모 요약이 완료되었습니다!', 'success');
+        } catch (error) {
+            console.error('요약 실패:', error);
+            showMessage('요약에 실패했습니다.', 'error');
+        }
     }
 
     // 전체 메모 AI 정리

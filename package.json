@@ -1,15 +1,18 @@
 {
   "name": "bear-center-neon",
   "version": "1.0.0",
-  "description": "사육곰 센터 관리 시스템 - Neon + Netlify Functions",
-  "main": "index.html",
+  "description": "사육곰 센터 관리 시스템",
+  "main": "index.js",
   "scripts": {
     "dev": "netlify dev",
-    "build": "echo 'No build required'",
+    "build": "echo 'No build step required'",
     "deploy": "netlify deploy --prod"
   },
+  "keywords": ["bear-center", "management", "ai", "text-mining"],
+  "author": "Bear Center Team",
+  "license": "MIT",
   "dependencies": {
-    "@neondatabase/serverless": "^0.10.1"
+    "@anthropic-ai/sdk": "^0.24.3"
   },
   "devDependencies": {
     "netlify-cli": "^17.0.0"
