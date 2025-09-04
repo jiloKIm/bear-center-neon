@@ -467,6 +467,83 @@
             font-size: 14px;
             line-height: 1.5;
         }
+        
+        /* 예산 분석 카드 */
+        .budget-breakdown {
+            background: white;
+            border-radius: 20px;
+            padding: 24px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.05);
+        }
+        
+        .budget-title {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: #111827;
+        }
+        
+        .budget-categories {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+        }
+        
+        .budget-category {
+            padding: 16px;
+            border-radius: 12px;
+            background: #f8fafc;
+            border-left: 4px solid #3b82f6;
+        }
+        
+        .budget-category.over-budget {
+            background: #fef2f2;
+            border-left-color: #ef4444;
+        }
+        
+        .category-name {
+            font-size: 14px;
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 8px;
+        }
+        
+        .budget-amounts {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        
+        .budget-amount {
+            display: flex;
+            justify-content: space-between;
+            font-size: 13px;
+        }
+        
+        .amount-label {
+            color: #6b7280;
+        }
+        
+        .amount-value {
+            font-weight: 600;
+        }
+        
+        .amount-allocated {
+            color: #3b82f6;
+        }
+        
+        .amount-used {
+            color: #059669;
+        }
+        
+        .amount-remaining {
+            color: #7c3aed;
+        }
+        
+        .amount-over {
+            color: #ef4444;
+        }
     </style>
 </head>
 <body>
@@ -498,12 +575,24 @@
                     </div>
                     <div class="stat-item">
                         <div class="stat-number" id="totalAmount">0원</div>
-                        <div class="stat-label">총 금액</div>
+                        <div class="stat-label">총 지출</div>
                     </div>
                     <div class="stat-item">
-                        <div class="stat-number" id="progressCount">0</div>
-                        <div class="stat-label">진행중</div>
+                        <div class="stat-number" id="totalBudget">0원</div>
+                        <div class="stat-label">할당 예산</div>
                     </div>
+                    <div class="stat-item">
+                        <div class="stat-number" id="remainingBudget">0원</div>
+                        <div class="stat-label">남은 예산</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 카테고리별 예산 현황 카드 -->
+            <div class="budget-breakdown">
+                <div class="budget-title">카테고리별 예산 현황</div>
+                <div id="budgetCategories" class="budget-categories">
+                    <!-- 동적으로 채워질 예정 -->
                 </div>
             </div>
 
@@ -671,6 +760,15 @@
         let filteredItems = [];
         let currentEditingItem = null;
         let detailItems = [];
+        
+        // 예산 할당 데이터
+        const budgetAllocation = {
+            '인건비': 69000000,
+            '재료비': 10869881,
+            '경비': 139000000,
+            '사무실조성': 113000000,
+            '진료실조성': 490000000
+        };
 
         // API 베이스 URL
         const API_URL = '/.netlify/functions/inventory-api/inventory-api';
@@ -742,11 +840,64 @@
         function updateSummary() {
             const totalCount = filteredItems.length;
             const totalAmount = filteredItems.reduce((sum, item) => sum + (item.amount || 0), 0);
-            const progressCount = filteredItems.filter(item => item.status === '진행중').length;
+            const totalBudget = Object.values(budgetAllocation).reduce((sum, budget) => sum + budget, 0);
+            const remainingBudget = totalBudget - totalAmount;
             
             document.getElementById('totalCount').textContent = totalCount;
             document.getElementById('totalAmount').textContent = totalAmount.toLocaleString() + '원';
-            document.getElementById('progressCount').textContent = progressCount;
+            document.getElementById('totalBudget').textContent = totalBudget.toLocaleString() + '원';
+            document.getElementById('remainingBudget').textContent = remainingBudget.toLocaleString() + '원';
+            
+            // 카테고리별 예산 현황 업데이트
+            updateBudgetBreakdown();
+        }
+        
+        // 카테고리별 예산 업데이트
+        function updateBudgetBreakdown() {
+            const budgetContainer = document.getElementById('budgetCategories');
+            const categoryTotals = {};
+            
+            // 카테고리별 사용 금액 계산
+            Object.keys(budgetAllocation).forEach(category => {
+                categoryTotals[category] = 0;
+            });
+            
+            allItems.forEach(item => {
+                const category = item.installation_location;
+                if (category && budgetAllocation[category]) {
+                    categoryTotals[category] += item.amount || 0;
+                }
+            });
+            
+            // 카테고리 카드 생성
+            budgetContainer.innerHTML = Object.keys(budgetAllocation).map(category => {
+                const allocated = budgetAllocation[category];
+                const used = categoryTotals[category];
+                const remaining = allocated - used;
+                const isOverBudget = remaining < 0;
+                
+                return `
+                    <div class="budget-category ${isOverBudget ? 'over-budget' : ''}">
+                        <div class="category-name">${category}</div>
+                        <div class="budget-amounts">
+                            <div class="budget-amount">
+                                <span class="amount-label">할당:</span>
+                                <span class="amount-value amount-allocated">${allocated.toLocaleString()}원</span>
+                            </div>
+                            <div class="budget-amount">
+                                <span class="amount-label">사용:</span>
+                                <span class="amount-value amount-used">${used.toLocaleString()}원</span>
+                            </div>
+                            <div class="budget-amount">
+                                <span class="amount-label">${isOverBudget ? '초과:' : '남은:'}</span>
+                                <span class="amount-value ${isOverBudget ? 'amount-over' : 'amount-remaining'}">
+                                    ${Math.abs(remaining).toLocaleString()}원
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
         }
 
         // 필터링
