@@ -1,0 +1,885 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🐾 사육곰 센터 메모 관리</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+        }
+
+        /* 메모 카드 스타일 */
+        .memo-card {
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 16px;
+            border-left: 4px solid #3b82f6;
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+
+        .memo-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+        }
+
+        .memo-card.category-요구사항 {
+            border-left-color: #f59e0b;
+        }
+
+        .memo-card.category-업체 {
+            border-left-color: #10b981;
+        }
+
+        .memo-card.category-계약 {
+            border-left-color: #8b5cf6;
+        }
+
+        .memo-card.category-아이디어 {
+            border-left-color: #ef4444;
+        }
+
+        .memo-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 12px;
+        }
+
+        .memo-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #111827;
+            flex: 1;
+            margin-right: 16px;
+        }
+
+        .memo-meta {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .category-badge {
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .category-badge.category-요구사항 {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .category-badge.category-업체 {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .category-badge.category-계약 {
+            background: #ede9fe;
+            color: #7c3aed;
+        }
+
+        .category-badge.category-아이디어 {
+            background: #fee2e2;
+            color: #dc2626;
+        }
+
+        .memo-date {
+            color: #6b7280;
+            font-size: 12px;
+        }
+
+        .memo-content {
+            color: #374151;
+            line-height: 1.6;
+            margin-bottom: 12px;
+        }
+
+        .memo-content.organized {
+            background: #f0f9ff;
+            padding: 16px;
+            border-radius: 8px;
+            border-left: 3px solid #0ea5e9;
+        }
+
+        .memo-actions {
+            display: flex;
+            gap: 8px;
+            justify-content: flex-end;
+        }
+
+        .action-btn-small {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-organize {
+            background: #dbeafe;
+            color: #1d4ed8;
+        }
+
+        .btn-organize:hover {
+            background: #bfdbfe;
+        }
+
+        .btn-organize:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .btn-edit {
+            background: #f3f4f6;
+            color: #4b5563;
+        }
+
+        .btn-delete {
+            background: #fef2f2;
+            color: #dc2626;
+        }
+
+        /* 액션 버튼들 */
+        .action-buttons {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        .action-btn {
+            flex: 1;
+            padding: 16px;
+            border: none;
+            border-radius: 16px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: #3b82f6;
+            color: white;
+        }
+
+        .btn-secondary {
+            background: #f3f4f6;
+            color: #4b5563;
+        }
+
+        .action-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        /* 필터 섹션 */
+        .filter-section {
+            margin-bottom: 20px;
+        }
+
+        .filter-row {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+
+        .filter-select, .search-input {
+            flex: 1;
+            padding: 12px 16px;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            font-size: 14px;
+            background: white;
+        }
+
+        /* 모달 스타일 */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+        }
+
+        .modal-content {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            border-radius: 20px 20px 0 0;
+            max-height: 90vh;
+            overflow-y: auto;
+            animation: slideUp 0.3s ease;
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(100%); }
+            to { transform: translateY(0); }
+        }
+
+        .modal-header {
+            padding: 20px 20px 16px;
+            border-bottom: 1px solid #f0f0f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-title {
+            font-size: 20px;
+            font-weight: 700;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 24px;
+            color: #9ca3af;
+            cursor: pointer;
+        }
+
+        .modal-body {
+            padding: 20px;
+        }
+
+        /* 폼 스타일 */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 16px;
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 8px;
+        }
+
+        .form-input, .form-select, .form-textarea {
+            width: 100%;
+            padding: 16px;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            font-size: 16px;
+            background: #fafafa;
+            transition: all 0.2s ease;
+        }
+
+        .form-input:focus, .form-select:focus, .form-textarea:focus {
+            outline: none;
+            border-color: #3b82f6;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .form-textarea {
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 12px;
+            padding: 20px;
+            background: #f9fafb;
+            margin: 0 -20px -20px;
+        }
+
+        .btn-full {
+            flex: 1;
+            padding: 16px;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        /* AI 정리 결과 */
+        .ai-result {
+            background: #f0f9ff;
+            border: 2px solid #0ea5e9;
+            border-radius: 12px;
+            padding: 16px;
+            margin-top: 16px;
+        }
+
+        .ai-result-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 12px;
+            font-weight: 600;
+            color: #0369a1;
+        }
+
+        .ai-result-content {
+            line-height: 1.6;
+            color: #374151;
+        }
+
+        /* 빈 상태 */
+        .empty-state {
+            text-align: center;
+            padding: 60px 40px;
+            color: #6b7280;
+        }
+
+        .empty-icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+            opacity: 0.5;
+        }
+
+        .empty-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .empty-description {
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        /* 로딩 상태 */
+        .loading {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .spinner {
+            width: 16px;
+            height: 16px;
+            border: 2px solid #e5e7eb;
+            border-top: 2px solid #3b82f6;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* 반응형 - 데스크톱 */
+        @media (min-width: 768px) {
+            .modal-content {
+                position: relative;
+                max-width: 600px;
+                margin: 5vh auto;
+                border-radius: 20px;
+                animation: none;
+            }
+
+            .memos-list {
+                display: grid;
+                grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+                gap: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+<nav class="main-nav">
+  <div class="nav-brand">
+    <h1>🐾 사육곰 센터 관리 시스템</h1>
+  </div>
+  <div class="nav-menu">
+    <a href="index.html" class="nav-item">📅 일정 관리</a>
+    <a href="inventory.html" class="nav-item">💼 사업 관리</a>
+    <a href="facilities.html" class="nav-item">🏗️ 센터시설</a>
+    <a href="procurement.html" class="nav-item">💰 지출 계약 조달 구매</a>
+    <a href="memos.html" class="nav-item active">📝 메모 관리</a>
+  </div>
+</nav>
+
+<div class="page-header">
+  <h2>📝 메모 관리</h2>
+  <div class="subtitle">요구사항, 업체 정보, 아이디어 등을 기록하고 AI가 정리해드립니다</div>
+</div>
+
+<div class="main-content">
+    <!-- 액션 버튼들 -->
+    <div class="action-buttons">
+        <button class="action-btn btn-primary" onclick="openModal()">
+            <i class="fas fa-plus"></i>
+            새 메모 작성
+        </button>
+        <button class="action-btn btn-secondary" onclick="organizeAllMemos()">
+            <i class="fas fa-robot"></i>
+            전체 메모 AI 정리
+        </button>
+    </div>
+
+    <!-- 필터 섹션 -->
+    <div class="filter-section">
+        <div class="filter-row">
+            <select class="filter-select" id="filterCategory" onchange="filterMemos()">
+                <option value="">전체 카테고리</option>
+                <option value="요구사항">요구사항</option>
+                <option value="업체">업체</option>
+                <option value="계약">계약</option>
+                <option value="아이디어">아이디어</option>
+            </select>
+            <input type="text" class="search-input" id="searchInput" placeholder="메모 검색..." onkeyup="filterMemos()">
+        </div>
+    </div>
+
+    <!-- 메모 리스트 -->
+    <div class="memos-list" id="memosList">
+        <div class="empty-state">
+            <div class="empty-icon">📝</div>
+            <div class="empty-title">아직 메모가 없습니다</div>
+            <div class="empty-description">위의 "새 메모 작성" 버튼을 눌러 첫 번째 메모를 작성해보세요.</div>
+        </div>
+    </div>
+</div>
+
+<!-- 메모 작성/수정 모달 -->
+<div id="memoModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 class="modal-title">새 메모 작성</h3>
+            <button type="button" class="close-btn" onclick="closeModal()">&times;</button>
+        </div>
+        <form id="memoForm" onsubmit="saveMemo(event)">
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label" for="memoCategory">카테고리</label>
+                    <select id="memoCategory" class="form-select" required>
+                        <option value="">선택하세요</option>
+                        <option value="요구사항">요구사항</option>
+                        <option value="업체">업체</option>
+                        <option value="계약">계약</option>
+                        <option value="아이디어">아이디어</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="memoTitle">제목</label>
+                    <input type="text" id="memoTitle" class="form-input" placeholder="메모 제목을 입력하세요" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="memoContent">내용</label>
+                    <textarea id="memoContent" class="form-textarea" placeholder="자유롭게 메모를 작성하세요. AI가 나중에 정리해드립니다." required></textarea>
+                </div>
+
+                <div id="organizeSection" style="display: none;">
+                    <button type="button" class="action-btn btn-secondary" onclick="organizeMemo()" id="organizeBtn">
+                        <i class="fas fa-robot"></i>
+                        AI로 정리하기
+                    </button>
+                    <div id="aiResult"></div>
+                </div>
+            </div>
+            <div class="form-actions">
+                <button type="button" class="btn-full btn-secondary" onclick="closeModal()">취소</button>
+                <button type="submit" class="btn-full btn-primary">저장</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    // 전역 변수들
+    let allMemos = [];
+    let filteredMemos = [];
+    let currentEditingMemo = null;
+
+    // 초기화
+    document.addEventListener('DOMContentLoaded', function() {
+        loadMemos();
+    });
+
+    // 메모 로드
+    function loadMemos() {
+        try {
+            const savedMemos = localStorage.getItem('bearCenterMemos');
+            allMemos = savedMemos ? JSON.parse(savedMemos) : [];
+            filteredMemos = [...allMemos];
+            displayMemos();
+        } catch (error) {
+            console.error('Failed to load memos:', error);
+            allMemos = [];
+            filteredMemos = [];
+            displayMemos();
+        }
+    }
+
+    // 메모 저장
+    function saveMemos() {
+        try {
+            localStorage.setItem('bearCenterMemos', JSON.stringify(allMemos));
+        } catch (error) {
+            console.error('Failed to save memos:', error);
+            showMessage('메모 저장에 실패했습니다.', 'error');
+        }
+    }
+
+    // 메모 표시
+    function displayMemos() {
+        const memosList = document.getElementById('memosList');
+        
+        if (filteredMemos.length === 0) {
+            memosList.innerHTML = `
+                <div class="empty-state">
+                    <div class="empty-icon">📝</div>
+                    <div class="empty-title">메모가 없습니다</div>
+                    <div class="empty-description">새 메모를 작성하거나 검색 조건을 변경해보세요.</div>
+                </div>
+            `;
+            return;
+        }
+
+        memosList.innerHTML = filteredMemos.map(memo => `
+            <div class="memo-card category-${memo.category}">
+                <div class="memo-header">
+                    <div class="memo-title">${memo.title}</div>
+                </div>
+                <div class="memo-meta">
+                    <span class="category-badge category-${memo.category}">${memo.category}</span>
+                    <span class="memo-date">${new Date(memo.created_at).toLocaleDateString()}</span>
+                </div>
+                <div class="memo-content ${memo.organized_content ? 'organized' : ''}" onclick="event.stopPropagation()">
+                    ${memo.organized_content || memo.content}
+                </div>
+                <div class="memo-actions" onclick="event.stopPropagation()">
+                    ${!memo.organized_content ? `
+                        <button class="action-btn-small btn-organize" onclick="organizeSingleMemo(${memo.id})" id="organizeBtn${memo.id}">
+                            <i class="fas fa-robot"></i> AI 정리
+                        </button>
+                    ` : ''}
+                    <button class="action-btn-small btn-edit" onclick="openEditModal(${JSON.stringify(memo).replace(/"/g, '&quot;')})">
+                        <i class="fas fa-edit"></i> 수정
+                    </button>
+                    <button class="action-btn-small btn-delete" onclick="deleteMemo(${memo.id})">
+                        <i class="fas fa-trash"></i> 삭제
+                    </button>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    // 필터링
+    function filterMemos() {
+        const categoryFilter = document.getElementById('filterCategory').value;
+        const searchQuery = document.getElementById('searchInput').value.toLowerCase();
+
+        filteredMemos = allMemos.filter(memo => {
+            const categoryMatch = !categoryFilter || memo.category === categoryFilter;
+            const searchMatch = !searchQuery || 
+                memo.title.toLowerCase().includes(searchQuery) ||
+                memo.content.toLowerCase().includes(searchQuery) ||
+                (memo.organized_content && memo.organized_content.toLowerCase().includes(searchQuery));
+            
+            return categoryMatch && searchMatch;
+        });
+
+        displayMemos();
+    }
+
+    // 모달 열기/닫기
+    function openModal() {
+        document.getElementById('memoForm').reset();
+        document.getElementById('memoModal').style.display = 'block';
+        document.querySelector('.modal-title').textContent = '새 메모 작성';
+        document.getElementById('organizeSection').style.display = 'none';
+        document.getElementById('aiResult').innerHTML = '';
+        currentEditingMemo = null;
+    }
+
+    function openEditModal(memo) {
+        currentEditingMemo = memo;
+        document.getElementById('memoCategory').value = memo.category;
+        document.getElementById('memoTitle').value = memo.title;
+        document.getElementById('memoContent').value = memo.content;
+        
+        document.querySelector('.modal-title').textContent = '메모 수정';
+        document.getElementById('organizeSection').style.display = 'block';
+        document.getElementById('memoModal').style.display = 'block';
+        
+        if (memo.organized_content) {
+            document.getElementById('aiResult').innerHTML = `
+                <div class="ai-result">
+                    <div class="ai-result-header">
+                        <i class="fas fa-robot"></i>
+                        AI 정리 결과
+                    </div>
+                    <div class="ai-result-content">${memo.organized_content}</div>
+                </div>
+            `;
+        }
+    }
+
+    function closeModal() {
+        document.getElementById('memoModal').style.display = 'none';
+        currentEditingMemo = null;
+    }
+
+    // 메모 저장
+    function saveMemo(e) {
+        e.preventDefault();
+        
+        const memoData = {
+            category: document.getElementById('memoCategory').value,
+            title: document.getElementById('memoTitle').value,
+            content: document.getElementById('memoContent').value,
+            created_at: currentEditingMemo ? currentEditingMemo.created_at : new Date().toISOString(),
+            updated_at: new Date().toISOString()
+        };
+
+        if (currentEditingMemo) {
+            memoData.id = currentEditingMemo.id;
+            memoData.organized_content = currentEditingMemo.organized_content;
+            const index = allMemos.findIndex(m => m.id === currentEditingMemo.id);
+            allMemos[index] = memoData;
+        } else {
+            memoData.id = Date.now();
+            allMemos.push(memoData);
+        }
+
+        saveMemos();
+        filterMemos();
+        closeModal();
+        showMessage(currentEditingMemo ? '메모가 수정되었습니다!' : '메모가 저장되었습니다!', 'success');
+    }
+
+    // 메모 삭제
+    function deleteMemo(id) {
+        if (!confirm('정말 삭제하시겠습니까?')) return;
+        
+        allMemos = allMemos.filter(memo => memo.id !== id);
+        saveMemos();
+        filterMemos();
+        showMessage('메모가 삭제되었습니다!', 'success');
+    }
+
+    // AI 정리 기능 (단일 메모)
+    async function organizeSingleMemo(id) {
+        const memo = allMemos.find(m => m.id === id);
+        if (!memo) return;
+
+        const button = document.getElementById(`organizeBtn${id}`);
+        const originalText = button.innerHTML;
+        button.innerHTML = '<div class="loading"><div class="spinner"></div>정리중...</div>';
+        button.disabled = true;
+
+        try {
+            const organizedContent = await organizeText(memo.content, memo.category);
+            memo.organized_content = organizedContent;
+            saveMemos();
+            filterMemos();
+            showMessage('메모가 AI로 정리되었습니다!', 'success');
+        } catch (error) {
+            console.error('AI 정리 실패:', error);
+            showMessage('AI 정리에 실패했습니다. 다시 시도해주세요.', 'error');
+        } finally {
+            button.innerHTML = originalText;
+            button.disabled = false;
+        }
+    }
+
+    // 모달 내에서 AI 정리
+    async function organizeMemo() {
+        const content = document.getElementById('memoContent').value;
+        const category = document.getElementById('memoCategory').value;
+        
+        if (!content.trim()) {
+            showMessage('정리할 내용을 입력해주세요.', 'error');
+            return;
+        }
+
+        const button = document.getElementById('organizeBtn');
+        const originalText = button.innerHTML;
+        button.innerHTML = '<div class="loading"><div class="spinner"></div>AI가 정리중...</div>';
+        button.disabled = true;
+
+        try {
+            const organizedContent = await organizeText(content, category);
+            document.getElementById('aiResult').innerHTML = `
+                <div class="ai-result">
+                    <div class="ai-result-header">
+                        <i class="fas fa-robot"></i>
+                        AI 정리 결과
+                    </div>
+                    <div class="ai-result-content">${organizedContent}</div>
+                </div>
+            `;
+        } catch (error) {
+            console.error('AI 정리 실패:', error);
+            showMessage('AI 정리에 실패했습니다. 다시 시도해주세요.', 'error');
+        } finally {
+            button.innerHTML = originalText;
+            button.disabled = false;
+        }
+    }
+
+    // AI 텍스트 정리 함수 (실제로는 서버 API 호출)
+    async function organizeText(content, category) {
+        // 실제로는 Claude API나 다른 AI 서비스를 호출
+        // 여기서는 시뮬레이션으로 구현
+        
+        return new Promise((resolve) => {
+            setTimeout(() => {
+                let organized = '';
+                
+                switch(category) {
+                    case '요구사항':
+                        organized = `<strong>📋 요구사항 정리</strong><br><br>
+                        <strong>• 주요 요구사항:</strong><br>
+                        ${content.split('.').slice(0, 3).join('.<br>')}<br><br>
+                        <strong>• 우선순위:</strong><br>
+                        - 높음: 필수 기능<br>
+                        - 중간: 추가 기능<br>
+                        - 낮음: 개선 사항<br><br>
+                        <strong>• 예상 일정:</strong> 검토 필요`;
+                        break;
+                        
+                    case '업체':
+                        organized = `<strong>🏢 업체 정보 정리</strong><br><br>
+                        <strong>• 업체명:</strong> [업체명 추출 필요]<br>
+                        <strong>• 연락처:</strong> [연락처 정리 필요]<br>
+                        <strong>• 제공 서비스:</strong><br>
+                        ${content.substring(0, 200)}...<br><br>
+                        <strong>• 특이사항:</strong><br>
+                        - 계약 조건 검토 필요<br>
+                        - 견적 비교 필요`;
+                        break;
+                        
+                    case '계약':
+                        organized = `<strong>📄 계약 사항 정리</strong><br><br>
+                        <strong>• 계약 내용:</strong><br>
+                        ${content.substring(0, 300)}...<br><br>
+                        <strong>• 주요 조건:</strong><br>
+                        - 금액: 확인 필요<br>
+                        - 기간: 협의 필요<br>
+                        - 조건: 검토 필요<br><br>
+                        <strong>• 다음 단계:</strong> 법무 검토 및 결재`;
+                        break;
+                        
+                    default:
+                        organized = `<strong>💡 아이디어 정리</strong><br><br>
+                        <strong>• 핵심 아이디어:</strong><br>
+                        ${content.split('.').slice(0, 2).join('.<br>')}<br><br>
+                        <strong>• 실행 방안:</strong><br>
+                        - 단계적 접근<br>
+                        - 예산 검토<br>
+                        - 일정 수립<br><br>
+                        <strong>• 기대 효과:</strong> 추가 분석 필요`;
+                }
+                
+                resolve(organized);
+            }, 2000); // 2초 시뮬레이션
+        });
+    }
+
+    // 전체 메모 AI 정리
+    async function organizeAllMemos() {
+        const unorganizedMemos = allMemos.filter(memo => !memo.organized_content);
+        
+        if (unorganizedMemos.length === 0) {
+            showMessage('정리할 메모가 없습니다.', 'info');
+            return;
+        }
+
+        if (!confirm(`${unorganizedMemos.length}개의 메모를 AI로 정리하시겠습니까?`)) return;
+
+        showMessage('모든 메모를 AI로 정리하고 있습니다...', 'info');
+
+        for (const memo of unorganizedMemos) {
+            try {
+                memo.organized_content = await organizeText(memo.content, memo.category);
+                await new Promise(resolve => setTimeout(resolve, 1000)); // 1초 대기
+            } catch (error) {
+                console.error(`메모 ${memo.id} 정리 실패:`, error);
+            }
+        }
+
+        saveMemos();
+        filterMemos();
+        showMessage('모든 메모가 AI로 정리되었습니다!', 'success');
+    }
+
+    // 메시지 표시
+    function showMessage(message, type) {
+        // 기존 메시지 제거
+        const existingMessage = document.querySelector('.toast-message');
+        if (existingMessage) {
+            existingMessage.remove();
+        }
+
+        const messageDiv = document.createElement('div');
+        messageDiv.className = 'toast-message';
+        messageDiv.textContent = message;
+        messageDiv.style.cssText = `
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 16px 24px;
+            border-radius: 12px;
+            font-weight: 600;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+            z-index: 9999;
+            animation: slideDown 0.3s ease;
+            max-width: 90vw;
+            text-align: center;
+            ${type === 'success' ? 'background: #10b981; color: white;' : 
+              type === 'error' ? 'background: #ef4444; color: white;' : 
+              'background: #3b82f6; color: white;'}
+        `;
+        
+        document.body.appendChild(messageDiv);
+        
+        setTimeout(() => {
+            if (messageDiv.parentNode) {
+                messageDiv.style.animation = 'slideUp 0.3s ease';
+                setTimeout(() => messageDiv.remove(), 300);
+            }
+        }, 3000);
+    }
+
+    // 모달 외부 클릭 시 닫기
+    document.addEventListener('click', function(e) {
+        if (e.target.classList.contains('modal')) {
+            e.target.style.display = 'none';
+        }
+    });
+</script>
+</body>
+</html>
