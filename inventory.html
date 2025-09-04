@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>🐻 사육곰 센터 사업 관리</title>
+    <link rel="stylesheet" href="styles.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
@@ -24,85 +25,6 @@
             min-height: 100vh;
         }
 
-        .main-nav {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            padding: 15px 30px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            box-shadow: 0 2px 20px rgba(0,0,0,0.1);
-            margin-bottom: 20px;
-        }
-
-        .nav-brand h1 {
-            margin: 0;
-            color: #333;
-            font-size: 1.8em;
-            font-weight: 700;
-        }
-
-        .nav-menu {
-            display: flex;
-            gap: 20px;
-        }
-
-        .nav-item {
-            text-decoration: none;
-            color: #555;
-            padding: 12px 20px;
-            border-radius: 25px;
-            font-weight: 600;
-            font-size: 1.1em;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .nav-item:hover {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
-        }
-
-        .nav-item.active {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            box-shadow: 0 3px 10px rgba(102, 126, 234, 0.3);
-        }
-
-        /* 페이지 헤더 */
-        .page-header {
-            text-align: center;
-            margin: 30px 20px 40px;
-            color: white;
-        }
-
-        .page-header h2 {
-            font-size: 2.5em;
-            margin: 0 0 10px;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
-        }
-
-        .page-header .subtitle {
-            font-size: 1.2em;
-            opacity: 0.9;
-            text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
-        }
-
-        /* 메인 콘텐츠 컨테이너 */
-        .main-content {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
-            background: rgba(255, 255, 255, 0.95);
-            border-radius: 20px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-            margin-top: 20px;
-            margin-bottom: 40px;
-        }
 
         /* 컨테이너는 제거 */
 
@@ -548,25 +470,25 @@
     </style>
 </head>
 <body>
-        <nav class="main-nav">
-            <div class="nav-brand">
-                <h1>🐻 사육곰 센터 관리 시스템</h1>
-            </div>
-            <div class="nav-menu">
-                <a href="index.html" class="nav-item">📅 일정 관리</a>
-                <a href="inventory.html" class="nav-item active">💼 사업 관리</a>
-                <a href="facilities.html" class="nav-item">🏗️ 센터시설</a>
-                <a href="procurement.html" class="nav-item">💰 지출 계약 조달 구매</a>
-            </div>
-        </nav>
+<nav class="main-nav">
+  <div class="nav-brand">
+    <h1>🐻 사육곰 센터 관리 시스템</h1>
+  </div>
+  <div class="nav-menu">
+    <a href="index.html" class="nav-item">📅 일정 관리</a>
+    <a href="inventory.html" class="nav-item active">💼 사업 관리</a>
+    <a href="facilities.html" class="nav-item">🏗️ 센터시설</a>
+    <a href="procurement.html" class="nav-item">💰 지출 계약 조달 구매</a>
+    <a href="habitat-analysis.html" class="nav-item">🗺️ 서식지 분석</a>
+  </div>
+</nav>
 
-        <div class="page-header">
-            <h2>💼 사업 관리</h2>
-            <div class="subtitle">사육곰 센터 사업 현황 및 자원 관리 시스템</div>
-        </div>
+<div class="page-header">
+  <h2>💼 사업 관리</h2>
+  <div class="subtitle">사육곰 센터 사업 현황 및 자원 관리 시스템</div>
+</div>
 
-        <!-- 메인 콘텐츠 -->
-        <div class="main-content">
+<div class="main-content">
             <!-- 요약 카드 -->
             <div class="summary-card">
                 <div class="summary-title">사업 현황</div>
@@ -730,9 +652,9 @@
         <!-- PDF 생성용 숨겨진 컨테이너 -->
         <div id="pdfContainer" style="position: absolute; left: -9999px; top: -9999px;">
             <!-- PDF 내용이 여기에 동적으로 채워집니다 -->
-        </div>
+</div>
 
-    <script>
+<script>
         // 전역 변수들
         let allItems = [];
         let filteredItems = [];
