@@ -122,6 +122,27 @@
             background: white;
         }
 
+        .filter-reset-btn {
+            padding: 12px 16px;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            background: white;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            color: #6b7280;
+        }
+
+        .filter-reset-btn:hover {
+            background: #f3f4f6;
+            border-color: #d1d5db;
+            color: #374151;
+        }
+
+        .filter-reset-btn:active {
+            background: #e5e7eb;
+            transform: scale(0.98);
+        }
+
         /* 아이템 리스트 */
         .items-list {
             display: flex;
@@ -807,6 +828,9 @@
                     <option value="사무실조성">사무실조성</option>
                     <option value="진료실조성">진료실조성</option>
                 </select>
+                <button class="filter-reset-btn" onclick="resetFilters()" title="필터 초기화">
+                    <i class="fas fa-undo"></i>
+                </button>
             </div>
 
             <!-- 아이템 리스트 -->
@@ -969,6 +993,9 @@
                     displayItems();
                     updateSummary();
                     updateLocationFilter();
+                    
+                    // 필터 상태 복원
+                    restoreFilterState();
                 }
             } catch (error) {
                 console.error('Failed to load items:', error);
@@ -1087,6 +1114,9 @@
             const statusFilter = document.getElementById('filterStatus').value;
             const locationFilter = document.getElementById('filterLocation').value;
 
+            // 필터 상태를 localStorage에 저장
+            saveFilterState();
+
             filteredItems = allItems.filter(item => {
                 const typeMatch = !typeFilter || item.type === typeFilter;
                 const statusMatch = !statusFilter || item.status === statusFilter;
@@ -1097,6 +1127,53 @@
 
             displayItems();
             updateSummary();
+        }
+
+        // 필터 상태 저장
+        function saveFilterState() {
+            const filterState = {
+                type: document.getElementById('filterType').value,
+                status: document.getElementById('filterStatus').value,
+                location: document.getElementById('filterLocation').value
+            };
+            localStorage.setItem('inventoryFilterState', JSON.stringify(filterState));
+        }
+
+        // 필터 상태 복원
+        function restoreFilterState() {
+            try {
+                const savedState = localStorage.getItem('inventoryFilterState');
+                if (savedState) {
+                    const filterState = JSON.parse(savedState);
+                    document.getElementById('filterType').value = filterState.type || '';
+                    document.getElementById('filterStatus').value = filterState.status || '';
+                    document.getElementById('filterLocation').value = filterState.location || '';
+                    
+                    // 복원 후 필터 적용
+                    if (allItems.length > 0) {
+                        filterItems();
+                    }
+                }
+            } catch (error) {
+                console.error('필터 상태 복원 실패:', error);
+            }
+        }
+
+        // 필터 초기화
+        function resetFilters() {
+            document.getElementById('filterType').value = '';
+            document.getElementById('filterStatus').value = '';
+            document.getElementById('filterLocation').value = '';
+            
+            // localStorage에서 필터 상태 제거
+            localStorage.removeItem('inventoryFilterState');
+            
+            // 전체 항목 표시
+            filteredItems = [...allItems];
+            displayItems();
+            updateSummary();
+            
+            showMessage('필터가 초기화되었습니다.', 'info');
         }
 
         // 위치 필터 업데이트 (예산 카테고리로 변경됨)
