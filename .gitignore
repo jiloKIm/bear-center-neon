@@ -1,2 +1,15 @@
 # Local Netlify folder
 .netlify
+
+# Dependencies
+node_modules/
+npm-debug.log*
+
+# Environment variables
+.env
+.env.local
+
+# Test and setup files
+test-*.js
+setup-*.js
+verify-*.js

@@ -3,7 +3,7 @@ const { Pool } = require('pg');
 
 // Neon 데이터베이스 연결 설정
 const pool = new Pool({
-  connectionString: process.env.NEON_DATABASE_URL,
+  connectionString: process.env.DATABASE_URL || process.env.NEON_DATABASE_URL,
   ssl: {
     rejectUnauthorized: false
   }

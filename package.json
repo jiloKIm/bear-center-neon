@@ -7,12 +7,18 @@
     "dev": "netlify dev",
     "deploy": "netlify deploy --prod"
   },
-  "keywords": ["bear-center", "management", "ai", "text-mining"],
+  "keywords": [
+    "bear-center",
+    "management",
+    "ai",
+    "text-mining"
+  ],
   "author": "Bear Center Team",
   "license": "MIT",
   "dependencies": {
-    "pg": "^8.11.3",
-    "@neondatabase/serverless": "^0.9.0"
+    "@neondatabase/serverless": "^0.9.0",
+    "dotenv": "^17.2.2",
+    "pg": "^8.11.3"
   },
   "devDependencies": {
     "netlify-cli": "^17.0.0"
