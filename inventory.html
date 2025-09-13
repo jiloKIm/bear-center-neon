@@ -839,27 +839,45 @@
                 border: 2px solid #e5e7eb;
             }
             
-            /* 세부품목 행 간격 */
+            /* 세부품목 행 간격 - 데스크톱에서는 단순하게 */
             .detail-item {
-                margin-bottom: 20px;
-                padding: 16px;
-                background: white;
-                border-radius: 12px;
-                border: 1px solid #f1f5f9;
+                margin-bottom: 16px;
+                padding: 0;
+                background: transparent;
+                border-radius: 0;
+                border: none;
             }
             
             .detail-item:last-child {
                 margin-bottom: 0;
             }
             
-            /* 데스크톱에서 detail-row 간격 */
+            /* 데스크톱에서 detail-row 간격 오버라이드 */
             .detail-row {
-                gap: 12px;
-                margin-bottom: 12px;
+                gap: 12px !important;
+                margin-bottom: 12px !important;
+                align-items: center;
             }
             
             .detail-row:last-child {
-                margin-bottom: 0;
+                margin-bottom: 0 !important;
+            }
+            
+            /* 데스크톱에서 그리드 템플릿 재정의 */
+            .detail-row:nth-child(1) {
+                grid-template-columns: 1fr 1fr !important;
+            }
+            
+            .detail-row:nth-child(2) {
+                grid-template-columns: 1fr 1fr !important;
+            }
+            
+            .detail-row:nth-child(3) {
+                grid-template-columns: 1fr !important;
+            }
+            
+            .detail-row:nth-child(4) {
+                grid-template-columns: 2fr 1fr 48px !important;
             }
             
             /* 세부품목 추가 버튼 */
@@ -878,7 +896,7 @@
             
             .detail-content {
                 max-height: 400px;
-                padding: 24px;
+                padding: 20px;
             }
             
             .detail-input {
@@ -903,14 +921,34 @@
             
             /* 그리드 레이아웃 개선 */
             .detail-row {
-                gap: 16px;
-                margin-bottom: 16px;
+                gap: 16px !important;
+                margin-bottom: 16px !important;
+            }
+            
+            /* 큰 화면에서 그리드 템플릿 재정의 */
+            .detail-row:nth-child(1) {
+                grid-template-columns: 1fr 1fr !important;
+            }
+            
+            .detail-row:nth-child(2) {
+                grid-template-columns: 1fr 1fr !important;
+            }
+            
+            .detail-row:nth-child(3) {
+                grid-template-columns: 1fr !important;
+            }
+            
+            .detail-row:nth-child(4) {
+                grid-template-columns: 2fr 1fr 52px !important;
             }
             
             .detail-item {
-                margin-bottom: 24px;
-                padding: 20px;
-                box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+                margin-bottom: 20px;
+                padding: 0;
+                background: transparent;
+                border-radius: 0;
+                border: none;
+                box-shadow: none;
             }
             
             /* 세부품목 제목 크기 증가 */
