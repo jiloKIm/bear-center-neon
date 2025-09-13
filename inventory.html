@@ -389,12 +389,24 @@
         }
 
         .detail-remove {
-            padding: 8px;
+            padding: 8px 12px;
             background: #fee2e2;
             color: #dc2626;
             border: none;
             border-radius: 8px;
             cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s ease;
+            min-width: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .detail-remove:hover {
+            background: #fecaca;
+            transform: translateY(-1px);
+            box-shadow: 0 2px 4px rgba(220, 38, 38, 0.2);
         }
 
         .add-detail-btn {
@@ -939,6 +951,9 @@
             currentEditingItem = null;
             detailItems = [];
             updateDetailsDisplay();
+            
+            // 금액 필드 초기화
+            document.getElementById('itemAmount').value = 0;
         }
 
         function openEditModal(item) {
@@ -952,12 +967,18 @@
             
             // 세부품목 로드
             detailItems = item.details ? JSON.parse(item.details) : [];
+            
+            // 세부품목의 total 값 재계산
+            detailItems.forEach(detailItem => {
+                const quantity = parseInt(detailItem.quantity) || 0;
+                const price = parseInt(detailItem.price) || 0;
+                detailItem.total = quantity * price;
+            });
+            
             updateDetailsDisplay();
             
-            // 세부품목이 있으면 총액 재계산
-            if (detailItems.length > 0) {
-                updateTotalAmount();
-            }
+            // 총액 재계산 및 적용
+            updateTotalAmount();
             
             document.querySelector('.modal-title').textContent = '건 수정';
             document.getElementById('itemModal').style.display = 'block';
@@ -1057,20 +1078,7 @@
             updateTotalAmount();
         }
 
-        function updateDetailTotal(index) {
-            const item = detailItems[index];
-            item.total = item.quantity * item.price;
-            updateDetailsJSON();
-            
-            // 해당 항목의 total 값만 업데이트
-            const totalElement = document.querySelector(`[data-total-index="${index}"]`);
-            if (totalElement) {
-                totalElement.textContent = item.total.toLocaleString() + '원';
-            }
-            
-            // 전체 세부품목 총액 계산 및 메인 금액 자동 업데이트
-            updateTotalAmount();
-        }
+        // 구 함수 제거됨 - updateDetailField로 대체
 
         function updateDetailsDisplay() {
             const detailsList = document.getElementById('detailsList');
@@ -1092,39 +1100,39 @@
 
             detailsList.innerHTML = detailItems.map((item, index) => {
                 // 안전한 값 처리
-                const safeName = (item.name || '').replace(/"/g, '&quot;');
-                const safeSpec = (item.spec || '').replace(/"/g, '&quot;');
-                const safeUnit = (item.unit || '').replace(/"/g, '&quot;');
-                const safeLocation = (item.location || '').replace(/"/g, '&quot;');
+                const safeName = (item.name || '').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+                const safeSpec = (item.spec || '').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+                const safeUnit = (item.unit || '').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+                const safeLocation = (item.location || '').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
                 const safeQuantity = item.quantity || 1;
                 const safePrice = item.price || 0;
-                const safeTotal = item.total || 0;
+                const safeTotal = item.total || (safeQuantity * safePrice);
                 
                 return `
-                <div class="detail-item">
+                <div class="detail-item" data-index="${index}">
                     <div class="detail-row">
                         <input type="text" class="detail-input" placeholder="품명" value="${safeName}" 
-                               onchange="detailItems[${index}].name = this.value; updateDetailsJSON()">
+                               onchange="updateDetailField(${index}, 'name', this.value)">
                         <input type="text" class="detail-input" placeholder="규격/비고" value="${safeSpec}" 
-                               onchange="detailItems[${index}].spec = this.value; updateDetailsJSON()">
+                               onchange="updateDetailField(${index}, 'spec', this.value)">
                     </div>
                     <div class="detail-row">
                         <input type="number" class="detail-input" placeholder="수량" value="${safeQuantity}" min="1" 
-                               oninput="detailItems[${index}].quantity = parseInt(this.value) || 1; updateDetailTotal(${index})"
-                               onchange="detailItems[${index}].quantity = parseInt(this.value) || 1; updateDetailTotal(${index})">
+                               oninput="updateDetailField(${index}, 'quantity', this.value, true)"
+                               onchange="updateDetailField(${index}, 'quantity', this.value, true)">
                         <input type="text" class="detail-input" placeholder="단위" value="${safeUnit}" 
-                               onchange="detailItems[${index}].unit = this.value; updateDetailsJSON()">
+                               onchange="updateDetailField(${index}, 'unit', this.value)">
                         <input type="number" class="detail-input" placeholder="단가" value="${safePrice}" min="0" 
-                               oninput="detailItems[${index}].price = parseInt(this.value) || 0; updateDetailTotal(${index})"
-                               onchange="detailItems[${index}].price = parseInt(this.value) || 0; updateDetailTotal(${index})">
+                               oninput="updateDetailField(${index}, 'price', this.value, true)"
+                               onchange="updateDetailField(${index}, 'price', this.value, true)">
                     </div>
                     <div class="detail-row">
                         <input type="text" class="detail-input" placeholder="설치위치" value="${safeLocation}" 
-                               onchange="detailItems[${index}].location = this.value; updateDetailsJSON()">
-                        <div class="detail-input" data-total-index="${index}" style="background: #f0f9ff; color: #1d4ed8; font-weight: 600;">
+                               onchange="updateDetailField(${index}, 'location', this.value)">
+                        <div class="detail-input" data-total-index="${index}" style="background: #f0f9ff; color: #1d4ed8; font-weight: 600; text-align: right;">
                             ${safeTotal.toLocaleString()}원
                         </div>
-                        <button type="button" class="detail-remove" onclick="removeDetailRow(${index})">
+                        <button type="button" class="detail-remove" onclick="removeDetailRow(${index})" title="삭제">
                             <i class="fas fa-trash"></i>
                         </button>
                     </div>
@@ -1139,19 +1147,70 @@
             document.getElementById('itemDetails').value = JSON.stringify(detailItems);
         }
 
+        // 세부품목 개별 필드 업데이트 함수
+        function updateDetailField(index, field, value, isCalculation = false) {
+            if (!detailItems[index]) return;
+            
+            // 값 업데이트
+            if (field === 'quantity' || field === 'price') {
+                detailItems[index][field] = parseInt(value) || 0;
+            } else {
+                detailItems[index][field] = value;
+            }
+            
+            // 계산 관련 필드일 경우 총액 업데이트
+            if (isCalculation) {
+                const item = detailItems[index];
+                const quantity = parseInt(item.quantity) || 0;
+                const price = parseInt(item.price) || 0;
+                item.total = quantity * price;
+                
+                // 해당 항목의 총액 표시 업데이트
+                const totalElement = document.querySelector(`[data-total-index="${index}"]`);
+                if (totalElement) {
+                    totalElement.textContent = item.total.toLocaleString() + '원';
+                    totalElement.style.background = '#dcfce7';
+                    setTimeout(() => {
+                        totalElement.style.background = '#f0f9ff';
+                    }, 500);
+                }
+                
+                // 전체 총액 업데이트
+                updateTotalAmount();
+            }
+            
+            updateDetailsJSON();
+        }
+
         // 세부품목 총액 계산 및 메인 금액 자동 업데이트
         function updateTotalAmount() {
-            const totalAmount = detailItems.reduce((sum, item) => sum + (item.total || 0), 0);
-            document.getElementById('itemAmount').value = totalAmount;
+            // 모든 세부품목의 총액 계산
+            let totalAmount = 0;
+            detailItems.forEach(item => {
+                const quantity = parseInt(item.quantity) || 0;
+                const price = parseInt(item.price) || 0;
+                const itemTotal = quantity * price;
+                item.total = itemTotal; // 개별 항목 총액 업데이트
+                totalAmount += itemTotal;
+            });
             
-            // 시각적 피드백 추가
+            // 메인 금액 필드에 반영
             const amountInput = document.getElementById('itemAmount');
-            amountInput.style.background = '#e0f2fe';
-            amountInput.style.color = '#0277bd';
-            setTimeout(() => {
-                amountInput.style.background = '';
-                amountInput.style.color = '';
-            }, 1000);
+            if (amountInput) {
+                amountInput.value = totalAmount;
+                
+                // 시각적 피드백 추가 (세부품목이 있을 때만)
+                if (detailItems.length > 0 && totalAmount > 0) {
+                    amountInput.style.background = '#e0f2fe';
+                    amountInput.style.color = '#0277bd';
+                    amountInput.style.fontWeight = '600';
+                    setTimeout(() => {
+                        amountInput.style.background = '';
+                        amountInput.style.color = '';
+                        amountInput.style.fontWeight = '';
+                    }, 1500);
+                }
+            }
         }
 
         // 일괄 입력 모달
