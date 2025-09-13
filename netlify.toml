@@ -1,6 +1,10 @@
 [build]
   publish = "."
+  command = "echo 'Static site - no build required'"
   functions = "netlify/functions"
+
+[build.environment]
+  NODE_VERSION = "18"
 
 [dev]
   port = 8888
@@ -10,3 +14,6 @@
   for = "/*"
   [headers.values]
     Access-Control-Allow-Origin = "*"
+    X-Frame-Options = "DENY"
+    X-XSS-Protection = "1; mode=block"
+    X-Content-Type-Options = "nosniff"
