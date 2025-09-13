@@ -425,13 +425,18 @@
             grid-template-columns: 1fr 1fr;
         }
         
-        /* 두 번째 줄: 수량 | 단위 | 가격 */
+        /* 두 번째 줄: 수량 | 단위 */
         .detail-row:nth-child(2) {
-            grid-template-columns: 80px 80px 1fr;
+            grid-template-columns: 1fr 1fr;
         }
         
-        /* 세 번째 줄: 설치위치 | 총액 | 삭제 */
+        /* 세 번째 줄: 단가 (전체 너비) */
         .detail-row:nth-child(3) {
+            grid-template-columns: 1fr;
+        }
+        
+        /* 네 번째 줄: 설치위치 | 총액 | 삭제 */
+        .detail-row:nth-child(4) {
             grid-template-columns: 2fr 1fr 65px;
             margin-bottom: 0;
         }
@@ -488,6 +493,20 @@
             align-items: center !important;
             justify-content: flex-end !important;
         }
+        
+        /* 단가 필드 강조 스타일 */
+        .detail-row:nth-child(3) .detail-input {
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%) !important;
+            border: 2px solid #f59e0b !important;
+            font-size: 16px !important;
+            font-weight: 600 !important;
+            text-align: center !important;
+        }
+        
+        .detail-row:nth-child(3) .detail-input:focus {
+            background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%) !important;
+            border-color: #d97706 !important;
+        }
 
         .add-detail-btn {
             width: 100%;
@@ -526,13 +545,18 @@
                 gap: 8px;
             }
             
-            /* 두 번째 줄: 수량, 단위, 가격을 가로로 */
+            /* 두 번째 줄: 수량과 단위 */
             .detail-row:nth-child(2) {
-                grid-template-columns: 1fr 1fr 1fr;
+                grid-template-columns: 1fr 1fr;
             }
             
-            /* 세 번째 줄: 설치위치, 총액, 삭제 */
+            /* 세 번째 줄: 단가 (전체 너비) */
             .detail-row:nth-child(3) {
+                grid-template-columns: 1fr;
+            }
+            
+            /* 네 번째 줄: 설치위치, 총액, 삭제 */
+            .detail-row:nth-child(4) {
                 grid-template-columns: 1fr 90px 50px;
             }
             
@@ -551,6 +575,11 @@
                 font-size: 12px !important;
                 padding: 8px 10px !important;
                 height: 36px !important;
+            }
+            
+            /* 모바일에서 단가 필드 스타일 조정 */
+            .detail-row:nth-child(3) .detail-input {
+                font-size: 15px !important;
             }
         }
 
@@ -1234,8 +1263,10 @@
                            onchange="updateItem(${index}, 'quantity', this.value)">
                     <input type="text" class="detail-input" placeholder="단위" value="${unit}" 
                            onchange="updateItem(${index}, 'unit', this.value)">
+                </div>
+                <div class="detail-row">
                     <input type="number" class="detail-input" placeholder="단가 (원)" value="${price}" min="0" 
-                           onchange="updateItem(${index}, 'price', this.value)">
+                           onchange="updateItem(${index}, 'price', this.value)" style="font-size: 16px; font-weight: 600;">
                 </div>
                 <div class="detail-row">
                     <input type="text" class="detail-input" placeholder="설치위치" value="${location}" 
