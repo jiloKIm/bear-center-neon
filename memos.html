@@ -151,6 +151,63 @@
             opacity: 0.5;
             cursor: not-allowed;
         }
+        
+        /* AI 기능 스타일 */
+        .ai-button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            margin: 5px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .ai-button:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+        
+        .ai-button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .ai-result {
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+            border: 2px solid #bae6fd;
+            border-radius: 12px;
+            padding: 16px;
+            margin-top: 12px;
+            font-size: 14px;
+            line-height: 1.6;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        .ai-loading {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border: 2px solid #ffffff;
+            border-radius: 50%;
+            border-top-color: transparent;
+            animation: spin 1s ease-in-out infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
 
         .btn-edit {
             background: #f3f4f6;
@@ -818,7 +875,7 @@
 
         const button = document.getElementById(`organizeBtn${id}`);
         const originalText = button.innerHTML;
-        button.innerHTML = '<div class="loading"><div class="spinner"></div>정리중...</div>';
+        button.innerHTML = '<span class="ai-loading"></span> AI 정리중...';
         button.disabled = true;
 
         try {
@@ -848,7 +905,7 @@
 
         const button = document.getElementById('organizeBtn');
         const originalText = button.innerHTML;
-        button.innerHTML = '<div class="loading"><div class="spinner"></div>AI가 정리중...</div>';
+        button.innerHTML = '<span class="ai-loading"></span> AI가 정리중...';
         button.disabled = true;
 
         try {
@@ -871,41 +928,136 @@
         }
     }
 
-    // 실제 AI API를 사용한 텍스트 마이닝 및 정리
+    // 무료 AI API를 사용한 텍스트 정리
     async function organizeText(content, category, task = 'organize') {
         try {
-            const response = await fetch('/.netlify/functions/ai-text-processor', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    text: content,
-                    category: category,
-                    task: task
-                })
-            });
-
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-
-            const result = await response.json();
+            // Hugging Face 무료 API 사용
+            let prompt = '';
             
-            if (result.success) {
-                return result.processedText;
-            } else if (result.fallback) {
-                // AI 서비스 오류 시 폴백 사용
-                showMessage('AI 서비스를 사용할 수 없어 기본 내용으로 표시합니다.', 'warning');
-                return result.fallback;
-            } else {
-                throw new Error(result.error || '알 수 없는 오류입니다.');
+            switch(task) {
+                case 'extract_keywords':
+                    prompt = `다음 텍스트에서 중요한 키워드를 추출해주세요. 최대 10개까지, 쉼표로 구분해서 답변해주세요:\n\n${content}`;
+                    break;
+                case 'summarize':
+                    prompt = `다음 텍스트를 3-4문장으로 요약해주세요:\n\n${content}`;
+                    break;
+                default:
+                    prompt = `다음 ${category} 관련 메모를 체계적으로 정리해주세요. 핵심 내용, 중요 포인트, 필요한 후속 조치를 포함해주세요:\n\n${content}`;
             }
+
+            // 여러 무료 API 시도
+            const apiResults = await tryMultipleAIAPIs(prompt, task);
+            
+            if (apiResults) {
+                return formatAIResult(apiResults, task, category);
+            } else {
+                // 모든 AI API 실패 시 로컬 폴백
+                return getLocalFallback(content, category, task);
+            }
+            
         } catch (error) {
             console.error('AI 정리 오류:', error);
-            // 네트워크 오류 또는 API 오류 시 로컬 폴백 사용
             return getLocalFallback(content, category, task);
         }
+    }
+    
+    // 여러 무료 AI API 시도
+    async function tryMultipleAIAPIs(prompt, task) {
+        const apis = [
+            {
+                name: 'Hugging Face',
+                url: 'https://api-inference.huggingface.co/models/microsoft/DialoGPT-medium',
+                headers: {}
+            },
+            {
+                name: 'Public API',
+                url: 'https://api.openai-proxy.org/v1/chat/completions',
+                headers: { 'Content-Type': 'application/json' }
+            }
+        ];
+        
+        for (const api of apis) {
+            try {
+                const response = await callAIAPI(api, prompt, task);
+                if (response) return response;
+            } catch (error) {
+                console.log(`${api.name} API 실패:`, error);
+                continue;
+            }
+        }
+        
+        return null;
+    }
+    
+    // AI API 호출
+    async function callAIAPI(api, prompt, task) {
+        try {
+            let body;
+            
+            if (api.name === 'Hugging Face') {
+                body = JSON.stringify({ 
+                    inputs: prompt,
+                    parameters: { max_length: 200, temperature: 0.7 }
+                });
+            } else {
+                body = JSON.stringify({
+                    model: "gpt-3.5-turbo",
+                    messages: [{ role: "user", content: prompt }],
+                    max_tokens: 300,
+                    temperature: 0.7
+                });
+            }
+            
+            const response = await fetch(api.url, {
+                method: 'POST',
+                headers: api.headers,
+                body: body
+            });
+            
+            if (!response.ok) throw new Error(`HTTP ${response.status}`);
+            
+            const result = await response.json();
+            
+            // 응답 파싱
+            if (api.name === 'Hugging Face' && result[0]?.generated_text) {
+                return result[0].generated_text.replace(prompt, '').trim();
+            } else if (result.choices?.[0]?.message?.content) {
+                return result.choices[0].message.content.trim();
+            }
+            
+            return null;
+            
+        } catch (error) {
+            throw error;
+        }
+    }
+    
+    // AI 결과 포맷팅
+    function formatAIResult(content, task, category) {
+        let formatted = `<div style="background: linear-gradient(135deg, #e0f2fe 0%, #f0f9ff 100%); padding: 16px; border-radius: 12px; margin-bottom: 16px; border: 2px solid #0284c7;">
+            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 12px;">
+                <i class="fas fa-robot" style="color: #0284c7;"></i>
+                <strong style="color: #0c4a6e;">🤖 AI ${task === 'extract_keywords' ? '키워드 추출' : task === 'summarize' ? '요약' : '정리'} 결과</strong>
+            </div>
+        `;
+        
+        switch(task) {
+            case 'extract_keywords':
+                formatted += `<strong>🏷️ 추출된 키워드:</strong><br><br>`;
+                const keywords = content.split(',').map(k => k.trim()).filter(k => k);
+                formatted += keywords.map(keyword => `<span style="background: #fbbf24; padding: 4px 8px; border-radius: 8px; margin: 2px; display: inline-block;">${keyword}</span>`).join('');
+                break;
+                
+            case 'summarize':
+                formatted += `<strong>📝 요약:</strong><br><br>${content}`;
+                break;
+                
+            default:
+                formatted += `<strong>📋 정리된 내용:</strong><br><br>${content}`;
+        }
+        
+        formatted += '</div>';
+        return formatted;
     }
     
     // 로컬 폴백 함수 (네트워크 오류 시)
@@ -1109,6 +1261,12 @@
         const memo = allMemos.find(m => m.id === id);
         if (!memo) return;
 
+        // 버튼 찾기 (이벤트에서 호출되므로 다른 방식 사용)
+        const button = event.target.closest('button');
+        const originalText = button.innerHTML;
+        button.innerHTML = '<span class="ai-loading"></span> 키워드 추출중...';
+        button.disabled = true;
+
         try {
             const result = await organizeText(memo.content, memo.category, 'extract_keywords');
             
@@ -1121,6 +1279,9 @@
         } catch (error) {
             console.error('키워드 분석 실패:', error);
             showMessage('키워드 분석에 실패했습니다.', 'error');
+        } finally {
+            button.innerHTML = originalText;
+            button.disabled = false;
         }
     }
     
@@ -1128,6 +1289,11 @@
     async function summarizeSingleMemo(id) {
         const memo = allMemos.find(m => m.id === id);
         if (!memo) return;
+
+        const button = event.target.closest('button');
+        const originalText = button.innerHTML;
+        button.innerHTML = '<span class="ai-loading"></span> 요약중...';
+        button.disabled = true;
 
         try {
             const result = await organizeText(memo.content, memo.category, 'summarize');
@@ -1141,6 +1307,9 @@
         } catch (error) {
             console.error('요약 실패:', error);
             showMessage('요약에 실패했습니다.', 'error');
+        } finally {
+            button.innerHTML = originalText;
+            button.disabled = false;
         }
     }
     
