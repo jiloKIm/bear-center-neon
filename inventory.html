@@ -415,19 +415,25 @@
 
         .detail-row {
             display: grid;
-            grid-template-columns: 1fr 1fr;
             gap: 10px;
             margin-bottom: 12px;
             align-items: center;
         }
         
-        .detail-row:last-child {
-            grid-template-columns: 2fr 1fr 65px;
-            margin-bottom: 0;
+        /* 첫 번째 줄: 품명 | 규격/비고 */
+        .detail-row:nth-child(1) {
+            grid-template-columns: 1fr 1fr;
         }
         
+        /* 두 번째 줄: 수량 | 단위 | 가격 */
         .detail-row:nth-child(2) {
-            grid-template-columns: 70px 70px 1fr;
+            grid-template-columns: 80px 80px 1fr;
+        }
+        
+        /* 세 번째 줄: 설치위치 | 총액 | 삭제 */
+        .detail-row:nth-child(3) {
+            grid-template-columns: 2fr 1fr 65px;
+            margin-bottom: 0;
         }
 
         .detail-input {
@@ -514,17 +520,20 @@
 
         /* 모바일 반응형 */
         @media (max-width: 768px) {
-            .detail-row {
+            /* 첫 번째 줄: 품명과 규격을 세로로 */
+            .detail-row:nth-child(1) {
                 grid-template-columns: 1fr;
                 gap: 8px;
             }
             
+            /* 두 번째 줄: 수량, 단위, 가격을 가로로 */
             .detail-row:nth-child(2) {
                 grid-template-columns: 1fr 1fr 1fr;
             }
             
-            .detail-row:last-child {
-                grid-template-columns: 1fr 100px 60px;
+            /* 세 번째 줄: 설치위치, 총액, 삭제 */
+            .detail-row:nth-child(3) {
+                grid-template-columns: 1fr 90px 50px;
             }
             
             .detail-input {
@@ -533,9 +542,15 @@
             }
             
             .detail-remove {
-                width: 50px;
-                height: 40px;
-                font-size: 14px;
+                width: 45px;
+                height: 36px;
+                font-size: 12px;
+            }
+            
+            .detail-total {
+                font-size: 12px !important;
+                padding: 8px 10px !important;
+                height: 36px !important;
             }
         }
 
@@ -1219,14 +1234,14 @@
                            onchange="updateItem(${index}, 'quantity', this.value)">
                     <input type="text" class="detail-input" placeholder="단위" value="${unit}" 
                            onchange="updateItem(${index}, 'unit', this.value)">
-                    <input type="number" class="detail-input" placeholder="단가" value="${price}" min="0" 
+                    <input type="number" class="detail-input" placeholder="단가 (원)" value="${price}" min="0" 
                            onchange="updateItem(${index}, 'price', this.value)">
                 </div>
                 <div class="detail-row">
                     <input type="text" class="detail-input" placeholder="설치위치" value="${location}" 
                            onchange="updateItem(${index}, 'location', this.value)">
                     <div class="detail-input detail-total">${total.toLocaleString()}원</div>
-                    <button type="button" class="detail-remove" onclick="removeDetailRow(${index})">
+                    <button type="button" class="detail-remove" onclick="removeDetailRow(${index})" title="삭제">
                         <i class="fas fa-trash"></i>
                     </button>
                 </div>
