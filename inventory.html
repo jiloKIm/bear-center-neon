@@ -680,7 +680,12 @@
                         </div>
 
                         <div class="form-group">
-                            <label class="form-label" for="itemAmount">금액 (원)</label>
+                            <label class="form-label" for="itemAmount">
+                                금액 (원)
+                                <span style="font-size: 12px; color: #6b7280; font-weight: normal;">
+                                    💡 세부품목을 입력하면 자동으로 계산됩니다
+                                </span>
+                            </label>
                             <input type="number" id="itemAmount" class="form-input" placeholder="0" min="0" required>
                         </div>
 
@@ -947,6 +952,11 @@
             detailItems = item.details ? JSON.parse(item.details) : [];
             updateDetailsDisplay();
             
+            // 세부품목이 있으면 총액 재계산
+            if (detailItems.length > 0) {
+                updateTotalAmount();
+            }
+            
             document.querySelector('.modal-title').textContent = '건 수정';
             document.getElementById('itemModal').style.display = 'block';
         }
@@ -1031,11 +1041,13 @@
                 location: ''
             });
             updateDetailsDisplay();
+            updateTotalAmount();
         }
 
         function removeDetailRow(index) {
             detailItems.splice(index, 1);
             updateDetailsDisplay();
+            updateTotalAmount();
         }
 
         function updateDetailTotal(index) {
@@ -1048,6 +1060,9 @@
             if (totalElement) {
                 totalElement.textContent = item.total.toLocaleString() + '원';
             }
+            
+            // 전체 세부품목 총액 계산 및 메인 금액 자동 업데이트
+            updateTotalAmount();
         }
 
         function updateDetailsDisplay() {
@@ -1078,10 +1093,12 @@
                     </div>
                     <div class="detail-row">
                         <input type="number" class="detail-input" placeholder="수량" value="${item.quantity || 1}" min="1" 
+                               oninput="detailItems[${index}].quantity = parseInt(this.value) || 1; updateDetailTotal(${index})"
                                onchange="detailItems[${index}].quantity = parseInt(this.value) || 1; updateDetailTotal(${index})">
                         <input type="text" class="detail-input" placeholder="단위" value="${item.unit || ''}" 
                                onchange="detailItems[${index}].unit = this.value; updateDetailsJSON()">
                         <input type="number" class="detail-input" placeholder="단가" value="${item.price || 0}" min="0" 
+                               oninput="detailItems[${index}].price = parseInt(this.value) || 0; updateDetailTotal(${index})"
                                onchange="detailItems[${index}].price = parseInt(this.value) || 0; updateDetailTotal(${index})">
                     </div>
                     <div class="detail-row">
@@ -1102,6 +1119,21 @@
 
         function updateDetailsJSON() {
             document.getElementById('itemDetails').value = JSON.stringify(detailItems);
+        }
+
+        // 세부품목 총액 계산 및 메인 금액 자동 업데이트
+        function updateTotalAmount() {
+            const totalAmount = detailItems.reduce((sum, item) => sum + (item.total || 0), 0);
+            document.getElementById('itemAmount').value = totalAmount;
+            
+            // 시각적 피드백 추가
+            const amountInput = document.getElementById('itemAmount');
+            amountInput.style.background = '#e0f2fe';
+            amountInput.style.color = '#0277bd';
+            setTimeout(() => {
+                amountInput.style.background = '';
+                amountInput.style.color = '';
+            }, 1000);
         }
 
         // 일괄 입력 모달
@@ -1154,6 +1186,7 @@
             
             if (addedCount > 0) {
                 updateDetailsDisplay();
+                updateTotalAmount();
                 closeBulkInputModal();
                 showMessage(`${addedCount}개 품목이 추가되었습니다!`, 'success');
             } else {
