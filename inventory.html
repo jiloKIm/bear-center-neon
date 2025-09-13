@@ -775,14 +775,16 @@
 
             .modal-content {
                 position: relative;
-                max-width: 800px;
-                margin: 5vh auto;
+                max-width: 1000px;
+                margin: 3vh auto;
                 border-radius: 20px;
                 animation: none;
+                width: 95vw;
             }
             
             .modal-body {
-                max-height: calc(90vh - 140px);
+                max-height: calc(94vh - 140px);
+                padding: 24px;
             }
             
             .detail-item {
@@ -891,12 +893,17 @@
         /* 큰 화면 (1200px 이상) 최적화 */
         @media (min-width: 1200px) {
             .modal-content {
-                max-width: 950px;
+                max-width: 1200px;
+                width: 90vw;
+            }
+            
+            .modal-body {
+                padding: 32px;
             }
             
             .detail-content {
-                max-height: 400px;
-                padding: 20px;
+                max-height: 450px;
+                padding: 24px;
             }
             
             .detail-input {
@@ -965,6 +972,64 @@
                 margin: 20px 24px 24px;
                 padding: 16px 24px;
                 font-size: 16px;
+            }
+        }
+
+        /* 매우 큰 화면 (1440px 이상) 최적화 */
+        @media (min-width: 1440px) {
+            .modal-content {
+                max-width: 1400px;
+                width: 85vw;
+            }
+            
+            .modal-body {
+                padding: 40px;
+            }
+            
+            .detail-content {
+                max-height: 500px;
+                padding: 32px;
+            }
+            
+            .detail-input {
+                font-size: 17px;
+                padding: 18px 24px;
+                min-height: 56px;
+            }
+            
+            .detail-total {
+                font-size: 16px;
+                padding: 18px 24px;
+                min-height: 56px;
+            }
+            
+            .detail-remove {
+                width: 56px;
+                height: 56px;
+                font-size: 22px;
+            }
+            
+            .detail-row {
+                gap: 20px !important;
+                margin-bottom: 18px !important;
+            }
+            
+            .detail-item {
+                margin-bottom: 28px;
+            }
+            
+            .details-title {
+                font-size: 22px;
+            }
+            
+            .details-header {
+                padding: 24px 32px;
+            }
+            
+            .add-detail-btn {
+                margin: 24px 32px 32px;
+                padding: 18px 32px;
+                font-size: 18px;
             }
         }
 
