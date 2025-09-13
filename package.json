@@ -5,7 +5,6 @@
   "main": "index.js",
   "scripts": {
     "dev": "netlify dev",
-    "build": "echo 'No build step required'",
     "deploy": "netlify deploy --prod"
   },
   "keywords": ["bear-center", "management", "ai", "text-mining"],
