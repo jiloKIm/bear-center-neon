@@ -1031,7 +1031,7 @@
 
         // 세부품목 관리
         function addDetailRow() {
-            detailItems.push({
+            const newItem = {
                 name: '',
                 spec: '',
                 quantity: 1,
@@ -1039,9 +1039,14 @@
                 price: 0,
                 total: 0,
                 location: ''
-            });
-            updateDetailsDisplay();
-            updateTotalAmount();
+            };
+            detailItems.push(newItem);
+            
+            // DOM 업데이트를 위해 약간의 지연
+            setTimeout(() => {
+                updateDetailsDisplay();
+                updateTotalAmount();
+            }, 10);
         }
 
         function removeDetailRow(index) {
@@ -1083,36 +1088,47 @@
                 if (item.location === undefined) item.location = '';
             });
 
-            detailsList.innerHTML = detailItems.map((item, index) => `
+            detailsList.innerHTML = detailItems.map((item, index) => {
+                // 안전한 값 처리
+                const safeName = (item.name || '').replace(/"/g, '&quot;');
+                const safeSpec = (item.spec || '').replace(/"/g, '&quot;');
+                const safeUnit = (item.unit || '').replace(/"/g, '&quot;');
+                const safeLocation = (item.location || '').replace(/"/g, '&quot;');
+                const safeQuantity = item.quantity || 1;
+                const safePrice = item.price || 0;
+                const safeTotal = item.total || 0;
+                
+                return `
                 <div class="detail-item">
                     <div class="detail-row">
-                        <input type="text" class="detail-input" placeholder="품명" value="${item.name || ''}" 
+                        <input type="text" class="detail-input" placeholder="품명" value="${safeName}" 
                                onchange="detailItems[${index}].name = this.value; updateDetailsJSON()">
-                        <input type="text" class="detail-input" placeholder="규격/비고" value="${item.spec || ''}" 
+                        <input type="text" class="detail-input" placeholder="규격/비고" value="${safeSpec}" 
                                onchange="detailItems[${index}].spec = this.value; updateDetailsJSON()">
                     </div>
                     <div class="detail-row">
-                        <input type="number" class="detail-input" placeholder="수량" value="${item.quantity || 1}" min="1" 
+                        <input type="number" class="detail-input" placeholder="수량" value="${safeQuantity}" min="1" 
                                oninput="detailItems[${index}].quantity = parseInt(this.value) || 1; updateDetailTotal(${index})"
                                onchange="detailItems[${index}].quantity = parseInt(this.value) || 1; updateDetailTotal(${index})">
-                        <input type="text" class="detail-input" placeholder="단위" value="${item.unit || ''}" 
+                        <input type="text" class="detail-input" placeholder="단위" value="${safeUnit}" 
                                onchange="detailItems[${index}].unit = this.value; updateDetailsJSON()">
-                        <input type="number" class="detail-input" placeholder="단가" value="${item.price || 0}" min="0" 
+                        <input type="number" class="detail-input" placeholder="단가" value="${safePrice}" min="0" 
                                oninput="detailItems[${index}].price = parseInt(this.value) || 0; updateDetailTotal(${index})"
                                onchange="detailItems[${index}].price = parseInt(this.value) || 0; updateDetailTotal(${index})">
                     </div>
                     <div class="detail-row">
-                        <input type="text" class="detail-input" placeholder="설치위치" value="${item.location || ''}" 
+                        <input type="text" class="detail-input" placeholder="설치위치" value="${safeLocation}" 
                                onchange="detailItems[${index}].location = this.value; updateDetailsJSON()">
                         <div class="detail-input" data-total-index="${index}" style="background: #f0f9ff; color: #1d4ed8; font-weight: 600;">
-                            ${(item.total || 0).toLocaleString()}원
+                            ${safeTotal.toLocaleString()}원
                         </div>
                         <button type="button" class="detail-remove" onclick="removeDetailRow(${index})">
                             <i class="fas fa-trash"></i>
                         </button>
                     </div>
                 </div>
-            `).join('');
+                `;
+            }).join('');
 
             updateDetailsJSON();
         }
