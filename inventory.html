@@ -1202,6 +1202,51 @@
         .amount-over {
             color: #ef4444;
         }
+        
+        /* 일괄 업로드 스타일 */
+        .bulk-preview {
+            background: #f8fafc;
+            border-radius: 12px;
+            padding: 16px;
+            margin-top: 16px;
+            border: 1px solid #e2e8f0;
+        }
+        
+        .bulk-preview h4 {
+            color: #374151;
+            font-size: 16px;
+            margin-bottom: 12px;
+        }
+        
+        .bulk-item-preview {
+            background: white;
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 8px;
+            border-left: 4px solid #3b82f6;
+            font-size: 14px;
+        }
+        
+        .bulk-item-preview.error {
+            border-left-color: #ef4444;
+            background: #fef2f2;
+        }
+        
+        .bulk-item-preview strong {
+            color: #1f2937;
+        }
+        
+        .bulk-item-preview .meta {
+            color: #6b7280;
+            font-size: 12px;
+            margin-top: 4px;
+        }
+        
+        .action-buttons {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 12px;
+        }
     </style>
 </head>
 <body>
@@ -1261,6 +1306,10 @@
                     <i class="fas fa-plus"></i>
                     새 건 추가
                 </button>
+                <button class="action-btn btn-secondary" onclick="openBulkModal()">
+                    <i class="fas fa-upload"></i>
+                    일괄 업로드
+                </button>
                 <button class="action-btn btn-secondary" onclick="generatePDF()">
                     <i class="fas fa-file-pdf"></i>
                     PDF 내보내기
@@ -1303,6 +1352,49 @@
                     <div class="empty-icon">📋</div>
                     <div class="empty-title">아직 등록된 사업이 없습니다</div>
                     <div class="empty-description">위의 "새 건 추가" 버튼을 눌러 첫 번째 사업을 등록해보세요.</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 일괄 업로드 모달 -->
+        <div id="bulkModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 class="modal-title">일괄 업로드</h3>
+                    <button type="button" class="close-btn" onclick="closeBulkModal()">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label class="form-label">일괄 입력 방법:</label>
+                        <p style="font-size: 14px; color: #6b7280; margin-bottom: 16px;">
+                            각 줄에 하나씩 입력하세요. 예시:<br>
+                            <code>사무용 책상 5개 - 사무실조성 - 500만원 - 계획</code><br>
+                            <code>의료용 CT스캐너 - 진료실조성 - 2억원 - 진행중</code>
+                        </p>
+                        <textarea id="bulkInput" class="form-textarea" placeholder="예시:
+사무용 책상 5개 - 사무실조성 - 500만원 - 계획
+의료용 CT스캐너 - 진료실조성 - 2억원 - 진행중
+사료 구매 - 경비 - 300만원 - 완료" rows="10"></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">기본 구분:</label>
+                        <select id="bulkDefaultType" class="form-select">
+                            <option value="조달">조달</option>
+                            <option value="계약">계약</option>
+                            <option value="지출">지출</option>
+                            <option value="입찰">입찰</option>
+                        </select>
+                    </div>
+                    
+                    <div id="bulkPreview" class="bulk-preview" style="display: none;">
+                        <h4>미리보기:</h4>
+                        <div id="bulkPreviewContent"></div>
+                    </div>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn-full btn-secondary" onclick="previewBulkItems()">미리보기</button>
+                    <button type="button" class="btn-full btn-primary" onclick="saveBulkItems()">일괄 저장</button>
                 </div>
             </div>
         </div>
@@ -1572,6 +1664,140 @@
                     </div>
                 `;
             }).join('');
+        }
+
+        // 일괄 업로드 기능
+        function openBulkModal() {
+            document.getElementById('bulkModal').style.display = 'block';
+        }
+        
+        function closeBulkModal() {
+            document.getElementById('bulkModal').style.display = 'none';
+            document.getElementById('bulkInput').value = '';
+            document.getElementById('bulkPreview').style.display = 'none';
+        }
+        
+        function previewBulkItems() {
+            const input = document.getElementById('bulkInput').value;
+            const defaultType = document.getElementById('bulkDefaultType').value;
+            const lines = input.split('\n').filter(line => line.trim());
+            
+            const preview = document.getElementById('bulkPreviewContent');
+            const previewSection = document.getElementById('bulkPreview');
+            
+            if (lines.length === 0) {
+                showMessage('내용을 입력해주세요.', 'error');
+                return;
+            }
+            
+            let previewHTML = '';
+            const parsedItems = [];
+            
+            lines.forEach((line, index) => {
+                const parsed = parseBulkLine(line, defaultType);
+                parsedItems.push(parsed);
+                
+                const itemClass = parsed.error ? 'bulk-item-preview error' : 'bulk-item-preview';
+                previewHTML += `
+                    <div class="${itemClass}">
+                        ${parsed.error ? 
+                            `<strong>오류:</strong> ${parsed.error}` : 
+                            `<strong>${parsed.name}</strong><br>
+                             <div class="meta">구분: ${parsed.type} | 카테고리: ${parsed.location} | 금액: ${parsed.amount.toLocaleString()}원 | 상태: ${parsed.status}</div>`
+                        }
+                    </div>
+                `;
+            });
+            
+            preview.innerHTML = previewHTML;
+            previewSection.style.display = 'block';
+            
+            // 전역으로 저장하여 저장 시 사용
+            window.bulkParsedItems = parsedItems.filter(item => !item.error);
+        }
+        
+        function parseBulkLine(line, defaultType) {
+            const parts = line.split('-').map(p => p.trim());
+            
+            if (parts.length < 3) {
+                return { error: '형식이 올바르지 않습니다. (이름 - 카테고리 - 금액 - 상태)' };
+            }
+            
+            const name = parts[0];
+            const location = parts[1] || '인건비';
+            const amountStr = parts[2];
+            const status = parts[3] || '계획';
+            
+            // 금액 파싱
+            let amount = 0;
+            const amountMatch = amountStr.match(/([\d,]+)(만원|억원|원)?/);
+            if (amountMatch) {
+                const number = parseInt(amountMatch[1].replace(/,/g, ''));
+                const unit = amountMatch[2];
+                
+                if (unit === '억원') {
+                    amount = number * 100000000;
+                } else if (unit === '만원') {
+                    amount = number * 10000;
+                } else {
+                    amount = number;
+                }
+            }
+            
+            if (amount === 0) {
+                return { error: '금액을 올바르게 입력해주세요. (예: 500만원, 2억원)' };
+            }
+            
+            // 카테고리 검증
+            const validCategories = ['인건비', '재료비', '경비', '사무실조성', '진료실조성'];
+            if (!validCategories.includes(location)) {
+                return { error: `잘못된 카테고리: ${location}. 사용 가능: ${validCategories.join(', ')}` };
+            }
+            
+            // 상태 검증
+            const validStatuses = ['계획', '진행중', '완료'];
+            if (!validStatuses.includes(status)) {
+                return { error: `잘못된 상태: ${status}. 사용 가능: ${validStatuses.join(', ')}` };
+            }
+            
+            return {
+                name,
+                type: defaultType,
+                location,
+                amount,
+                status,
+                details: `일괄 업로드로 생성된 항목`
+            };
+        }
+        
+        function saveBulkItems() {
+            if (!window.bulkParsedItems || window.bulkParsedItems.length === 0) {
+                showMessage('먼저 미리보기를 해주세요.', 'error');
+                return;
+            }
+            
+            // 각 아이템을 배열에 추가
+            window.bulkParsedItems.forEach(item => {
+                const newItem = {
+                    ...item,
+                    id: Date.now() + Math.random(),
+                    createdAt: new Date().toISOString()
+                };
+                allItems.push(newItem);
+            });
+            
+            // 로컬 저장소에 저장
+            localStorage.setItem('inventoryItems', JSON.stringify(allItems));
+            
+            // 화면 업데이트
+            displayItems();
+            updateSummary();
+            updateBudgetBreakdown();
+            
+            // 모달 닫기
+            closeBulkModal();
+            
+            showMessage(`${window.bulkParsedItems.length}개 항목이 성공적으로 추가되었습니다.`, 'success');
         }
 
         // 필터링
