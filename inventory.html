@@ -560,6 +560,67 @@
 
         /* 모바일 반응형 */
         @media (max-width: 768px) {
+            body {
+                font-size: 14px;
+            }
+            
+            .container {
+                padding: 0;
+                margin: 0;
+            }
+            
+            .main-content {
+                padding: 16px;
+            }
+            
+            /* 모바일에서 폼 필드 크기 조정 */
+            .form-input, .form-select, .form-textarea {
+                padding: 14px;
+                font-size: 16px; /* iOS 확대 방지 */
+                border-radius: 8px;
+            }
+            
+            .form-label {
+                font-size: 14px;
+            }
+            
+            /* 모바일 모달 스타일 */
+            .modal-content {
+                border-radius: 12px 12px 0 0;
+                max-height: 95vh;
+            }
+            
+            .modal-body {
+                padding: 16px;
+                max-height: calc(95vh - 120px);
+            }
+            
+            .modal-title {
+                font-size: 18px;
+            }
+            
+            /* 액션 버튼 모바일 최적화 */
+            .action-buttons {
+                flex-direction: column;
+                gap: 12px;
+            }
+            
+            .btn-primary, .btn-secondary {
+                width: 100%;
+                padding: 14px;
+                font-size: 16px;
+            }
+            
+            /* 세부품목 섹션 모바일 최적화 */
+            .details-section {
+                margin-top: 16px;
+            }
+            
+            .detail-header {
+                padding: 12px;
+                font-size: 14px;
+            }
+            
             /* 첫 번째 줄: 품명과 규격을 세로로 */
             .detail-row:nth-child(1) {
                 grid-template-columns: 1fr;
@@ -582,25 +643,108 @@
             }
             
             .detail-input {
-                padding: 10px 12px;
-                font-size: 14px;
+                padding: 12px;
+                font-size: 16px; /* iOS 확대 방지 */
+                border-radius: 8px;
             }
             
             .detail-remove {
                 width: 45px;
-                height: 36px;
-                font-size: 12px;
+                height: 40px;
+                font-size: 14px;
             }
             
             .detail-total {
-                font-size: 12px !important;
-                padding: 8px 10px !important;
-                height: 36px !important;
+                font-size: 14px !important;
+                padding: 10px !important;
+                height: 40px !important;
             }
             
             /* 모바일에서 단가 필드 스타일 조정 */
             .detail-row:nth-child(3) .detail-input {
-                font-size: 15px !important;
+                font-size: 16px !important;
+                font-weight: 600;
+                background: #f0f9ff;
+            }
+            
+            /* 필터 섹션 모바일 최적화 */
+            .filter-section {
+                margin-bottom: 16px;
+            }
+            
+            .filter-row {
+                flex-direction: column;
+                gap: 12px;
+            }
+            
+            .filter-select, .filter-reset-btn {
+                padding: 12px 16px;
+                font-size: 16px;
+            }
+            
+            .filter-reset-btn {
+                align-self: flex-end;
+                width: auto;
+                min-width: 50px;
+            }
+            
+            /* 아이템 카드 모바일 최적화 */
+            .item-card {
+                padding: 16px;
+                border-radius: 12px;
+            }
+            
+            .item-title {
+                font-size: 16px;
+            }
+            
+            .item-meta {
+                font-size: 14px;
+            }
+            
+            .item-actions {
+                gap: 8px;
+            }
+            
+            .btn-edit, .btn-delete {
+                padding: 8px 12px;
+                font-size: 14px;
+            }
+            
+            /* 폼 그룹 모바일 최적화 */
+            .form-group {
+                margin-bottom: 16px;
+            }
+            
+            /* 모달 폼 액션 버튼 */
+            .form-actions {
+                padding: 16px;
+                margin: 0 -16px -16px;
+            }
+            
+            .btn-full {
+                padding: 14px;
+                font-size: 16px;
+                border-radius: 8px;
+            }
+            
+            /* 터치 친화적인 버튼 크기 */
+            .close-btn {
+                padding: 8px;
+                font-size: 20px;
+                min-width: 44px;
+                min-height: 44px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+            
+            /* 메시지 알림 모바일 최적화 */
+            .message {
+                font-size: 14px;
+                padding: 12px 16px;
+                border-radius: 8px;
+                margin: 16px;
             }
         }
 
