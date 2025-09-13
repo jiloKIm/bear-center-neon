@@ -408,6 +408,14 @@
             transform: translateY(-1px);
             box-shadow: 0 2px 4px rgba(220, 38, 38, 0.2);
         }
+        
+        .detail-total {
+            background: #f0f9ff !important;
+            color: #1d4ed8 !important;
+            font-weight: 600 !important;
+            text-align: right !important;
+            border: 1px solid #dbeafe !important;
+        }
 
         .add-detail-btn {
             width: 100%;
@@ -1054,6 +1062,8 @@
 
         // 세부품목 관리
         function addDetailRow() {
+            console.log('세부품목 추가 시작');
+            
             const newItem = {
                 name: '',
                 spec: '',
@@ -1063,13 +1073,19 @@
                 total: 0,
                 location: ''
             };
-            detailItems.push(newItem);
             
-            // DOM 업데이트를 위해 약간의 지연
-            setTimeout(() => {
+            detailItems.push(newItem);
+            console.log('현재 세부품목 개수:', detailItems.length);
+            
+            // 즉시 업데이트
+            try {
                 updateDetailsDisplay();
                 updateTotalAmount();
-            }, 10);
+                console.log('세부품목 추가 완료');
+            } catch (error) {
+                console.error('세부품목 추가 오류:', error);
+                showMessage('세부품목 추가 중 오류가 발생했습니다.', 'error');
+            }
         }
 
         function removeDetailRow(index) {
@@ -1081,11 +1097,20 @@
         // 구 함수 제거됨 - updateDetailField로 대체
 
         function updateDetailsDisplay() {
+            console.log('updateDetailsDisplay 시작, 항목 수:', detailItems.length);
+            
             const detailsList = document.getElementById('detailsList');
+            if (!detailsList) {
+                console.error('detailsList 요소를 찾을 수 없습니다');
+                return;
+            }
             
             if (detailItems.length === 0) {
                 detailsList.innerHTML = '<div style="text-align: center; color: #9ca3af; padding: 20px;">세부 품목을 추가해주세요</div>';
-                document.getElementById('itemDetails').value = '';
+                const itemDetailsInput = document.getElementById('itemDetails');
+                if (itemDetailsInput) {
+                    itemDetailsInput.value = '';
+                }
                 return;
             }
 
@@ -1096,49 +1121,68 @@
                 }
                 if (item.spec === undefined) item.spec = '';
                 if (item.location === undefined) item.location = '';
+                if (item.name === undefined) item.name = '';
+                if (item.unit === undefined) item.unit = '개';
+                if (item.quantity === undefined) item.quantity = 1;
+                if (item.price === undefined) item.price = 0;
             });
 
-            detailsList.innerHTML = detailItems.map((item, index) => {
-                // 안전한 값 처리
-                const safeName = (item.name || '').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
-                const safeSpec = (item.spec || '').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
-                const safeUnit = (item.unit || '').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
-                const safeLocation = (item.location || '').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
-                const safeQuantity = item.quantity || 1;
-                const safePrice = item.price || 0;
-                const safeTotal = item.total || (safeQuantity * safePrice);
-                
-                return `
-                <div class="detail-item" data-index="${index}">
-                    <div class="detail-row">
-                        <input type="text" class="detail-input" placeholder="품명" value="${safeName}" 
-                               onchange="updateDetailField(${index}, 'name', this.value)">
-                        <input type="text" class="detail-input" placeholder="규격/비고" value="${safeSpec}" 
-                               onchange="updateDetailField(${index}, 'spec', this.value)">
-                    </div>
-                    <div class="detail-row">
-                        <input type="number" class="detail-input" placeholder="수량" value="${safeQuantity}" min="1" 
-                               oninput="updateDetailField(${index}, 'quantity', this.value, true)"
-                               onchange="updateDetailField(${index}, 'quantity', this.value, true)">
-                        <input type="text" class="detail-input" placeholder="단위" value="${safeUnit}" 
-                               onchange="updateDetailField(${index}, 'unit', this.value)">
-                        <input type="number" class="detail-input" placeholder="단가" value="${safePrice}" min="0" 
-                               oninput="updateDetailField(${index}, 'price', this.value, true)"
-                               onchange="updateDetailField(${index}, 'price', this.value, true)">
-                    </div>
-                    <div class="detail-row">
-                        <input type="text" class="detail-input" placeholder="설치위치" value="${safeLocation}" 
-                               onchange="updateDetailField(${index}, 'location', this.value)">
-                        <div class="detail-input" data-total-index="${index}" style="background: #f0f9ff; color: #1d4ed8; font-weight: 600; text-align: right;">
-                            ${safeTotal.toLocaleString()}원
+            try {
+                detailsList.innerHTML = detailItems.map((item, index) => {
+                    // 안전한 값 처리
+                    const safeName = String(item.name || '').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+                    const safeSpec = String(item.spec || '').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+                    const safeUnit = String(item.unit || '개').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+                    const safeLocation = String(item.location || '').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+                    const safeQuantity = parseInt(item.quantity) || 1;
+                    const safePrice = parseInt(item.price) || 0;
+                    const safeTotal = parseInt(item.total) || (safeQuantity * safePrice);
+                    
+                    return `
+                    <div class="detail-item" data-index="${index}">
+                        <div class="detail-row">
+                            <input type="text" class="detail-input" placeholder="품명" value="${safeName}" 
+                                   onchange="updateDetailField(${index}, 'name', this.value)">
+                            <input type="text" class="detail-input" placeholder="규격/비고" value="${safeSpec}" 
+                                   onchange="updateDetailField(${index}, 'spec', this.value)">
                         </div>
-                        <button type="button" class="detail-remove" onclick="removeDetailRow(${index})" title="삭제">
-                            <i class="fas fa-trash"></i>
+                        <div class="detail-row">
+                            <input type="number" class="detail-input" placeholder="수량" value="${safeQuantity}" min="1" 
+                                   oninput="updateDetailField(${index}, 'quantity', this.value, true)"
+                                   onchange="updateDetailField(${index}, 'quantity', this.value, true)">
+                            <input type="text" class="detail-input" placeholder="단위" value="${safeUnit}" 
+                                   onchange="updateDetailField(${index}, 'unit', this.value)">
+                            <input type="number" class="detail-input" placeholder="단가" value="${safePrice}" min="0" 
+                                   oninput="updateDetailField(${index}, 'price', this.value, true)"
+                                   onchange="updateDetailField(${index}, 'price', this.value, true)">
+                        </div>
+                        <div class="detail-row">
+                            <input type="text" class="detail-input" placeholder="설치위치" value="${safeLocation}" 
+                                   onchange="updateDetailField(${index}, 'location', this.value)">
+                            <div class="detail-input detail-total" data-total-index="${index}">
+                                ${safeTotal.toLocaleString()}원
+                            </div>
+                            <button type="button" class="detail-remove" onclick="removeDetailRow(${index})" title="삭제">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                    `;
+                }).join('');
+                
+                console.log('HTML 렌더링 완료');
+                
+            } catch (error) {
+                console.error('HTML 렌더링 오류:', error);
+                detailsList.innerHTML = `
+                    <div style="text-align: center; color: #ef4444; padding: 20px;">
+                        세부품목 표시 중 오류가 발생했습니다.<br>
+                        <button onclick="location.reload()" style="margin-top: 10px; padding: 8px 16px; background: #3b82f6; color: white; border: none; border-radius: 8px;">
+                            페이지 새로고침
                         </button>
                     </div>
-                </div>
                 `;
-            }).join('');
+            }
 
             updateDetailsJSON();
         }
