@@ -29,10 +29,6 @@
 </div>
 
 <div class="main-content">
-<div class="workflow-controls">
-  <button id="connectBtn" class="workflow-btn">🔗 워크플로우 연결</button>
-  <button id="clearConnectionsBtn" class="workflow-btn">🗑️ 연결선 지우기</button>
-</div>
 
 <div class="legend">
   <div class="item"><span class="chip cat-인사"></span>인사</div>
@@ -89,37 +85,6 @@
   </tbody>
 </table>
 
-<!-- SVG 화살표 마커 및 그라디언트 정의 -->
-<svg class="arrow-markers" style="position: absolute; width: 0; height: 0;">
-  <defs>
-    <!-- 기본 연결선 그라디언트 -->
-    <linearGradient id="connectionGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-      <stop offset="0%" style="stop-color:#667eea;stop-opacity:1" />
-      <stop offset="50%" style="stop-color:#764ba2;stop-opacity:1" />
-      <stop offset="100%" style="stop-color:#667eea;stop-opacity:1" />
-    </linearGradient>
-    
-    <!-- 연결 중 그라디언트 -->
-    <linearGradient id="connectingGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-      <stop offset="0%" style="stop-color:#06b6d4;stop-opacity:1" />
-      <stop offset="50%" style="stop-color:#0891b2;stop-opacity:1" />
-      <stop offset="100%" style="stop-color:#06b6d4;stop-opacity:1" />
-    </linearGradient>
-    
-    <!-- 기본 화살표 -->
-    <marker id="arrowhead" markerWidth="12" markerHeight="8" refX="12" refY="4" orient="auto" markerUnits="strokeWidth">
-      <polygon points="0 0, 12 4, 0 8" fill="url(#connectionGradient)" stroke="none" />
-    </marker>
-    
-    <!-- 큰 화살표 (호버용) -->
-    <marker id="arrowheadBig" markerWidth="14" markerHeight="10" refX="14" refY="5" orient="auto" markerUnits="strokeWidth">
-      <polygon points="0 0, 14 5, 0 10" fill="url(#connectionGradient)" stroke="none" />
-    </marker>
-  </defs>
-</svg>
-
-<!-- 워크플로우 연결선을 위한 SVG 컨테이너 -->
-<svg id="connectionSvg" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: 100;"></svg>
 </div>
 
 <script type="module" src="neon-database.js"></script>
