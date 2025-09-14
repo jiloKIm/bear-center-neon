@@ -1,5 +1,7 @@
 let currentDate = null;
 let editingEvent = null;
+let currentMonth = 9; // 2025년 9월부터 시작
+let currentYear = 2025;
 
 const modal = document.getElementById('eventModal');
 const eventForm = document.getElementById('eventForm');
@@ -323,14 +325,109 @@ function findElementById(id) {
          });
 }
 
-// 페이지 로드시 연결선 복원
-document.addEventListener('DOMContentLoaded', function() {
-  loadConnections();
-});
-
 // 윈도우 리사이즈시 연결선 다시 그리기
 window.addEventListener('resize', function() {
   if (connections.length > 0) {
     redrawConnections();
   }
+});
+
+// 월 변경 및 달력 생성 기능
+const monthNames = ['1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월', '11월', '12월'];
+
+// 월 변경 버튼 이벤트
+document.getElementById('prevMonth').addEventListener('click', () => {
+  if (currentMonth > 1) {
+    currentMonth--;
+    updateCalendar();
+  } else if (currentYear > 2025) {
+    currentYear--;
+    currentMonth = 12;
+    updateCalendar();
+  }
+});
+
+document.getElementById('nextMonth').addEventListener('click', () => {
+  if (currentMonth < 12) {
+    currentMonth++;
+    updateCalendar();
+  } else {
+    currentYear++;
+    currentMonth = 1;
+    updateCalendar();
+  }
+});
+
+// 달력 업데이트
+function updateCalendar() {
+  const monthTitle = document.getElementById('currentMonthTitle');
+  const subtitle = document.getElementById('currentSubtitle');
+
+  monthTitle.textContent = `${currentYear}년 ${monthNames[currentMonth - 1]}`;
+  subtitle.textContent = `카테고리별 색상으로 구분된 월간 계획 (${currentYear}년 ${currentMonth}월)`;
+
+  generateCalendar(currentYear, currentMonth);
+}
+
+// 달력 생성
+function generateCalendar(year, month) {
+  const tbody = document.getElementById('calendarBody');
+  tbody.innerHTML = '';
+
+  const firstDay = new Date(year, month - 1, 1);
+  const lastDay = new Date(year, month, 0);
+  const daysInMonth = lastDay.getDate();
+  const startingDay = firstDay.getDay();
+
+  let date = 1;
+  let today = new Date();
+  let isCurrentMonth = (today.getFullYear() === year && today.getMonth() === month - 1);
+
+  for (let i = 0; i < 6; i++) {
+    const row = document.createElement('tr');
+
+    for (let j = 0; j < 7; j++) {
+      const cell = document.createElement('td');
+
+      if (i === 0 && j < startingDay) {
+        cell.classList.add('muted');
+      } else if (date > daysInMonth) {
+        cell.classList.add('muted');
+      } else {
+        cell.setAttribute('data-date', date);
+
+        // 오늘 날짜 표시
+        if (isCurrentMonth && date === today.getDate()) {
+          cell.classList.add('today');
+        }
+
+        cell.innerHTML = `
+          <span class="date">${date}</span>
+          <div class="add-btn">+ 일정 추가</div>
+        `;
+
+        date++;
+      }
+
+      row.appendChild(cell);
+    }
+
+    tbody.appendChild(row);
+
+    // 모든 날짜를 표시했으면 중단
+    if (date > daysInMonth) {
+      break;
+    }
+  }
+
+  // 기존 이벤트 다시 로드
+  if (typeof loadEvents === 'function') {
+    loadEvents();
+  }
+}
+
+// 페이지 로드 시 달력 초기화 및 연결선 복원
+document.addEventListener('DOMContentLoaded', function() {
+  updateCalendar();
+  loadConnections();
 });
