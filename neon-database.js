@@ -232,24 +232,29 @@ function renderEvents(events) {
   
   events.forEach((event, index) => {
     const dateValue = event.date_value || event.dateValue;
-    
-    // 날짜에서 일(day) 부분만 추출
-    let dayOnly = dateValue;
-    if (dateValue && typeof dateValue === 'string') {
-      if (dateValue.includes('-')) {
-        // '2025-09-01 14:30:09.014417' 또는 '2025-09-01' 형식 처리
-        const datePart = dateValue.split(' ')[0]; // 시간 부분 제거
-        dayOnly = datePart.split('-')[2];
-        // 앞의 0 제거 (예: '01' -> '1')
-        dayOnly = parseInt(dayOnly, 10).toString();
+
+    if (!dateValue || typeof dateValue !== 'string') {
+      failCount++;
+      return;
+    }
+
+    // 날짜 파싱: '2025-09-01' 형식에서 년월일 추출
+    const datePart = dateValue.split(' ')[0]; // 시간 부분 제거
+    const [eventYear, eventMonth, eventDay] = datePart.split('-').map(Number);
+
+    // 현재 달력 년월과 일치하는지 확인 (9월만 표시)
+    if (eventMonth !== 9) {
+      if (index < 5) {
+        console.log(`⏭️ [${index}] 9월이 아닌 이벤트 스킵: ${dateValue}`);
       }
+      return;
     }
-    
+
     if (index < 3) { // 처음 3개만 자세한 로그
-      console.log(`🔍 [${index}] 원본날짜: ${dateValue} -> 변환: ${dayOnly}, 이벤트: ${event.title}`);
+      console.log(`🔍 [${index}] 원본날짜: ${dateValue} -> 년:${eventYear}, 월:${eventMonth}, 일:${eventDay}, 이벤트: ${event.title}`);
     }
-    
-    const cell = document.querySelector(`td[data-date="${dayOnly}"]`);
+
+    const cell = document.querySelector(`td[data-date="${eventDay}"]`);
     
     if (cell) {
       const eventElement = document.createElement('div');
@@ -289,7 +294,7 @@ function renderEvents(events) {
     } else {
       failCount++;
       if (index < 5) { // 실패한 것 중 처음 5개만 로그
-        console.error(`❌ [${index}] 날짜 셀 못찾음: ${dayOnly} (원본: ${dateValue})`);
+        console.error(`❌ [${index}] 날짜 셀 못찾음: ${eventDay} (원본: ${dateValue})`);
       }
     }
   });
