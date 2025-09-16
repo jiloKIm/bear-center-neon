@@ -25,13 +25,7 @@ CREATE TABLE inventory_items (
     created_at TIMESTAMP DEFAULT NOW()
 );
 
--- 테스트 데이터 추가
-INSERT INTO schedule_events (date_value, year, month, day, title, category)
-VALUES
-    ('2025-09-01', 2025, 9, 1, '곰 입식 준비', 'gom입식and개소'),
-    ('2025-09-02', 2025, 9, 2, '외부업체 미팅', '외부업체방문'),
-    ('2025-09-03', 2025, 9, 3, '인사 발령', '인사'),
-    ('2025-09-04', 2025, 9, 4, 'MOU 체결', '협약MOU');
+-- 테스트 데이터는 JavaScript에서 동적으로 생성
 
 -- 사업 관리 테스트 데이터 추가
 INSERT INTO inventory_items (type, status, name, amount, quantity, details, notes, installation_location)
