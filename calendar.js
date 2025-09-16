@@ -180,6 +180,9 @@ function updateCalendar() {
 
 // 달력 생성
 function generateCalendar(year, month) {
+  // window.currentMonth를 다시 한번 확실히 설정
+  window.currentMonth = month;
+
   const tbody = document.getElementById('calendarBody');
   tbody.innerHTML = '';
 

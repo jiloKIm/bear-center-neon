@@ -242,11 +242,12 @@ function renderEvents(events) {
     const datePart = dateValue.split(' ')[0]; // 시간 부분 제거
     const [eventYear, eventMonth, eventDay] = datePart.split('-').map(Number);
 
-    // 현재 달력 년월과 일치하는지 확인 (9월만 표시)
-    if (eventMonth !== 9) {
-      if (index < 5) {
-        console.log(`⏭️ [${index}] 9월이 아닌 이벤트 스킵: ${dateValue}`);
-      }
+    // 현재 달력 월과 일치하는지 확인
+    const currentCalendarMonth = window.currentMonth || 9;
+    console.log(`🔍 [${index}] 이벤트 월: ${eventMonth}, 현재 달력 월: ${currentCalendarMonth}, window.currentMonth: ${window.currentMonth}`);
+
+    if (eventMonth !== currentCalendarMonth) {
+      console.log(`⏭️ [${index}] 다른 달 이벤트 스킵: ${dateValue} (이벤트월: ${eventMonth}, 현재월: ${currentCalendarMonth})`);
       return;
     }
 
