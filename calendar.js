@@ -3,6 +3,10 @@ let editingEvent = null;
 let currentMonth = 9; // 2025년 9월부터 시작
 let currentYear = 2025;
 
+// 전역 변수로 설정 (이벤트 렌더링에서 사용)
+window.currentYear = currentYear;
+window.currentMonth = currentMonth;
+
 const modal = document.getElementById('eventModal');
 const eventForm = document.getElementById('eventForm');
 const eventTitle = document.getElementById('eventTitle');
@@ -15,16 +19,31 @@ function openModal(date, event = null) {
   currentDate = date;
   editingEvent = event;
 
+  // 날짜 입력 필드 가져오기
+  const eventYear = document.getElementById('eventYear');
+  const eventMonth = document.getElementById('eventMonth');
+  const eventDay = document.getElementById('eventDay');
+
   if (event) {
     // 기존 이벤트 편집
     eventTitle.value = event.textContent;
     eventCategory.value = event.className.replace('event cat-', '');
     deleteBtn.style.display = 'inline-block';
+
+    // 기존 이벤트의 날짜 정보 설정
+    eventYear.value = currentYear;
+    eventMonth.value = currentMonth;
+    eventDay.value = date;
   } else {
     // 새 이벤트 추가
     eventTitle.value = '';
     eventCategory.value = '인사';
     deleteBtn.style.display = 'none';
+
+    // 클릭한 날짜로 설정
+    eventYear.value = currentYear;
+    eventMonth.value = currentMonth;
+    eventDay.value = date;
   }
 
   modal.style.display = 'block';
@@ -51,23 +70,35 @@ eventForm.onsubmit = async function(e) {
   const title = eventTitle.value.trim();
   const category = eventCategory.value;
 
-  if (!title) return;
+  // 날짜 입력 필드에서 값 가져오기
+  const eventYear = document.getElementById('eventYear');
+  const eventMonth = document.getElementById('eventMonth');
+  const eventDay = document.getElementById('eventDay');
+
+  const year = parseInt(eventYear.value);
+  const month = parseInt(eventMonth.value);
+  const day = parseInt(eventDay.value);
+
+  if (!title || !year || !month || !day) {
+    alert('모든 필드를 입력해주세요.');
+    return;
+  }
 
   try {
     // 날짜를 YYYY-MM-DD 형식으로 변환
-    const day = String(currentDate).padStart(2, '0');
-    const monthStr = String(currentMonth).padStart(2, '0');
-    const fullDate = `${currentYear}-${monthStr}-${day}`;
+    const monthStr = String(month).padStart(2, '0');
+    const dayStr = String(day).padStart(2, '0');
+    const fullDate = `${year}-${monthStr}-${dayStr}`;
 
-    console.log('📅 저장할 날짜:', fullDate, '(원본:', currentDate, ')');
+    console.log('📅 저장할 날짜:', fullDate, '(년:', year, '월:', month, '일:', day, ')');
 
     if (editingEvent) {
       // 기존 이벤트 수정
       const eventId = editingEvent.dataset.eventId;
-      await saveEvent(fullDate, title, category, eventId);
+      await saveEvent(fullDate, title, category, eventId, year, month, day);
     } else {
       // 새 이벤트 추가
-      await saveEvent(fullDate, title, category);
+      await saveEvent(fullDate, title, category, null, year, month, day);
     }
 
     // 항상 전체 이벤트를 다시 로드하여 UI를 업데이트
@@ -172,7 +203,16 @@ function updateCalendar() {
   monthTitle.textContent = `${currentYear}년 ${monthNames[currentMonth - 1]}`;
   subtitle.textContent = `카테고리별 색상으로 구분된 월간 계획 (${currentYear}년 ${currentMonth}월)`;
 
+  // 전역 변수 업데이트 (이벤트 렌더링에서 사용)
+  window.currentYear = currentYear;
+  window.currentMonth = currentMonth;
+
   generateCalendar(currentYear, currentMonth);
+
+  // 달력 변경 후 해당 월의 이벤트 다시 로드
+  if (window.loadEvents) {
+    window.loadEvents();
+  }
 }
 
 // 달력 생성
@@ -226,10 +266,7 @@ function generateCalendar(year, month) {
     }
   }
 
-  // 기존 이벤트 다시 로드
-  if (typeof loadEvents === 'function') {
-    loadEvents();
-  }
+  // 기존 이벤트 다시 로드는 updateCalendar에서 처리
 }
 
 // 페이지 로드 시 달력 초기화

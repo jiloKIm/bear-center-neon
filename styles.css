@@ -9,6 +9,27 @@ body {
   line-height: 1.5;
 }
 
+/* 날짜 입력 스타일 */
+.date-inputs {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.date-inputs input {
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+  text-align: center;
+}
+
+.date-inputs span {
+  font-size: 14px;
+  color: #666;
+  margin-right: 8px;
+}
+
 /* 네비게이션 스타일 - 공공기관 */
 .main-nav {
   background: #1e3a8a;

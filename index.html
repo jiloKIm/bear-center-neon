@@ -51,6 +51,17 @@
         <input type="text" id="eventTitle" required>
       </div>
       <div class="form-group">
+        <label>날짜:</label>
+        <div class="date-inputs">
+          <input type="number" id="eventYear" placeholder="년" min="2020" max="2050" value="2025" style="width: 80px;">
+          <span>년</span>
+          <input type="number" id="eventMonth" placeholder="월" min="1" max="12" value="9" style="width: 60px;">
+          <span>월</span>
+          <input type="number" id="eventDay" placeholder="일" min="1" max="31" style="width: 60px;">
+          <span>일</span>
+        </div>
+      </div>
+      <div class="form-group">
         <label>카테고리:</label>
         <select id="eventCategory">
           <option value="인사">인사</option>
