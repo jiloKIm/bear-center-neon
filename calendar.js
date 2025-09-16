@@ -172,6 +172,9 @@ function updateCalendar() {
   monthTitle.textContent = `${currentYear}년 ${monthNames[currentMonth - 1]}`;
   subtitle.textContent = `카테고리별 색상으로 구분된 월간 계획 (${currentYear}년 ${currentMonth}월)`;
 
+  // window.currentMonth 업데이트 (neon-database.js의 필터링에서 사용)
+  window.currentMonth = currentMonth;
+
   generateCalendar(currentYear, currentMonth);
 }
 
@@ -234,5 +237,7 @@ function generateCalendar(year, month) {
 
 // 페이지 로드 시 달력 초기화
 document.addEventListener('DOMContentLoaded', function() {
+  // window.currentMonth 초기 설정
+  window.currentMonth = currentMonth;
   updateCalendar();
 });
