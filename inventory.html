@@ -8,6 +8,8 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <!-- 한글 폰트 지원을 위한 추가 라이브러리 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.23/jspdf.plugin.autotable.min.js"></script>
     <style>
         * {
             margin: 0;
@@ -2159,51 +2161,116 @@
                 const { jsPDF } = window.jspdf;
                 const pdf = new jsPDF('p', 'mm', 'a4');
 
-                // 한글 폰트 설정 (기본 폰트 사용)
-                pdf.setFont('helvetica');
+                // 테이블 데이터 준비
+                const tableData = allItems.map((item, index) => [
+                    (index + 1).toString(),
+                    item.name || '',
+                    item.type || '',
+                    item.status || '',
+                    (item.amount || 0).toLocaleString() + '원',
+                    item.installation_location || '',
+                    item.notes || ''
+                ]);
 
-                // 제목
-                pdf.setFontSize(20);
-                pdf.text('사육곰 센터 사업 관리 보고서', 20, 30);
+                // 요약 정보
+                const totalAmount = allItems.reduce((sum, item) => sum + (item.amount || 0), 0);
+                const totalBudget = Object.values(budgetAllocation).reduce((sum, budget) => sum + budget, 0);
 
-                // 현재 날짜
+                // 제목 및 기본 정보
+                pdf.setFontSize(18);
+                pdf.text('🐾 사육곰 센터 사업 관리 보고서', 20, 25);
+
                 pdf.setFontSize(12);
-                pdf.text('Generated: ' + new Date().toLocaleDateString(), 20, 45);
+                pdf.text(`작성일: ${new Date().toLocaleDateString('ko-KR')}`, 20, 35);
 
                 // 요약 정보
                 pdf.setFontSize(14);
-                pdf.text('Summary', 20, 65);
+                pdf.text('📊 전체 현황', 20, 50);
                 pdf.setFontSize(11);
-                pdf.text(`Total Items: ${allItems.length}`, 20, 75);
-                pdf.text(`Total Amount: ${allItems.reduce((sum, item) => sum + item.amount, 0).toLocaleString()} KRW`, 20, 85);
+                pdf.text(`• 총 건수: ${allItems.length}건`, 25, 60);
+                pdf.text(`• 총 지출: ${totalAmount.toLocaleString()}원`, 25, 68);
+                pdf.text(`• 전체 예산: ${totalBudget.toLocaleString()}원`, 25, 76);
+                pdf.text(`• 남은 예산: ${(totalBudget - totalAmount).toLocaleString()}원`, 25, 84);
 
-                // 항목 리스트
-                let yPos = 100;
+                // 테이블 생성
+                pdf.autoTable({
+                    head: [['번호', '사업명', '구분', '상태', '금액', '카테고리', '비고']],
+                    body: tableData,
+                    startY: 95,
+                    styles: {
+                        font: 'helvetica',
+                        fontSize: 9,
+                        cellPadding: 3,
+                        overflow: 'linebreak',
+                        halign: 'left'
+                    },
+                    headStyles: {
+                        fillColor: [30, 58, 138],
+                        textColor: 255,
+                        fontSize: 10,
+                        fontStyle: 'bold'
+                    },
+                    columnStyles: {
+                        0: {cellWidth: 15, halign: 'center'},
+                        1: {cellWidth: 35},
+                        2: {cellWidth: 20, halign: 'center'},
+                        3: {cellWidth: 20, halign: 'center'},
+                        4: {cellWidth: 25, halign: 'right'},
+                        5: {cellWidth: 25, halign: 'center'},
+                        6: {cellWidth: 35}
+                    },
+                    margin: {left: 15, right: 15},
+                    theme: 'grid'
+                });
+
+                // 카테고리별 예산 현황
+                const finalY = pdf.lastAutoTable.finalY || 95;
                 pdf.setFontSize(14);
-                pdf.text('Items List', 20, yPos);
-                yPos += 15;
+                pdf.text('💰 카테고리별 예산 현황', 20, finalY + 15);
 
-                allItems.forEach((item, index) => {
-                    if (yPos > 250) {
-                        pdf.addPage();
-                        yPos = 30;
-                    }
+                const categoryData = Object.keys(budgetAllocation).map(category => {
+                    const allocated = budgetAllocation[category];
+                    const used = allItems
+                        .filter(item => item.installation_location === category)
+                        .reduce((sum, item) => sum + (item.amount || 0), 0);
+                    const remaining = allocated - used;
 
-                    pdf.setFontSize(11);
-                    pdf.text(`${index + 1}. ${item.name}`, 20, yPos);
-                    pdf.text(`Type: ${item.type}`, 25, yPos + 8);
-                    pdf.text(`Status: ${item.status}`, 25, yPos + 16);
-                    pdf.text(`Amount: ${item.amount.toLocaleString()} KRW`, 25, yPos + 24);
-                    if (item.installation_location) {
-                        pdf.text(`Location: ${item.installation_location}`, 25, yPos + 32);
-                        yPos += 40;
-                    } else {
-                        yPos += 35;
-                    }
+                    return [
+                        category,
+                        allocated.toLocaleString() + '원',
+                        used.toLocaleString() + '원',
+                        remaining.toLocaleString() + '원',
+                        remaining < 0 ? '예산 초과' : '정상'
+                    ];
+                });
+
+                pdf.autoTable({
+                    head: [['카테고리', '할당 예산', '사용 금액', '잔여 예산', '상태']],
+                    body: categoryData,
+                    startY: finalY + 25,
+                    styles: {
+                        font: 'helvetica',
+                        fontSize: 10,
+                        cellPadding: 4
+                    },
+                    headStyles: {
+                        fillColor: [59, 130, 246],
+                        textColor: 255,
+                        fontSize: 11,
+                        fontStyle: 'bold'
+                    },
+                    columnStyles: {
+                        0: {cellWidth: 35, halign: 'center'},
+                        1: {cellWidth: 35, halign: 'right'},
+                        2: {cellWidth: 35, halign: 'right'},
+                        3: {cellWidth: 35, halign: 'right'},
+                        4: {cellWidth: 25, halign: 'center'}
+                    },
+                    margin: {left: 15, right: 15}
                 });
 
                 // PDF 저장
-                pdf.save(`사업관리보고서_${new Date().toISOString().split('T')[0]}.pdf`);
+                pdf.save(`사육곰센터_사업관리보고서_${new Date().toISOString().split('T')[0]}.pdf`);
                 showMessage('PDF가 생성되었습니다!', 'success');
 
             } catch (error) {
@@ -2232,101 +2299,151 @@
                 const { jsPDF } = window.jspdf;
                 const pdf = new jsPDF('p', 'mm', 'a4');
 
-                // 한글 폰트 설정
-                pdf.setFont('helvetica');
+                // 필터링된 항목들
+                const itemsToExport = filteredItems;
+                const totalAmount = itemsToExport.reduce((sum, item) => sum + (item.amount || 0), 0);
 
-                // 제목
-                pdf.setFontSize(20);
-                pdf.text('사육곰 센터 사업 관리 보고서 (필터링)', 20, 30);
+                // 테이블 데이터 준비
+                const tableData = itemsToExport.map((item, index) => [
+                    (index + 1).toString(),
+                    item.name || '',
+                    item.type || '',
+                    item.status || '',
+                    (item.amount || 0).toLocaleString() + '원',
+                    item.installation_location || '',
+                    item.notes || ''
+                ]);
 
-                // 현재 날짜
+                // 제목 및 기본 정보
+                pdf.setFontSize(18);
+                pdf.text('🐾 사육곰 센터 사업 관리 보고서 (필터링)', 20, 25);
+
                 pdf.setFontSize(12);
-                pdf.text('Generated: ' + new Date().toLocaleDateString(), 20, 45);
+                pdf.text(`작성일: ${new Date().toLocaleDateString('ko-KR')}`, 20, 35);
 
                 // 필터 조건 표시
                 pdf.setFontSize(12);
-                let filterText = 'Filters: ';
-                if (currentFilters.type) filterText += `Type: ${currentFilters.type} `;
-                if (currentFilters.status) filterText += `Status: ${currentFilters.status} `;
-                if (currentFilters.location) filterText += `Category: ${currentFilters.location} `;
-                pdf.text(filterText, 20, 55);
+                let filterConditions = [];
+                if (currentFilters.type) filterConditions.push(`구분: ${currentFilters.type}`);
+                if (currentFilters.status) filterConditions.push(`상태: ${currentFilters.status}`);
+                if (currentFilters.location) filterConditions.push(`카테고리: ${currentFilters.location}`);
 
-                // 필터링된 항목들 사용
-                const itemsToExport = filteredItems;
-                const totalAmount = itemsToExport.reduce((sum, item) => sum + item.amount, 0);
+                if (filterConditions.length > 0) {
+                    pdf.text(`필터 조건: ${filterConditions.join(', ')}`, 20, 45);
+                }
 
                 // 요약 정보
                 pdf.setFontSize(14);
-                pdf.text('Summary', 20, 75);
+                pdf.text('📊 필터링 결과', 20, 60);
                 pdf.setFontSize(11);
-                pdf.text(`Filtered Items: ${itemsToExport.length}`, 20, 85);
-                pdf.text(`Total Amount: ${totalAmount.toLocaleString()} KRW`, 20, 95);
+                pdf.text(`• 선택된 건수: ${itemsToExport.length}건`, 25, 70);
+                pdf.text(`• 선택된 항목 총액: ${totalAmount.toLocaleString()}원`, 25, 78);
 
-                // 카테고리별 세부 정보
+                // 카테고리별 세부 정보 (카테고리 필터가 있는 경우)
                 if (currentFilters.location) {
                     const budgetAllocated = budgetAllocation[currentFilters.location] || 0;
                     const remaining = budgetAllocated - totalAmount;
-                    pdf.text(`Budget Allocated: ${budgetAllocated.toLocaleString()} KRW`, 20, 105);
-                    pdf.text(`Remaining Budget: ${remaining.toLocaleString()} KRW`, 20, 115);
+                    pdf.text(`• ${currentFilters.location} 할당 예산: ${budgetAllocated.toLocaleString()}원`, 25, 86);
+                    pdf.text(`• ${currentFilters.location} 잔여 예산: ${remaining.toLocaleString()}원`, 25, 94);
+                    pdf.text(`• 예산 상태: ${remaining < 0 ? '예산 초과' : '정상'}`, 25, 102);
                 }
 
-                // 항목 리스트
-                let yPos = currentFilters.location ? 130 : 110;
-                pdf.setFontSize(14);
-                pdf.text('Items List', 20, yPos);
-                yPos += 15;
+                // 시작 Y 위치 결정
+                let startY = currentFilters.location ? 115 : 90;
 
-                itemsToExport.forEach((item, index) => {
-                    if (yPos > 250) {
-                        pdf.addPage();
-                        yPos = 30;
-                    }
+                // 테이블 생성
+                pdf.autoTable({
+                    head: [['번호', '사업명', '구분', '상태', '금액', '카테고리', '비고']],
+                    body: tableData,
+                    startY: startY,
+                    styles: {
+                        font: 'helvetica',
+                        fontSize: 9,
+                        cellPadding: 3,
+                        overflow: 'linebreak',
+                        halign: 'left'
+                    },
+                    headStyles: {
+                        fillColor: [34, 197, 94],
+                        textColor: 255,
+                        fontSize: 10,
+                        fontStyle: 'bold'
+                    },
+                    columnStyles: {
+                        0: {cellWidth: 15, halign: 'center'},
+                        1: {cellWidth: 35},
+                        2: {cellWidth: 20, halign: 'center'},
+                        3: {cellWidth: 20, halign: 'center'},
+                        4: {cellWidth: 25, halign: 'right'},
+                        5: {cellWidth: 25, halign: 'center'},
+                        6: {cellWidth: 35}
+                    },
+                    margin: {left: 15, right: 15},
+                    theme: 'grid'
+                });
 
-                    pdf.setFontSize(11);
-                    pdf.text(`${index + 1}. ${item.name}`, 20, yPos);
-                    pdf.text(`Type: ${item.type}`, 25, yPos + 8);
-                    pdf.text(`Status: ${item.status}`, 25, yPos + 16);
-                    pdf.text(`Amount: ${item.amount.toLocaleString()} KRW`, 25, yPos + 24);
-                    if (item.installation_location) {
-                        pdf.text(`Category: ${item.installation_location}`, 25, yPos + 32);
-                    }
-                    if (item.notes) {
-                        pdf.text(`Notes: ${item.notes.substring(0, 50)}...`, 25, yPos + 40);
-                        yPos += 50;
-                    } else {
-                        yPos += 42;
-                    }
+                // 세부품목이 있는 경우 별도 테이블 추가
+                const itemsWithDetails = itemsToExport.filter(item => item.details);
+                if (itemsWithDetails.length > 0) {
+                    const finalY = pdf.lastAutoTable.finalY || startY;
+                    pdf.setFontSize(14);
+                    pdf.text('📋 세부품목 내역', 20, finalY + 15);
 
-                    // 세부품목이 있는 경우 추가
-                    if (item.details) {
+                    const detailsData = [];
+                    itemsWithDetails.forEach(item => {
                         try {
                             const details = JSON.parse(item.details);
                             if (details && details.length > 0) {
-                                pdf.setFontSize(9);
-                                pdf.text('Details:', 25, yPos);
-                                yPos += 8;
-                                details.slice(0, 3).forEach(detail => {
-                                    if (yPos > 250) {
-                                        pdf.addPage();
-                                        yPos = 30;
-                                    }
-                                    pdf.text(`- ${detail.name}: ${detail.quantity} ${detail.unit} @ ${detail.price.toLocaleString()}원`, 30, yPos);
-                                    yPos += 6;
+                                details.forEach(detail => {
+                                    detailsData.push([
+                                        item.name,
+                                        detail.name || '',
+                                        detail.spec || '',
+                                        (detail.quantity || 0).toString() + ' ' + (detail.unit || ''),
+                                        (detail.price || 0).toLocaleString() + '원',
+                                        ((detail.quantity || 0) * (detail.price || 0)).toLocaleString() + '원',
+                                        detail.location || ''
+                                    ]);
                                 });
-                                if (details.length > 3) {
-                                    pdf.text(`... and ${details.length - 3} more items`, 30, yPos);
-                                    yPos += 6;
-                                }
-                                yPos += 5;
                             }
                         } catch (e) {
                             console.log('세부품목 파싱 오류:', e);
                         }
+                    });
+
+                    if (detailsData.length > 0) {
+                        pdf.autoTable({
+                            head: [['사업명', '품목명', '규격', '수량', '단가', '금액', '위치']],
+                            body: detailsData,
+                            startY: finalY + 25,
+                            styles: {
+                                font: 'helvetica',
+                                fontSize: 8,
+                                cellPadding: 2,
+                                overflow: 'linebreak'
+                            },
+                            headStyles: {
+                                fillColor: [168, 85, 247],
+                                textColor: 255,
+                                fontSize: 9,
+                                fontStyle: 'bold'
+                            },
+                            columnStyles: {
+                                0: {cellWidth: 25},
+                                1: {cellWidth: 25},
+                                2: {cellWidth: 25},
+                                3: {cellWidth: 20, halign: 'center'},
+                                4: {cellWidth: 20, halign: 'right'},
+                                5: {cellWidth: 20, halign: 'right'},
+                                6: {cellWidth: 20, halign: 'center'}
+                            },
+                            margin: {left: 15, right: 15}
+                        });
                     }
-                });
+                }
 
                 // 파일명 생성
-                let fileName = '사업관리보고서';
+                let fileName = '사육곰센터_필터링보고서';
                 if (currentFilters.type) fileName += `_${currentFilters.type}`;
                 if (currentFilters.status) fileName += `_${currentFilters.status}`;
                 if (currentFilters.location) fileName += `_${currentFilters.location}`;
