@@ -1,7 +1,10 @@
 let currentDate = null;
 let editingEvent = null;
-let currentMonth = 9; // 2025년 9월부터 시작
-let currentYear = 2025;
+
+// 오늘 날짜 기준으로 초기화
+const today = new Date();
+let currentMonth = today.getMonth() + 1; // 현재 월 (1-12)
+let currentYear = today.getFullYear(); // 현재 년
 
 // 전역 변수로 설정 (이벤트 렌더링에서 사용)
 window.currentYear = currentYear;
@@ -177,7 +180,7 @@ document.getElementById('prevMonth').addEventListener('click', () => {
   if (currentMonth > 1) {
     currentMonth--;
     updateCalendar();
-  } else if (currentYear > 2025) {
+  } else if (currentYear > 2020) {
     currentYear--;
     currentMonth = 12;
     updateCalendar();
@@ -188,7 +191,7 @@ document.getElementById('nextMonth').addEventListener('click', () => {
   if (currentMonth < 12) {
     currentMonth++;
     updateCalendar();
-  } else {
+  } else if (currentYear < 2030) {
     currentYear++;
     currentMonth = 1;
     updateCalendar();
