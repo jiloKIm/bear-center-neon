@@ -1,7 +1,14 @@
 let currentDate = null;
 let editingEvent = null;
-let currentMonth = 9; // 2025년 9월부터 시작
-let currentYear = 2025;
+
+// 현재 날짜 기준으로 초기화
+const today = new Date();
+let currentMonth = today.getMonth() + 1; // 현재 월 (1-12)
+let currentYear = today.getFullYear(); // 현재 년
+
+// 전역 변수로 설정 (이벤트 렌더링에서 사용)
+window.currentYear = currentYear;
+window.currentMonth = currentMonth;
 
 const modal = document.getElementById('eventModal');
 const eventForm = document.getElementById('eventForm');
@@ -172,7 +179,16 @@ function updateCalendar() {
   monthTitle.textContent = `${currentYear}년 ${monthNames[currentMonth - 1]}`;
   subtitle.textContent = `카테고리별 색상으로 구분된 월간 계획 (${currentYear}년 ${currentMonth}월)`;
 
+  // 전역 변수 업데이트 (이벤트 렌더링에서 사용)
+  window.currentYear = currentYear;
+  window.currentMonth = currentMonth;
+
   generateCalendar(currentYear, currentMonth);
+
+  // 달력 변경 후 해당 월의 이벤트 다시 로드
+  if (window.loadEvents) {
+    window.loadEvents();
+  }
 }
 
 // 달력 생성
@@ -226,10 +242,7 @@ function generateCalendar(year, month) {
     }
   }
 
-  // 기존 이벤트 다시 로드
-  if (typeof loadEvents === 'function') {
-    loadEvents();
-  }
+  // 기존 이벤트는 updateCalendar에서 처리
 }
 
 // 페이지 로드 시 달력 초기화

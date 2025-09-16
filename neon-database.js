@@ -216,52 +216,64 @@ function loadEventsFromStorage() {
 function renderEvents(events) {
   console.log('🎨 이벤트 렌더링:', events.length, '개');
   console.log('📄 이벤트 데이터 샘플:', events.slice(0, 3));
-  
+
   // 기존 동적 이벤트 제거
   document.querySelectorAll('.event[data-event-id]').forEach(event => {
     console.log('🗑️ 기존 이벤트 제거:', event.textContent);
     event.remove();
   });
-  
+
+  // 현재 달력의 년월 정보 가져오기
+  const currentCalendarYear = window.currentYear || 2025;
+  const currentCalendarMonth = window.currentMonth || 9;
+
+  console.log(`📅 현재 달력: ${currentCalendarYear}년 ${currentCalendarMonth}월`);
+
   // 먼저 사용 가능한 셀들 확인
   const availableCells = document.querySelectorAll('td[data-date]');
   console.log('📅 사용 가능한 날짜 셀들:', Array.from(availableCells).map(cell => cell.getAttribute('data-date')));
-  
+
   let successCount = 0;
   let failCount = 0;
-  
+
   events.forEach((event, index) => {
     const dateValue = event.date_value || event.dateValue;
-    
-    // 날짜에서 일(day) 부분만 추출
-    let dayOnly = dateValue;
-    if (dateValue && typeof dateValue === 'string') {
-      if (dateValue.includes('-')) {
-        // '2025-09-01 14:30:09.014417' 또는 '2025-09-01' 형식 처리
-        const datePart = dateValue.split(' ')[0]; // 시간 부분 제거
-        dayOnly = datePart.split('-')[2];
-        // 앞의 0 제거 (예: '01' -> '1')
-        dayOnly = parseInt(dayOnly, 10).toString();
+
+    if (!dateValue || typeof dateValue !== 'string') {
+      failCount++;
+      return;
+    }
+
+    // 날짜 파싱: '2025-09-01' 형식에서 년월일 추출
+    const datePart = dateValue.split(' ')[0]; // 시간 부분 제거
+    const [eventYear, eventMonth, eventDay] = datePart.split('-').map(Number);
+
+    // 현재 달력 년월과 일치하는지 확인
+    if (eventYear !== currentCalendarYear || eventMonth !== currentCalendarMonth) {
+      if (index < 5) {
+        console.log(`⏭️ [${index}] 다른 달 이벤트 스킵: ${dateValue} (현재: ${currentCalendarYear}-${currentCalendarMonth})`);
       }
+      return;
     }
-    
+
     if (index < 3) { // 처음 3개만 자세한 로그
-      console.log(`🔍 [${index}] 원본날짜: ${dateValue} -> 변환: ${dayOnly}, 이벤트: ${event.title}`);
+      console.log(`🔍 [${index}] 원본날짜: ${dateValue} -> 년:${eventYear}, 월:${eventMonth}, 일:${eventDay}, 이벤트: ${event.title}`);
     }
-    
-    const cell = document.querySelector(`td[data-date="${dayOnly}"]`);
-    
+
+    // 일(day)로 셀 찾기
+    const cell = document.querySelector(`td[data-date="${eventDay}"]`);
+
     if (cell) {
       const eventElement = document.createElement('div');
       eventElement.className = `event cat-${event.category}`;
       eventElement.textContent = event.title;
       eventElement.setAttribute('title', getCategoryName(event.category));
       eventElement.dataset.eventId = event.id;
-      
+
       if (index < 3) {
         console.log(`✨ [${index}] 이벤트 생성:`, eventElement.textContent, eventElement.className);
       }
-      
+
       const addBtn = cell.querySelector('.add-btn');
       if (addBtn) {
         cell.insertBefore(eventElement, addBtn);
@@ -270,30 +282,20 @@ function renderEvents(events) {
         cell.appendChild(eventElement);
         console.log('📍 cell 마지막에 추가');
       }
-      
-      // 스타일 확인
-      const computedStyle = window.getComputedStyle(eventElement);
-      console.log(`🎨 [${index}] 스타일 확인:`, {
-        display: computedStyle.display,
-        visibility: computedStyle.visibility,
-        opacity: computedStyle.opacity,
-        backgroundColor: computedStyle.backgroundColor
-      });
-      
+
       successCount++;
-      
+
       if (index < 3) {
         console.log(`📌 [${index}] 이벤트 추가 완료 - DOM에 연결됨:`, document.contains(eventElement));
-        console.log(`📌 [${index}] 셀 내용:`, cell.innerHTML.substring(0, 200));
       }
     } else {
       failCount++;
       if (index < 5) { // 실패한 것 중 처음 5개만 로그
-        console.error(`❌ [${index}] 날짜 셀 못찾음: ${dayOnly} (원본: ${dateValue})`);
+        console.error(`❌ [${index}] 날짜 셀 못찾음: ${eventDay} (원본: ${dateValue})`);
       }
     }
   });
-  
+
   console.log(`✅ 렌더링 완료 - 성공: ${successCount}, 실패: ${failCount}`);
 }
 
