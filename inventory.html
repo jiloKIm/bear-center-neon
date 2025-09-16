@@ -2153,121 +2153,153 @@
             }
         }
 
-        // PDF 생성
+        // HTML을 PDF로 변환하는 함수
         async function generatePDF() {
             showMessage('PDF를 생성하고 있습니다...', 'info');
 
             try {
-                const { jsPDF } = window.jspdf;
-                const pdf = new jsPDF('p', 'mm', 'a4');
+                // HTML 컨테이너 생성
+                const pdfContainer = document.getElementById('pdfContainer');
 
-                // 테이블 데이터 준비
-                const tableData = allItems.map((item, index) => [
-                    (index + 1).toString(),
-                    item.name || '',
-                    item.type || '',
-                    item.status || '',
-                    (item.amount || 0).toLocaleString() + '원',
-                    item.installation_location || '',
-                    item.notes || ''
-                ]);
-
-                // 요약 정보
+                // 요약 정보 계산
                 const totalAmount = allItems.reduce((sum, item) => sum + (item.amount || 0), 0);
                 const totalBudget = Object.values(budgetAllocation).reduce((sum, budget) => sum + budget, 0);
 
-                // 제목 및 기본 정보
-                pdf.setFontSize(18);
-                pdf.text('🐾 사육곰 센터 사업 관리 보고서', 20, 25);
-
-                pdf.setFontSize(12);
-                pdf.text(`작성일: ${new Date().toLocaleDateString('ko-KR')}`, 20, 35);
-
-                // 요약 정보
-                pdf.setFontSize(14);
-                pdf.text('📊 전체 현황', 20, 50);
-                pdf.setFontSize(11);
-                pdf.text(`• 총 건수: ${allItems.length}건`, 25, 60);
-                pdf.text(`• 총 지출: ${totalAmount.toLocaleString()}원`, 25, 68);
-                pdf.text(`• 전체 예산: ${totalBudget.toLocaleString()}원`, 25, 76);
-                pdf.text(`• 남은 예산: ${(totalBudget - totalAmount).toLocaleString()}원`, 25, 84);
-
-                // 테이블 생성
-                pdf.autoTable({
-                    head: [['번호', '사업명', '구분', '상태', '금액', '카테고리', '비고']],
-                    body: tableData,
-                    startY: 95,
-                    styles: {
-                        font: 'helvetica',
-                        fontSize: 9,
-                        cellPadding: 3,
-                        overflow: 'linebreak',
-                        halign: 'left'
-                    },
-                    headStyles: {
-                        fillColor: [30, 58, 138],
-                        textColor: 255,
-                        fontSize: 10,
-                        fontStyle: 'bold'
-                    },
-                    columnStyles: {
-                        0: {cellWidth: 15, halign: 'center'},
-                        1: {cellWidth: 35},
-                        2: {cellWidth: 20, halign: 'center'},
-                        3: {cellWidth: 20, halign: 'center'},
-                        4: {cellWidth: 25, halign: 'right'},
-                        5: {cellWidth: 25, halign: 'center'},
-                        6: {cellWidth: 35}
-                    },
-                    margin: {left: 15, right: 15},
-                    theme: 'grid'
-                });
-
-                // 카테고리별 예산 현황
-                const finalY = pdf.lastAutoTable.finalY || 95;
-                pdf.setFontSize(14);
-                pdf.text('💰 카테고리별 예산 현황', 20, finalY + 15);
-
-                const categoryData = Object.keys(budgetAllocation).map(category => {
+                // 카테고리별 예산 현황 계산
+                const categoryStats = Object.keys(budgetAllocation).map(category => {
                     const allocated = budgetAllocation[category];
                     const used = allItems
                         .filter(item => item.installation_location === category)
                         .reduce((sum, item) => sum + (item.amount || 0), 0);
                     const remaining = allocated - used;
 
-                    return [
+                    return {
                         category,
-                        allocated.toLocaleString() + '원',
-                        used.toLocaleString() + '원',
-                        remaining.toLocaleString() + '원',
-                        remaining < 0 ? '예산 초과' : '정상'
-                    ];
+                        allocated,
+                        used,
+                        remaining,
+                        status: remaining < 0 ? '예산 초과' : '정상'
+                    };
                 });
 
-                pdf.autoTable({
-                    head: [['카테고리', '할당 예산', '사용 금액', '잔여 예산', '상태']],
-                    body: categoryData,
-                    startY: finalY + 25,
-                    styles: {
-                        font: 'helvetica',
-                        fontSize: 10,
-                        cellPadding: 4
-                    },
-                    headStyles: {
-                        fillColor: [59, 130, 246],
-                        textColor: 255,
-                        fontSize: 11,
-                        fontStyle: 'bold'
-                    },
-                    columnStyles: {
-                        0: {cellWidth: 35, halign: 'center'},
-                        1: {cellWidth: 35, halign: 'right'},
-                        2: {cellWidth: 35, halign: 'right'},
-                        3: {cellWidth: 35, halign: 'right'},
-                        4: {cellWidth: 25, halign: 'center'}
-                    },
-                    margin: {left: 15, right: 15}
+                // HTML 내용 생성
+                pdfContainer.innerHTML = `
+                    <div style="font-family: 'Malgun Gothic', '맑은 고딕', sans-serif; padding: 20px; background: white; width: 750px;">
+                        <div style="text-align: center; margin-bottom: 30px;">
+                            <h1 style="color: #1e3a8a; font-size: 24px; margin-bottom: 10px;">🐾 사육곰 센터 사업 관리 보고서</h1>
+                            <p style="color: #6b7280; font-size: 14px;">작성일: ${new Date().toLocaleDateString('ko-KR')}</p>
+                        </div>
+
+                        <div style="margin-bottom: 30px; padding: 20px; background: #f8fafc; border-radius: 8px;">
+                            <h2 style="color: #1e40af; font-size: 18px; margin-bottom: 15px;">📊 전체 현황</h2>
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                                <div>• 총 건수: <strong>${allItems.length}건</strong></div>
+                                <div>• 총 지출: <strong>${totalAmount.toLocaleString()}원</strong></div>
+                                <div>• 전체 예산: <strong>${totalBudget.toLocaleString()}원</strong></div>
+                                <div>• 남은 예산: <strong>${(totalBudget - totalAmount).toLocaleString()}원</strong></div>
+                            </div>
+                        </div>
+
+                        <div style="margin-bottom: 30px;">
+                            <h2 style="color: #1e40af; font-size: 18px; margin-bottom: 15px;">💰 카테고리별 예산 현황</h2>
+                            <table style="width: 100%; border-collapse: collapse; font-size: 14px;">
+                                <thead>
+                                    <tr style="background: #3b82f6; color: white;">
+                                        <th style="padding: 12px; border: 1px solid #ddd; text-align: center;">카테고리</th>
+                                        <th style="padding: 12px; border: 1px solid #ddd; text-align: center;">할당 예산</th>
+                                        <th style="padding: 12px; border: 1px solid #ddd; text-align: center;">사용 금액</th>
+                                        <th style="padding: 12px; border: 1px solid #ddd; text-align: center;">잔여 예산</th>
+                                        <th style="padding: 12px; border: 1px solid #ddd; text-align: center;">상태</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    ${categoryStats.map(cat => `
+                                        <tr>
+                                            <td style="padding: 10px; border: 1px solid #ddd; text-align: center;">${cat.category}</td>
+                                            <td style="padding: 10px; border: 1px solid #ddd; text-align: right;">${cat.allocated.toLocaleString()}원</td>
+                                            <td style="padding: 10px; border: 1px solid #ddd; text-align: right;">${cat.used.toLocaleString()}원</td>
+                                            <td style="padding: 10px; border: 1px solid #ddd; text-align: right;">${cat.remaining.toLocaleString()}원</td>
+                                            <td style="padding: 10px; border: 1px solid #ddd; text-align: center; color: ${cat.status === '예산 초과' ? '#dc2626' : '#059669'};">${cat.status}</td>
+                                        </tr>
+                                    `).join('')}
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div>
+                            <h2 style="color: #1e40af; font-size: 18px; margin-bottom: 15px;">📋 사업 목록</h2>
+                            <table style="width: 100%; border-collapse: collapse; font-size: 12px;">
+                                <thead>
+                                    <tr style="background: #1e3a8a; color: white;">
+                                        <th style="padding: 10px; border: 1px solid #ddd; text-align: center;">번호</th>
+                                        <th style="padding: 10px; border: 1px solid #ddd; text-align: center;">사업명</th>
+                                        <th style="padding: 10px; border: 1px solid #ddd; text-align: center;">구분</th>
+                                        <th style="padding: 10px; border: 1px solid #ddd; text-align: center;">상태</th>
+                                        <th style="padding: 10px; border: 1px solid #ddd; text-align: center;">금액</th>
+                                        <th style="padding: 10px; border: 1px solid #ddd; text-align: center;">카테고리</th>
+                                        <th style="padding: 10px; border: 1px solid #ddd; text-align: center;">비고</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    ${allItems.map((item, index) => `
+                                        <tr>
+                                            <td style="padding: 8px; border: 1px solid #ddd; text-align: center;">${index + 1}</td>
+                                            <td style="padding: 8px; border: 1px solid #ddd;">${item.name || ''}</td>
+                                            <td style="padding: 8px; border: 1px solid #ddd; text-align: center;">${item.type || ''}</td>
+                                            <td style="padding: 8px; border: 1px solid #ddd; text-align: center;">${item.status || ''}</td>
+                                            <td style="padding: 8px; border: 1px solid #ddd; text-align: right;">${(item.amount || 0).toLocaleString()}원</td>
+                                            <td style="padding: 8px; border: 1px solid #ddd; text-align: center;">${item.installation_location || ''}</td>
+                                            <td style="padding: 8px; border: 1px solid #ddd;">${item.notes || ''}</td>
+                                        </tr>
+                                    `).join('')}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                `;
+
+                // 컨테이너를 화면에 표시 (캔버스로 변환하기 위해)
+                pdfContainer.style.position = 'absolute';
+                pdfContainer.style.left = '0';
+                pdfContainer.style.top = '0';
+                pdfContainer.style.zIndex = '-9999';
+
+                // HTML을 캔버스로 변환
+                const canvas = await html2canvas(pdfContainer, {
+                    scale: 2,
+                    useCORS: true,
+                    backgroundColor: '#ffffff',
+                    width: 750,
+                    height: pdfContainer.scrollHeight
                 });
+
+                // 컨테이너 다시 숨기기
+                pdfContainer.style.position = 'absolute';
+                pdfContainer.style.left = '-9999px';
+                pdfContainer.style.top = '-9999px';
+
+                // PDF 생성
+                const { jsPDF } = window.jspdf;
+                const pdf = new jsPDF('p', 'mm', 'a4');
+
+                const imgWidth = 190; // A4 width in mm minus margins
+                const imgHeight = (canvas.height * imgWidth) / canvas.width;
+
+                // 페이지 분할이 필요한 경우 처리
+                let heightLeft = imgHeight;
+                let position = 0;
+
+                // 첫 번째 페이지 추가
+                pdf.addImage(canvas.toDataURL('image/png'), 'PNG', 10, 10, imgWidth, imgHeight);
+                heightLeft -= 297; // A4 height minus margins
+
+                // 추가 페이지가 필요한 경우
+                while (heightLeft >= 0) {
+                    position = heightLeft - imgHeight;
+                    pdf.addPage();
+                    pdf.addImage(canvas.toDataURL('image/png'), 'PNG', 10, position, imgWidth, imgHeight);
+                    heightLeft -= 297;
+                }
 
                 // PDF 저장
                 pdf.save(`사육곰센터_사업관리보고서_${new Date().toISOString().split('T')[0]}.pdf`);
@@ -2296,150 +2328,171 @@
             showMessage('선택된 카테고리 PDF를 생성하고 있습니다...', 'info');
 
             try {
-                const { jsPDF } = window.jspdf;
-                const pdf = new jsPDF('p', 'mm', 'a4');
+                // HTML 컨테이너 생성
+                const pdfContainer = document.getElementById('pdfContainer');
 
                 // 필터링된 항목들
                 const itemsToExport = filteredItems;
                 const totalAmount = itemsToExport.reduce((sum, item) => sum + (item.amount || 0), 0);
 
-                // 테이블 데이터 준비
-                const tableData = itemsToExport.map((item, index) => [
-                    (index + 1).toString(),
-                    item.name || '',
-                    item.type || '',
-                    item.status || '',
-                    (item.amount || 0).toLocaleString() + '원',
-                    item.installation_location || '',
-                    item.notes || ''
-                ]);
-
-                // 제목 및 기본 정보
-                pdf.setFontSize(18);
-                pdf.text('🐾 사육곰 센터 사업 관리 보고서 (필터링)', 20, 25);
-
-                pdf.setFontSize(12);
-                pdf.text(`작성일: ${new Date().toLocaleDateString('ko-KR')}`, 20, 35);
-
-                // 필터 조건 표시
-                pdf.setFontSize(12);
+                // 필터 조건 텍스트 생성
                 let filterConditions = [];
                 if (currentFilters.type) filterConditions.push(`구분: ${currentFilters.type}`);
                 if (currentFilters.status) filterConditions.push(`상태: ${currentFilters.status}`);
                 if (currentFilters.location) filterConditions.push(`카테고리: ${currentFilters.location}`);
 
-                if (filterConditions.length > 0) {
-                    pdf.text(`필터 조건: ${filterConditions.join(', ')}`, 20, 45);
-                }
-
-                // 요약 정보
-                pdf.setFontSize(14);
-                pdf.text('📊 필터링 결과', 20, 60);
-                pdf.setFontSize(11);
-                pdf.text(`• 선택된 건수: ${itemsToExport.length}건`, 25, 70);
-                pdf.text(`• 선택된 항목 총액: ${totalAmount.toLocaleString()}원`, 25, 78);
-
-                // 카테고리별 세부 정보 (카테고리 필터가 있는 경우)
-                if (currentFilters.location) {
-                    const budgetAllocated = budgetAllocation[currentFilters.location] || 0;
-                    const remaining = budgetAllocated - totalAmount;
-                    pdf.text(`• ${currentFilters.location} 할당 예산: ${budgetAllocated.toLocaleString()}원`, 25, 86);
-                    pdf.text(`• ${currentFilters.location} 잔여 예산: ${remaining.toLocaleString()}원`, 25, 94);
-                    pdf.text(`• 예산 상태: ${remaining < 0 ? '예산 초과' : '정상'}`, 25, 102);
-                }
-
-                // 시작 Y 위치 결정
-                let startY = currentFilters.location ? 115 : 90;
-
-                // 테이블 생성
-                pdf.autoTable({
-                    head: [['번호', '사업명', '구분', '상태', '금액', '카테고리', '비고']],
-                    body: tableData,
-                    startY: startY,
-                    styles: {
-                        font: 'helvetica',
-                        fontSize: 9,
-                        cellPadding: 3,
-                        overflow: 'linebreak',
-                        halign: 'left'
-                    },
-                    headStyles: {
-                        fillColor: [34, 197, 94],
-                        textColor: 255,
-                        fontSize: 10,
-                        fontStyle: 'bold'
-                    },
-                    columnStyles: {
-                        0: {cellWidth: 15, halign: 'center'},
-                        1: {cellWidth: 35},
-                        2: {cellWidth: 20, halign: 'center'},
-                        3: {cellWidth: 20, halign: 'center'},
-                        4: {cellWidth: 25, halign: 'right'},
-                        5: {cellWidth: 25, halign: 'center'},
-                        6: {cellWidth: 35}
-                    },
-                    margin: {left: 15, right: 15},
-                    theme: 'grid'
-                });
-
-                // 세부품목이 있는 경우 별도 테이블 추가
-                const itemsWithDetails = itemsToExport.filter(item => item.details);
-                if (itemsWithDetails.length > 0) {
-                    const finalY = pdf.lastAutoTable.finalY || startY;
-                    pdf.setFontSize(14);
-                    pdf.text('📋 세부품목 내역', 20, finalY + 15);
-
-                    const detailsData = [];
-                    itemsWithDetails.forEach(item => {
+                // 세부품목 데이터 준비
+                const detailsData = [];
+                itemsToExport.forEach(item => {
+                    if (item.details) {
                         try {
                             const details = JSON.parse(item.details);
                             if (details && details.length > 0) {
                                 details.forEach(detail => {
-                                    detailsData.push([
-                                        item.name,
-                                        detail.name || '',
-                                        detail.spec || '',
-                                        (detail.quantity || 0).toString() + ' ' + (detail.unit || ''),
-                                        (detail.price || 0).toLocaleString() + '원',
-                                        ((detail.quantity || 0) * (detail.price || 0)).toLocaleString() + '원',
-                                        detail.location || ''
-                                    ]);
+                                    detailsData.push({
+                                        itemName: item.name,
+                                        name: detail.name || '',
+                                        spec: detail.spec || '',
+                                        quantity: detail.quantity || 0,
+                                        unit: detail.unit || '',
+                                        price: detail.price || 0,
+                                        total: (detail.quantity || 0) * (detail.price || 0),
+                                        location: detail.location || ''
+                                    });
                                 });
                             }
                         } catch (e) {
                             console.log('세부품목 파싱 오류:', e);
                         }
-                    });
-
-                    if (detailsData.length > 0) {
-                        pdf.autoTable({
-                            head: [['사업명', '품목명', '규격', '수량', '단가', '금액', '위치']],
-                            body: detailsData,
-                            startY: finalY + 25,
-                            styles: {
-                                font: 'helvetica',
-                                fontSize: 8,
-                                cellPadding: 2,
-                                overflow: 'linebreak'
-                            },
-                            headStyles: {
-                                fillColor: [168, 85, 247],
-                                textColor: 255,
-                                fontSize: 9,
-                                fontStyle: 'bold'
-                            },
-                            columnStyles: {
-                                0: {cellWidth: 25},
-                                1: {cellWidth: 25},
-                                2: {cellWidth: 25},
-                                3: {cellWidth: 20, halign: 'center'},
-                                4: {cellWidth: 20, halign: 'right'},
-                                5: {cellWidth: 20, halign: 'right'},
-                                6: {cellWidth: 20, halign: 'center'}
-                            },
-                            margin: {left: 15, right: 15}
-                        });
                     }
+                });
+
+                // HTML 내용 생성
+                pdfContainer.innerHTML = `
+                    <div style="font-family: 'Malgun Gothic', '맑은 고딕', sans-serif; padding: 20px; background: white; width: 750px;">
+                        <div style="text-align: center; margin-bottom: 30px;">
+                            <h1 style="color: #1e3a8a; font-size: 24px; margin-bottom: 10px;">🐾 사육곰 센터 사업 관리 보고서 (필터링)</h1>
+                            <p style="color: #6b7280; font-size: 14px;">작성일: ${new Date().toLocaleDateString('ko-KR')}</p>
+                            ${filterConditions.length > 0 ? `<p style="color: #059669; font-size: 14px; font-weight: bold;">필터 조건: ${filterConditions.join(', ')}</p>` : ''}
+                        </div>
+
+                        <div style="margin-bottom: 30px; padding: 20px; background: #f0fdf4; border-radius: 8px; border-left: 4px solid #22c55e;">
+                            <h2 style="color: #15803d; font-size: 18px; margin-bottom: 15px;">📊 필터링 결과</h2>
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                                <div>• 선택된 건수: <strong>${itemsToExport.length}건</strong></div>
+                                <div>• 선택된 항목 총액: <strong>${totalAmount.toLocaleString()}원</strong></div>
+                                ${currentFilters.location ? `
+                                    <div>• ${currentFilters.location} 할당 예산: <strong>${(budgetAllocation[currentFilters.location] || 0).toLocaleString()}원</strong></div>
+                                    <div>• ${currentFilters.location} 잔여 예산: <strong>${((budgetAllocation[currentFilters.location] || 0) - totalAmount).toLocaleString()}원</strong></div>
+                                ` : ''}
+                            </div>
+                        </div>
+
+                        <div style="margin-bottom: 30px;">
+                            <h2 style="color: #1e40af; font-size: 18px; margin-bottom: 15px;">📋 선택된 사업 목록</h2>
+                            <table style="width: 100%; border-collapse: collapse; font-size: 12px;">
+                                <thead>
+                                    <tr style="background: #22c55e; color: white;">
+                                        <th style="padding: 10px; border: 1px solid #ddd; text-align: center;">번호</th>
+                                        <th style="padding: 10px; border: 1px solid #ddd; text-align: center;">사업명</th>
+                                        <th style="padding: 10px; border: 1px solid #ddd; text-align: center;">구분</th>
+                                        <th style="padding: 10px; border: 1px solid #ddd; text-align: center;">상태</th>
+                                        <th style="padding: 10px; border: 1px solid #ddd; text-align: center;">금액</th>
+                                        <th style="padding: 10px; border: 1px solid #ddd; text-align: center;">카테고리</th>
+                                        <th style="padding: 10px; border: 1px solid #ddd; text-align: center;">비고</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    ${itemsToExport.map((item, index) => `
+                                        <tr>
+                                            <td style="padding: 8px; border: 1px solid #ddd; text-align: center;">${index + 1}</td>
+                                            <td style="padding: 8px; border: 1px solid #ddd;">${item.name || ''}</td>
+                                            <td style="padding: 8px; border: 1px solid #ddd; text-align: center;">${item.type || ''}</td>
+                                            <td style="padding: 8px; border: 1px solid #ddd; text-align: center;">${item.status || ''}</td>
+                                            <td style="padding: 8px; border: 1px solid #ddd; text-align: right;">${(item.amount || 0).toLocaleString()}원</td>
+                                            <td style="padding: 8px; border: 1px solid #ddd; text-align: center;">${item.installation_location || ''}</td>
+                                            <td style="padding: 8px; border: 1px solid #ddd;">${item.notes || ''}</td>
+                                        </tr>
+                                    `).join('')}
+                                </tbody>
+                            </table>
+                        </div>
+
+                        ${detailsData.length > 0 ? `
+                            <div>
+                                <h2 style="color: #7c3aed; font-size: 18px; margin-bottom: 15px;">📋 세부품목 내역</h2>
+                                <table style="width: 100%; border-collapse: collapse; font-size: 11px;">
+                                    <thead>
+                                        <tr style="background: #a855f7; color: white;">
+                                            <th style="padding: 8px; border: 1px solid #ddd; text-align: center;">사업명</th>
+                                            <th style="padding: 8px; border: 1px solid #ddd; text-align: center;">품목명</th>
+                                            <th style="padding: 8px; border: 1px solid #ddd; text-align: center;">규격</th>
+                                            <th style="padding: 8px; border: 1px solid #ddd; text-align: center;">수량</th>
+                                            <th style="padding: 8px; border: 1px solid #ddd; text-align: center;">단가</th>
+                                            <th style="padding: 8px; border: 1px solid #ddd; text-align: center;">금액</th>
+                                            <th style="padding: 8px; border: 1px solid #ddd; text-align: center;">위치</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        ${detailsData.map(detail => `
+                                            <tr>
+                                                <td style="padding: 6px; border: 1px solid #ddd; font-size: 10px;">${detail.itemName}</td>
+                                                <td style="padding: 6px; border: 1px solid #ddd;">${detail.name}</td>
+                                                <td style="padding: 6px; border: 1px solid #ddd;">${detail.spec}</td>
+                                                <td style="padding: 6px; border: 1px solid #ddd; text-align: center;">${detail.quantity} ${detail.unit}</td>
+                                                <td style="padding: 6px; border: 1px solid #ddd; text-align: right;">${detail.price.toLocaleString()}원</td>
+                                                <td style="padding: 6px; border: 1px solid #ddd; text-align: right;">${detail.total.toLocaleString()}원</td>
+                                                <td style="padding: 6px; border: 1px solid #ddd; text-align: center;">${detail.location}</td>
+                                            </tr>
+                                        `).join('')}
+                                    </tbody>
+                                </table>
+                            </div>
+                        ` : ''}
+                    </div>
+                `;
+
+                // 컨테이너를 화면에 표시 (캔버스로 변환하기 위해)
+                pdfContainer.style.position = 'absolute';
+                pdfContainer.style.left = '0';
+                pdfContainer.style.top = '0';
+                pdfContainer.style.zIndex = '-9999';
+
+                // HTML을 캔버스로 변환
+                const canvas = await html2canvas(pdfContainer, {
+                    scale: 2,
+                    useCORS: true,
+                    backgroundColor: '#ffffff',
+                    width: 750,
+                    height: pdfContainer.scrollHeight
+                });
+
+                // 컨테이너 다시 숨기기
+                pdfContainer.style.position = 'absolute';
+                pdfContainer.style.left = '-9999px';
+                pdfContainer.style.top = '-9999px';
+
+                // PDF 생성
+                const { jsPDF } = window.jspdf;
+                const pdf = new jsPDF('p', 'mm', 'a4');
+
+                const imgWidth = 190; // A4 width in mm minus margins
+                const imgHeight = (canvas.height * imgWidth) / canvas.width;
+
+                // 페이지 분할이 필요한 경우 처리
+                let heightLeft = imgHeight;
+                let position = 0;
+
+                // 첫 번째 페이지 추가
+                pdf.addImage(canvas.toDataURL('image/png'), 'PNG', 10, 10, imgWidth, imgHeight);
+                heightLeft -= 297; // A4 height minus margins
+
+                // 추가 페이지가 필요한 경우
+                while (heightLeft >= 0) {
+                    position = heightLeft - imgHeight;
+                    pdf.addPage();
+                    pdf.addImage(canvas.toDataURL('image/png'), 'PNG', 10, position, imgWidth, imgHeight);
+                    heightLeft -= 297;
                 }
 
                 // 파일명 생성
