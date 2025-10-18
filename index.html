@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>예산 관리 시스템 - 사육곰 센터</title>
+    <title>예산 관리 시스템 - 국립공원공단 사육곰보호센터</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
     <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
     <style>
@@ -1204,7 +1204,7 @@
                     <div class="gov-logo-img">
                         <img src="logo.png" alt="국립공원 로고">
                     </div>
-                    <div class="gov-org-name">국립공원 사육곰 보호센터</div>
+                    <div class="gov-org-name">국립공원공단 사육곰보호센터</div>
                 </div>
             </div>
             <div class="gov-header-right">
@@ -3219,7 +3219,7 @@
 
             // 1. 전체 요약 시트
             const summaryData = [];
-            summaryData.push(['[국립공원 사육곰 보호센터] 2025년도 예산 집행 관리 대장']);
+            summaryData.push(['[국립공원공단 사육곰보호센터] 2025년도 예산 집행 관리 대장']);
             summaryData.push(['작성일자', new Date().toLocaleDateString('ko-KR')]);
             summaryData.push([]);
 
@@ -3391,7 +3391,7 @@
             // 파일 다운로드
             const today = new Date();
                 const dateStr = `${today.getFullYear()}${String(today.getMonth() + 1).padStart(2, '0')}${String(today.getDate()).padStart(2, '0')}`;
-                const fileName = `[국립공원]사육곰센터_예산관리대장_${dateStr}.xlsx`;
+                const fileName = `[국립공원공단]사육곰보호센터_예산관리대장_${dateStr}.xlsx`;
 
                 XLSX.writeFile(wb, fileName);
                 console.log('엑셀 파일 다운로드 완료:', fileName);
