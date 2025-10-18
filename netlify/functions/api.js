@@ -252,11 +252,22 @@ exports.handler = async (event, context) => {
         };
 
     } catch (error) {
-        console.error('Error:', error);
+        console.error('API 오류:', error);
+        console.error('오류 상세:', {
+            message: error.message,
+            stack: error.stack,
+            path: event.path,
+            method: event.httpMethod
+        });
         return {
             statusCode: 500,
             headers,
-            body: JSON.stringify({ error: error.message })
+            body: JSON.stringify({
+                error: error.message,
+                path: event.path,
+                method: event.httpMethod,
+                details: error.stack
+            })
         };
     }
 };
