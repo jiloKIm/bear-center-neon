@@ -1586,7 +1586,11 @@
         };
 
         // API 기본 URL
-        const API_BASE_URL = '/.netlify/functions/api';
+        // 로컬 개발: http://localhost:3000/api
+        // Netlify 배포: /.netlify/functions/api
+        const API_BASE_URL = window.location.hostname === 'localhost'
+            ? 'http://localhost:3000/api'
+            : '/.netlify/functions/api';
 
         // 대분류별 소분류 정의
         const subCategories = {
@@ -2522,8 +2526,11 @@
         let currentEditingCell = null;
 
         function makeCellEditable(cell, type, id) {
+            console.log('makeCellEditable 호출:', { cell, type, id, field: cell.dataset.field });
+
             // 이미 편집 중이면 무시
             if (currentEditingCell) {
+                console.log('이미 편집 중인 셀이 있음');
                 return;
             }
 
@@ -2661,7 +2668,9 @@
                 currentEditingCell = null;
             } catch (error) {
                 console.error('저장 오류:', error);
-                alert('저장 중 오류가 발생했습니다.');
+                console.error('오류 상세:', error.message);
+                console.error('오류 스택:', error.stack);
+                alert('저장 중 오류가 발생했습니다.\n\n오류: ' + error.message + '\n\n브라우저 콘솔(F12)을 확인해주세요.');
                 cancelCellEdit(cell, originalValue, field);
             }
         }
@@ -2739,15 +2748,25 @@
         }
 
         async function updateItemField(itemId, field, value) {
+            console.log('updateItemField 호출:', { itemId, field, value });
+
             // 먼저 해당 품목 찾기
             let itemData = null;
             let categoryId = null;
 
+            // itemId가 숫자인지 확인
+            const numericItemId = Number(itemId);
+            console.log('변환된 itemId:', numericItemId);
+
             for (const [catName, catData] of Object.entries(budgetData.categories)) {
-                const item = catData.items.find(i => i.id === itemId);
+                const item = catData.items.find(i => {
+                    console.log('비교:', i.id, '===', numericItemId, '?', i.id === numericItemId);
+                    return i.id === numericItemId;
+                });
                 if (item) {
                     itemData = item;
                     categoryId = catData.id;
+                    console.log('품목 찾음:', { itemData, categoryId });
                     break;
                 }
             }
@@ -2755,6 +2774,8 @@
             if (!itemData) {
                 throw new Error('품목을 찾을 수 없습니다.');
             }
+
+            console.log('찾은 품목 데이터:', itemData);
 
             // 업데이트할 데이터 준비
             let updateData = {
@@ -2782,7 +2803,12 @@
                 updateData.note = value;
             }
 
-            const response = await fetch(`${API_BASE_URL}/items/${itemId}`, {
+            console.log('전송할 데이터:', updateData);
+
+            const url = `${API_BASE_URL}/items/${itemId}`;
+            console.log('요청 URL:', url);
+
+            const response = await fetch(url, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
@@ -2790,7 +2816,17 @@
                 body: JSON.stringify(updateData)
             });
 
-            if (!response.ok) throw new Error('업데이트 실패');
+            console.log('응답 상태:', response.status, response.statusText);
+
+            if (!response.ok) {
+                const errorText = await response.text();
+                console.error('업데이트 실패:', errorText);
+                console.error('응답 상태:', response.status);
+                throw new Error('업데이트 실패: ' + response.status + ' - ' + errorText);
+            }
+
+            const result = await response.json();
+            console.log('업데이트 성공:', result);
         }
 
         // 서류 확인 모달

@@ -8,8 +8,14 @@ const PORT = process.env.PORT || 3000;
 
 // Middleware
 app.use(cors());
-app.use(express.json());
+app.use(express.json({ charset: 'utf-8' }));
 app.use(express.static('.')); // 정적 파일 제공
+
+// UTF-8 인코딩 헤더 설정
+app.use((req, res, next) => {
+    res.setHeader('Content-Type', 'application/json; charset=utf-8');
+    next();
+});
 
 // Neon DB 연결
 const sql = neon(process.env.DATABASE_URL);
@@ -130,23 +136,32 @@ app.put('/api/items/:id', async (req, res) => {
         const { id } = req.params;
         const { categoryId, name, company, phone, price, quantity, note } = req.body;
 
+        console.log('품목 수정 요청:', { id, body: req.body });
+
+        // 데이터 검증
+        if (!categoryId || !name) {
+            return res.status(400).json({ error: 'categoryId와 name은 필수입니다.' });
+        }
+
         const result = await sql`
             UPDATE items
             SET category_id = ${categoryId},
                 name = ${name},
-                company = ${company},
-                phone = ${phone},
-                price = ${price},
-                quantity = ${quantity},
-                note = ${note}
+                company = ${company || ''},
+                phone = ${phone || ''},
+                price = ${price || 0},
+                quantity = ${quantity || 1},
+                note = ${note || ''}
             WHERE id = ${id}
             RETURNING *
         `;
 
+        console.log('품목 수정 성공:', result[0]);
         res.json(result[0]);
     } catch (error) {
         console.error('Error updating item:', error);
-        res.status(500).json({ error: 'Failed to update item' });
+        console.error('Error details:', error.message);
+        res.status(500).json({ error: 'Failed to update item', details: error.message });
     }
 });
 
