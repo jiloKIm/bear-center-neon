@@ -1,0 +1,2860 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>예산 관리 시스템 - 사육곰 센터</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: '맑은 고딕', 'Malgun Gothic', '돋움', Dotum, sans-serif;
+            background: #f5f7fa;
+            color: #222;
+            line-height: 1.8;
+            min-height: 100vh;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 0;
+            background: white;
+        }
+
+        /* 정부기관 상단 헤더 */
+        .gov-header {
+            background: white;
+            border-bottom: 1px solid #e0e0e0;
+            padding: 8px 0;
+        }
+
+        .gov-header-content {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 0 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .gov-header-left {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .gov-logo-area {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .gov-logo-img {
+            width: 40px;
+            height: 40px;
+            background: #003876;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 20px;
+        }
+
+        .gov-org-name {
+            font-size: 14px;
+            font-weight: 700;
+            color: #003876;
+        }
+
+        .gov-header-right {
+            font-size: 12px;
+            color: #666;
+        }
+
+        /* 정부기관 네비게이션 바 */
+        .gov-top-bar {
+            background: #003876;
+            padding: 0;
+            border-bottom: 3px solid #002a56;
+            position: sticky;
+            top: 0;
+            z-index: 999;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+        }
+
+        .gov-top-content {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 0 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: stretch;
+            gap: 0;
+        }
+
+        .nav-title-full {
+            flex: 1;
+            background: #003876;
+            padding: 16px 0;
+            border-right: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .nav-main-title {
+            color: white;
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            gap: 12px;
+        }
+
+        .fiscal-year-nav {
+            display: inline-block;
+            background: #00509e;
+            color: white;
+            padding: 2px 10px;
+            border-radius: 2px;
+            font-size: 11px;
+            font-weight: 700;
+            border: 1px solid #006ac3;
+        }
+
+        .nav-subtitle {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 12px;
+            font-weight: 400;
+            text-align: left;
+        }
+
+        .nav-actions {
+            display: flex;
+            align-items: center;
+            gap: 0;
+        }
+
+        .nav-action-item {
+            padding: 16px 20px;
+            color: white;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            border-right: 1px solid rgba(255, 255, 255, 0.1);
+            transition: background 0.2s;
+            white-space: nowrap;
+        }
+
+        .nav-action-item:hover {
+            background: #00509e;
+        }
+
+        .nav-action-item i {
+            margin-right: 6px;
+        }
+
+
+        /* 필터 섹션 */
+        .filter-section {
+            background: #f8f9fb;
+            border: 2px solid #d0d0d0;
+            margin: 30px 40px 20px 40px;
+            padding: 0;
+        }
+
+        .filter-header {
+            background: white;
+            padding: 12px 20px;
+            border-bottom: 2px solid #d0d0d0;
+        }
+
+        .filter-header h3 {
+            margin: 0;
+            font-size: 15px;
+            font-weight: 700;
+            color: #003876;
+        }
+
+        .filter-header i {
+            margin-right: 6px;
+        }
+
+        .filter-body {
+            padding: 20px;
+            display: flex;
+            gap: 15px;
+            align-items: flex-end;
+            flex-wrap: wrap;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .filter-label {
+            font-size: 12px;
+            font-weight: 700;
+            color: #333;
+        }
+
+        .filter-select {
+            padding: 8px 12px;
+            border: 1px solid #bbb;
+            background: white;
+            font-size: 13px;
+            min-width: 150px;
+            font-family: '맑은 고딕', sans-serif;
+        }
+
+        .filter-input {
+            padding: 8px 12px;
+            border: 1px solid #bbb;
+            background: white;
+            font-size: 13px;
+            min-width: 160px;
+            font-family: '맑은 고딕', sans-serif;
+        }
+
+        input[type="date"].filter-input {
+            min-width: 160px;
+        }
+
+        .filter-select:focus,
+        .filter-input:focus {
+            outline: none;
+            border-color: #003876;
+        }
+
+        /* 대분류별 예산 현황 */
+        .category-breakdown {
+            margin-bottom: 20px;
+            border: 2px solid #d0d0d0;
+            background: white;
+        }
+
+        .breakdown-header {
+            background: linear-gradient(135deg, #f8f9fb 0%, #e8eaf0 100%);
+            padding: 15px 20px;
+            border-bottom: 2px solid #d0d0d0;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.2s;
+        }
+
+        .breakdown-header:hover {
+            background: linear-gradient(135deg, #e8eaf0 0%, #d8dae5 100%);
+        }
+
+        .breakdown-header-left {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .breakdown-category-name {
+            font-size: 18px;
+            font-weight: 700;
+            color: #003876;
+        }
+
+        .breakdown-budget-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 14px;
+        }
+
+        .breakdown-label {
+            color: #666;
+            font-weight: 600;
+        }
+
+        .breakdown-total {
+            font-weight: 700;
+            color: #003876;
+            font-family: 'Courier New', monospace;
+        }
+
+        .breakdown-used {
+            font-weight: 700;
+            color: #1565c0;
+            font-family: 'Courier New', monospace;
+        }
+
+        .breakdown-remaining {
+            font-weight: 700;
+            font-family: 'Courier New', monospace;
+        }
+
+        .breakdown-remaining.positive {
+            color: #2e7d32;
+        }
+
+        .breakdown-remaining.negative {
+            color: #c62828;
+        }
+
+        .breakdown-rate {
+            font-weight: 700;
+            font-family: 'Courier New', monospace;
+        }
+
+        .breakdown-separator {
+            color: #ccc;
+        }
+
+        .breakdown-toggle {
+            color: #003876;
+            font-size: 18px;
+            transition: transform 0.3s;
+        }
+
+        .breakdown-toggle.expanded {
+            transform: rotate(180deg);
+        }
+
+        .breakdown-body {
+            display: none;
+            padding: 20px;
+            background: #fafafa;
+        }
+
+        .breakdown-body.expanded {
+            display: block;
+        }
+
+        .breakdown-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border: 1px solid #d0d0d0;
+        }
+
+        .breakdown-table th {
+            background: #003876;
+            color: white;
+            padding: 12px;
+            text-align: left;
+            font-size: 13px;
+            font-weight: 700;
+            border: 1px solid #00509e;
+        }
+
+        .breakdown-table td {
+            padding: 10px 12px;
+            border: 1px solid #e0e0e0;
+            font-size: 13px;
+            vertical-align: top;
+        }
+
+        .breakdown-table tr:hover {
+            background: #f5f5f5;
+        }
+
+        .breakdown-item-name {
+            font-weight: 600;
+            color: #111;
+        }
+
+        .breakdown-item-details {
+            color: #666;
+            font-size: 12px;
+            margin-top: 5px;
+            line-height: 1.8;
+        }
+
+        .breakdown-item-details li {
+            margin-left: 15px;
+        }
+
+        /* 통계 카드 - 공문서 스타일 */
+        .stats-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+            gap: 20px;
+            margin: 30px 40px;
+            padding: 0;
+        }
+
+        .stat-card {
+            background: white;
+            border: 2px solid #e0e0e0;
+            padding: 20px 24px;
+            position: relative;
+            transition: all 0.2s ease;
+        }
+
+        .stat-card:hover {
+            border-color: #003876;
+            box-shadow: 0 2px 8px rgba(0, 56, 118, 0.1);
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: #003876;
+        }
+
+        .stat-label {
+            font-size: 13px;
+            color: #555;
+            margin-bottom: 10px;
+            font-weight: 600;
+            padding-left: 15px;
+        }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: #003876;
+            font-family: 'Courier New', monospace;
+            padding-left: 15px;
+        }
+
+        /* 섹션 - 공문서 박스 스타일 */
+        .section {
+            background: white;
+            border: 2px solid #d0d0d0;
+            margin: 30px 40px;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 18px 24px;
+            background: #f8f9fb;
+            border-bottom: 2px solid #d0d0d0;
+        }
+
+        .section-title {
+            font-size: 17px;
+            font-weight: 700;
+            color: #003876;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-title::before {
+            content: '▣';
+            color: #003876;
+            font-size: 18px;
+        }
+
+        .section-body {
+            padding: 24px;
+            background: white;
+        }
+
+        /* 버튼 - 공무원 스타일 */
+        .btn-group {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 9px 18px;
+            border: 1px solid #bbb;
+            border-radius: 0;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: white;
+            color: #333;
+            font-family: '맑은 고딕', sans-serif;
+        }
+
+        .btn:hover {
+            background: #f0f0f0;
+            border-color: #999;
+        }
+
+        .btn-primary {
+            background: #003876;
+            color: white;
+            border-color: #003876;
+        }
+
+        .btn-primary:hover {
+            background: #00509e;
+            border-color: #00509e;
+        }
+
+        .btn-success {
+            background: white;
+            color: #2e7d32;
+            border-color: #2e7d32;
+        }
+
+        .btn-success:hover {
+            background: #2e7d32;
+            color: white;
+        }
+
+        .btn-excel {
+            background: #217346;
+            color: white;
+            border-color: #217346;
+        }
+
+        .btn-excel:hover {
+            background: #1a5c37;
+            border-color: #1a5c37;
+        }
+
+        .btn-warning {
+            background: white;
+            color: #f57c00;
+            border-color: #f57c00;
+        }
+
+        .btn-warning:hover {
+            background: #f57c00;
+            color: white;
+        }
+
+        .btn-danger {
+            background: white;
+            color: #c62828;
+            border-color: #c62828;
+        }
+
+        .btn-danger:hover {
+            background: #c62828;
+            color: white;
+        }
+
+        .btn-sm {
+            padding: 6px 14px;
+            font-size: 12px;
+        }
+
+        /* 테이블 - 공문서 표 스타일 */
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            border: 1px solid #666;
+            margin-top: 10px;
+        }
+
+        .data-table thead {
+            background: #e8eaf0;
+        }
+
+        .data-table th {
+            padding: 12px 8px;
+            text-align: center;
+            font-size: 13px;
+            font-weight: 700;
+            color: #222;
+            border: 1px solid #999;
+        }
+
+        .data-table tbody tr {
+            border: 1px solid #ccc;
+        }
+
+        .data-table tbody tr:hover {
+            background: #f9f9f9;
+        }
+
+        .data-table td {
+            padding: 10px 8px;
+            text-align: center;
+            font-size: 13px;
+            color: #333;
+            border: 1px solid #ccc;
+        }
+
+        .data-table td.text-left {
+            text-align: left;
+        }
+
+        .data-table td.text-right {
+            text-align: right;
+            font-family: 'Courier New', monospace;
+        }
+
+        .data-table .amount {
+            font-weight: 600;
+            color: #111;
+        }
+
+        .data-table .positive {
+            color: #1b5e20;
+            font-weight: 600;
+        }
+
+        .data-table .negative {
+            color: #c62828;
+            font-weight: 600;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 50px 20px;
+            color: #999;
+            background: #fafafa;
+        }
+
+        .empty-state i {
+            font-size: 42px;
+            margin-bottom: 12px;
+            opacity: 0.4;
+            color: #666;
+        }
+
+        /* 뱃지 */
+        .badge-status {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 2px;
+            font-size: 11px;
+            font-weight: 700;
+            border: 1px solid;
+        }
+
+        .badge-status.normal {
+            background: white;
+            color: #2e7d32;
+            border-color: #2e7d32;
+        }
+
+        .badge-status.warning {
+            background: #fff3e0;
+            color: #e65100;
+            border-color: #f57c00;
+        }
+
+        .badge-status.danger {
+            background: #ffebee;
+            color: #c62828;
+            border-color: #c62828;
+        }
+
+        .category-badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border: 1px solid;
+            border-radius: 2px;
+            font-size: 11px;
+            font-weight: 700;
+        }
+
+        .category-badge.물품 {
+            background: white;
+            color: #1565c0;
+            border-color: #1976d2;
+        }
+
+        .category-badge.용역 {
+            background: white;
+            color: #6a1b9a;
+            border-color: #7b1fa2;
+        }
+
+        .category-badge.공사 {
+            background: white;
+            color: #e65100;
+            border-color: #f57c00;
+        }
+
+        /* 지출상태 뱃지 */
+        .status-badge {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 3px;
+            font-size: 11px;
+            font-weight: 700;
+            border: 1px solid;
+        }
+
+        .status-badge.계획 {
+            background: #fff3e0;
+            color: #e65100;
+            border-color: #f57c00;
+        }
+
+        .status-badge.지출진행 {
+            background: #e3f2fd;
+            color: #1565c0;
+            border-color: #1976d2;
+        }
+
+        .status-badge.지출완료 {
+            background: #e8f5e9;
+            color: #2e7d32;
+            border-color: #388e3c;
+        }
+
+        /* 모달 */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            z-index: 9999;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border: 3px solid #003876;
+            width: 90%;
+            max-width: 800px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+        }
+
+        .modal-header {
+            padding: 18px 25px;
+            background: #003876;
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid #002a56;
+        }
+
+        .modal-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: white;
+        }
+
+        .modal-title::before {
+            content: '▣ ';
+            margin-right: 6px;
+        }
+
+        .modal-close {
+            background: white;
+            border: 1px solid white;
+            font-size: 20px;
+            color: #003876;
+            cursor: pointer;
+            padding: 2px 8px;
+            width: 28px;
+            height: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+        }
+
+        .modal-close:hover {
+            background: #f0f0f0;
+        }
+
+        .modal-body {
+            padding: 25px;
+            background: #fafafa;
+        }
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 700;
+            color: #111;
+            font-size: 13px;
+        }
+
+        .form-label.required::after {
+            content: ' *';
+            color: #c62828;
+        }
+
+        .form-input,
+        .form-select,
+        .form-textarea {
+            width: 100%;
+            padding: 9px 12px;
+            border: 1px solid #999;
+            border-radius: 2px;
+            font-size: 13px;
+            background: white;
+            transition: border-color 0.2s;
+        }
+
+        .form-input:focus,
+        .form-select:focus,
+        .form-textarea:focus {
+            outline: none;
+            border-color: #003876;
+            box-shadow: 0 0 0 2px rgba(0,56,118,0.1);
+        }
+
+        .form-textarea {
+            resize: vertical;
+            min-height: 70px;
+            font-family: '맑은 고딕', 'Malgun Gothic', sans-serif;
+        }
+
+        .modal-footer {
+            padding: 15px 25px;
+            border-top: 1px solid #ddd;
+            display: flex;
+            justify-content: flex-end;
+            gap: 8px;
+            background: white;
+        }
+
+        /* 서류 안내 - 공문서 스타일 */
+        .doc-guide {
+            background: #fffbf0;
+            border: 2px solid #f57c00;
+            padding: 18px;
+            margin: 18px 0;
+        }
+
+        .doc-guide-title {
+            font-weight: 700;
+            color: #e65100;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 14px;
+        }
+
+        .doc-guide-title::before {
+            content: '▶';
+            font-size: 12px;
+        }
+
+        .doc-list {
+            margin: 10px 0;
+        }
+
+        .doc-item {
+            padding: 6px 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+        }
+
+        .doc-item::before {
+            content: '·';
+            font-weight: 700;
+            color: #003876;
+        }
+
+        .doc-section {
+            margin: 12px 0;
+            padding: 12px;
+            background: white;
+            border-left: 3px solid #003876;
+        }
+
+        .doc-section-title {
+            font-weight: 700;
+            color: #003876;
+            margin-bottom: 8px;
+            font-size: 13px;
+        }
+
+        /* 체크리스트 */
+        .checklist {
+            margin-top: 15px;
+            background: white;
+            padding: 15px;
+            border: 1px solid #999;
+        }
+
+        .checklist-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .checklist-item:last-child {
+            border-bottom: none;
+        }
+
+        .checklist-item input[type="checkbox"] {
+            width: 16px;
+            height: 16px;
+            cursor: pointer;
+            accent-color: #003876;
+        }
+
+        .checklist-item label {
+            flex: 1;
+            cursor: pointer;
+            font-size: 13px;
+            color: #333;
+        }
+
+        .checklist-item input[type="checkbox"]:checked + label {
+            color: #003876;
+            font-weight: 700;
+            text-decoration: underline;
+        }
+
+        /* 대분류 카드 */
+        .main-cat-card {
+            background: white;
+            border: 2px solid #003876;
+            padding: 20px;
+            position: relative;
+            transition: all 0.3s;
+        }
+
+        .main-cat-card:hover {
+            box-shadow: 0 4px 12px rgba(0,56,118,0.2);
+            transform: translateY(-2px);
+        }
+
+        .main-cat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, #003876, #0066cc);
+        }
+
+        .main-cat-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .main-cat-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: #003876;
+        }
+
+        .main-cat-count {
+            font-size: 12px;
+            color: #666;
+            background: #f0f0f0;
+            padding: 3px 10px;
+            border-radius: 12px;
+        }
+
+        .main-cat-budget {
+            margin-bottom: 12px;
+        }
+
+        .main-cat-budget-label {
+            font-size: 11px;
+            color: #666;
+            margin-bottom: 4px;
+        }
+
+        .main-cat-budget-value {
+            font-size: 20px;
+            font-weight: 700;
+            color: #003876;
+            font-family: 'Courier New', monospace;
+        }
+
+        .main-cat-progress {
+            margin-top: 12px;
+        }
+
+        .main-cat-progress-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 11px;
+            color: #666;
+            margin-bottom: 6px;
+        }
+
+        .main-cat-progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #e0e0e0;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .main-cat-progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #2e7d32, #66bb6a);
+            transition: width 0.5s ease;
+        }
+
+        .main-cat-progress-fill.warning {
+            background: linear-gradient(90deg, #f57c00, #ffb74d);
+        }
+
+        .main-cat-progress-fill.danger {
+            background: linear-gradient(90deg, #c62828, #ef5350);
+        }
+
+        .main-cat-details {
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid #e0e0e0;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            font-size: 12px;
+        }
+
+        .main-cat-detail-item {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .main-cat-detail-label {
+            font-size: 10px;
+            color: #999;
+            margin-bottom: 2px;
+        }
+
+        .main-cat-detail-value {
+            font-weight: 700;
+            color: #333;
+            font-family: 'Courier New', monospace;
+        }
+
+        /* 공문서 푸터 */
+        .doc-footer {
+            margin: 50px 40px 0 40px;
+            padding: 30px 20px;
+            border-top: 3px double #d0d0d0;
+            text-align: center;
+            color: #666;
+            font-size: 12px;
+            background: #fafafa;
+        }
+
+        .doc-footer p {
+            margin: 5px 0;
+        }
+
+        /* 정부기관 하단바 */
+        .gov-footer {
+            background: #2c3e50;
+            color: white;
+            padding: 30px 0;
+            margin-top: 40px;
+        }
+
+        .gov-footer-content {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 0 40px;
+        }
+
+        .gov-footer-title {
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 15px;
+            color: white;
+        }
+
+        .gov-footer-info {
+            font-size: 12px;
+            line-height: 2;
+            color: #bdc3c7;
+        }
+
+        .gov-footer-info strong {
+            color: white;
+            margin-right: 5px;
+        }
+
+        /* 반응형 */
+        @media print {
+            .gov-top-bar,
+            .gov-footer,
+            .btn-group {
+                display: none;
+            }
+            .modal {
+                display: none !important;
+            }
+            .section {
+                page-break-inside: avoid;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+
+            .system-header {
+                padding: 20px 15px;
+            }
+
+            .header-top {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .doc-info {
+                text-align: left;
+            }
+
+            .stats-container {
+                grid-template-columns: 1fr;
+                padding: 15px;
+            }
+
+            .section-body {
+                padding: 15px;
+            }
+
+            .data-table {
+                font-size: 11px;
+            }
+
+            .data-table th,
+            .data-table td {
+                padding: 8px 4px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 정부기관 상단 헤더 -->
+    <div class="gov-header">
+        <div class="gov-header-content">
+            <div class="gov-header-left">
+                <div class="gov-logo-area">
+                    <div class="gov-logo-img">
+                        <i class="fas fa-landmark"></i>
+                    </div>
+                    <div class="gov-org-name">국립공원 사육곰 관리센터</div>
+                </div>
+            </div>
+            <div class="gov-header-right">
+                <span id="currentDateTime"></span>
+            </div>
+        </div>
+    </div>
+
+    <!-- 정부기관 네비게이션 바 -->
+    <div class="gov-top-bar">
+        <div class="gov-top-content">
+            <div class="nav-title-full">
+                <div class="nav-main-title">2025 예산 관리집행대장<span class="fiscal-year-nav">2025 회계연도</span></div>
+                <div class="nav-subtitle">물품구매 · 용역계약 · 공사발주 통합관리</div>
+            </div>
+            <div class="nav-actions">
+                <div class="nav-action-item" onclick="window.print()">
+                    <i class="fas fa-print"></i>인쇄
+                </div>
+                <div class="nav-action-item" onclick="exportToExcel()">
+                    <i class="fas fa-file-excel"></i>엑셀 다운로드
+                </div>
+                <div class="nav-action-item" onclick="loadInitialData()">
+                    <i class="fas fa-database"></i>초기 데이터
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+
+        <!-- 필터 영역 -->
+        <div class="filter-section">
+            <div class="filter-header">
+                <h3><i class="fas fa-filter"></i> 필터</h3>
+            </div>
+            <div class="filter-body">
+                <div class="filter-group">
+                    <label class="filter-label">대분류</label>
+                    <select id="filterMainCategory" class="filter-select" onchange="applyFilters()">
+                        <option value="">전체</option>
+                        <option value="인건비">인건비</option>
+                        <option value="재료비">재료비</option>
+                        <option value="경비">경비</option>
+                        <option value="사무실조성">사무실조성</option>
+                        <option value="진료실조성">진료실조성</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label class="filter-label">지출상태</label>
+                    <select id="filterStatus" class="filter-select" onchange="applyFilters()">
+                        <option value="">전체</option>
+                        <option value="계획">계획</option>
+                        <option value="지출진행">지출진행</option>
+                        <option value="지출완료">지출완료</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label class="filter-label">구분</label>
+                    <select id="filterType" class="filter-select" onchange="applyFilters()">
+                        <option value="">전체</option>
+                        <option value="물품">물품</option>
+                        <option value="용역">용역</option>
+                        <option value="공사">공사</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label class="filter-label">지출일 (시작)</label>
+                    <input type="date" id="filterDateStart" class="filter-input" onchange="applyFilters()">
+                </div>
+                <div class="filter-group">
+                    <label class="filter-label">지출일 (종료)</label>
+                    <input type="date" id="filterDateEnd" class="filter-input" onchange="applyFilters()">
+                </div>
+                <div class="filter-group">
+                    <label class="filter-label">검색</label>
+                    <input type="text" id="filterSearch" class="filter-input" placeholder="사업명 검색..." onkeyup="applyFilters()">
+                </div>
+                <div class="filter-group">
+                    <button class="btn" onclick="resetFilters()">
+                        <i class="fas fa-redo"></i> 초기화
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 대분류별 예산 현황 테이블 -->
+        <div class="section">
+            <div class="section-header">
+                <h2 class="section-title">대분류별 예산 현황</h2>
+                <div class="btn-group">
+                    <button class="btn btn-primary" onclick="toggleAllCategories()">
+                        <i class="fas fa-expand-alt"></i> 전체 펼치기/접기
+                    </button>
+                </div>
+            </div>
+            <div class="section-body">
+                <div id="categoryBreakdownContainer"></div>
+            </div>
+        </div>
+
+        <!-- 통계 카드 -->
+        <div class="stats-container">
+            <div class="stat-card">
+                <div class="stat-label">총 편성 예산</div>
+                <div class="stat-value" id="totalBudget">0원</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">지출완료 (집행완료)</div>
+                <div class="stat-value" style="color: #2e7d32;" id="completedBudget">0원</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">지출진행 (진행중)</div>
+                <div class="stat-value" style="color: #1565c0;" id="inProgressBudget">0원</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">계획 (미집행)</div>
+                <div class="stat-value" style="color: #e65100;" id="plannedBudget">0원</div>
+            </div>
+        </div>
+
+        <!-- 사업별 예산 현황 -->
+        <div class="section">
+            <div class="section-header">
+                <h2 class="section-title">사업별 예산 집행 현황</h2>
+                <div class="btn-group">
+                    <button class="btn btn-primary" onclick="openCategoryModal()">
+                        <i class="fas fa-plus"></i> 사업 등록
+                    </button>
+                    <button class="btn btn-warning" onclick="loadInitialBudget()">
+                        <i class="fas fa-database"></i> 초기 데이터 불러오기
+                    </button>
+                    <button class="btn btn-excel" onclick="exportToExcel()">
+                        <i class="fas fa-file-excel"></i> 엑셀 출력
+                    </button>
+                </div>
+            </div>
+            <div class="section-body">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 2%"><input type="checkbox" id="selectAllCategories" onchange="toggleAllCategorySelection()"></th>
+                            <th style="width: 3%">연번</th>
+                            <th style="width: 8%">대분류</th>
+                            <th style="width: 6%">소분류</th>
+                            <th style="width: 10%">사업명</th>
+                            <th style="width: 5%">구분</th>
+                            <th style="width: 8%">편성예산(원)</th>
+                            <th style="width: 8%">집행액(원)</th>
+                            <th style="width: 8%">잔액(원)</th>
+                            <th style="width: 5%">집행률(%)</th>
+                            <th style="width: 6%">지출상태</th>
+                            <th style="width: 7%">지출일</th>
+                            <th style="width: 6%">진행상태</th>
+                            <th style="width: 18%">관리</th>
+                        </tr>
+                    </thead>
+                    <tbody id="categoryTableBody">
+                        <tr>
+                            <td colspan="14" class="empty-state">
+                                <i class="fas fa-folder-open"></i>
+                                <p>등록된 사업이 없습니다.<br>상단 '사업 등록' 버튼을 클릭하거나 '초기 데이터 불러오기'를 이용하세요.</p>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- 세부 품목 내역 -->
+        <div class="section">
+            <div class="section-header">
+                <h2 class="section-title">세부 품목별 집행 내역</h2>
+                <div class="btn-group">
+                    <button class="btn btn-success" onclick="openItemModal()">
+                        <i class="fas fa-plus"></i> 품목 등록
+                    </button>
+                    <button class="btn btn-danger" onclick="resetAllData()">
+                        <i class="fas fa-trash-alt"></i> 전체 데이터 초기화
+                    </button>
+                </div>
+            </div>
+            <div class="section-body">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 2%"><input type="checkbox" id="selectAllItems" onchange="toggleAllItemSelection()"></th>
+                            <th style="width: 3%">연번</th>
+                            <th style="width: 11%">사업명</th>
+                            <th style="width: 5%">구분</th>
+                            <th style="width: 13%">품목명</th>
+                            <th style="width: 11%">업체명</th>
+                            <th style="width: 9%">연락처</th>
+                            <th style="width: 8%">단가(원)</th>
+                            <th style="width: 5%">수량</th>
+                            <th style="width: 8%">합계(원)</th>
+                            <th style="width: 8%">비고</th>
+                            <th style="width: 17%">관리</th>
+                        </tr>
+                    </thead>
+                    <tbody id="itemTableBody">
+                        <tr>
+                            <td colspan="12" class="empty-state">
+                                <i class="fas fa-inbox"></i>
+                                <p>등록된 품목이 없습니다.</p>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- 사업 추가 모달 -->
+    <div id="categoryModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">사업 등록</h3>
+                <button class="modal-close" onclick="closeCategoryModal()">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label required">대분류 (카테고리)</label>
+                    <select id="categoryMain" class="form-select" onchange="updateSubCategoryOptions()">
+                        <option value="">▷ 선택하세요</option>
+                        <option value="인건비">인건비 (69,000,000원)</option>
+                        <option value="재료비">재료비 (10,000,000원)</option>
+                        <option value="경비">경비 (139,000,000원)</option>
+                        <option value="사무실조성">사무실조성 (100,000,000원)</option>
+                        <option value="진료실조성">진료실조성(CT 포함) (540,000,000원)</option>
+                    </select>
+                    <input type="text" id="categoryMainCustom" class="form-input" placeholder="또는 새로운 대분류를 직접 입력하세요" style="margin-top: 8px;">
+                </div>
+                <div class="form-group" id="subCategoryGroup" style="display: none;">
+                    <label class="form-label">소분류</label>
+                    <select id="categorySub" class="form-select">
+                        <option value="">▷ 선택하세요 (선택사항)</option>
+                    </select>
+                    <input type="text" id="categorySubCustom" class="form-input" placeholder="또는 새로운 소분류를 직접 입력하세요" style="margin-top: 8px;">
+                </div>
+                <div class="form-group">
+                    <label class="form-label required">사업명</label>
+                    <input type="text" id="categoryName" class="form-input" placeholder="예) 통신망 구축사업">
+                </div>
+                <div class="form-group">
+                    <label class="form-label required">사업 구분</label>
+                    <select id="categoryType" class="form-select">
+                        <option value="">▷ 선택하세요</option>
+                        <option value="물품">물품구매</option>
+                        <option value="용역">용역계약</option>
+                        <option value="공사">공사발주</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label required">편성예산 (원)</label>
+                    <input type="number" id="categoryBudget" class="form-input" placeholder="10000000">
+                </div>
+                <div class="form-group">
+                    <label class="form-label required">지출 상태</label>
+                    <select id="categoryStatus" class="form-select">
+                        <option value="">▷ 선택하세요</option>
+                        <option value="계획">계획</option>
+                        <option value="지출진행">지출진행</option>
+                        <option value="지출완료">지출완료</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">지출일</label>
+                    <input type="date" id="categoryPaymentDate" class="form-input">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">비고사항</label>
+                    <textarea id="categoryNote" class="form-textarea" placeholder="사업 관련 참고사항을 입력하세요 (선택사항)"></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn" onclick="closeCategoryModal()">취소</button>
+                <button class="btn btn-primary" onclick="saveCategory()">등록</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 품목 추가 모달 -->
+    <div id="itemModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">품목 등록</h3>
+                <button class="modal-close" onclick="closeItemModal()">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label required">사업 선택</label>
+                    <select id="itemCategory" class="form-select" onchange="updateDocGuide()">
+                        <option value="">▷ 사업을 선택하세요</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label required">품목명</label>
+                    <input type="text" id="itemName" class="form-input" placeholder="예) 키폰 주장치 1식">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">계약업체명</label>
+                    <input type="text" id="itemCompany" class="form-input" placeholder="예) (주)케이티">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">업체 연락처</label>
+                    <input type="text" id="itemPhone" class="form-input" placeholder="예) 02-1234-5678">
+                </div>
+                <div class="form-group">
+                    <label class="form-label required">단가 (원)</label>
+                    <input type="number" id="itemPrice" class="form-input" placeholder="1800000" onchange="updateDocGuide()">
+                </div>
+                <div class="form-group">
+                    <label class="form-label required">수량</label>
+                    <input type="number" id="itemQuantity" class="form-input" value="1" min="1" onchange="updateDocGuide()">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">비고사항</label>
+                    <input type="text" id="itemNote" class="form-input" placeholder="특이사항 입력 (선택사항)">
+                </div>
+
+                <!-- 필요 서류 안내 -->
+                <div id="docGuideContainer"></div>
+
+                <!-- 서류 체크리스트 -->
+                <div class="form-group" id="checklistGroup" style="display: none;">
+                    <label class="form-label">구비서류 제출 현황</label>
+                    <div class="checklist" id="docChecklist">
+                        <!-- 동적으로 생성됨 -->
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn" onclick="closeItemModal()">취소</button>
+                <button class="btn btn-success" onclick="saveItem()">등록</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 서류 확인 모달 -->
+    <div id="docModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">구비서류 제출 현황</h3>
+                <button class="modal-close" onclick="closeDocModal()">×</button>
+            </div>
+            <div class="modal-body" id="docModalBody">
+                <!-- 동적으로 생성됨 -->
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" onclick="closeDocModal()">확인</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 현재 날짜 및 시간 표시
+        function updateDateTime() {
+            const now = new Date();
+            const year = now.getFullYear();
+            const month = String(now.getMonth() + 1).padStart(2, '0');
+            const date = String(now.getDate()).padStart(2, '0');
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+
+            const dateTimeStr = `${year}.${month}.${date} ${hours}:${minutes}`;
+            const element = document.getElementById('currentDateTime');
+            if (element) {
+                element.textContent = dateTimeStr;
+            }
+        }
+
+        // 1분마다 시간 업데이트
+        updateDateTime();
+        setInterval(updateDateTime, 60000);
+
+        const today = new Date();
+
+        // 데이터 구조
+        let budgetData = {
+            categories: {} // {사업명: {type: 구분, budget: 예산, note: 비고, mainCategory: 대분류, subCategory: 소분류, status: 지출상태, paymentDate: 지출일, items: []}}
+        };
+
+        const STORAGE_KEY = 'budgetSystemData_gov_v1';
+
+        // 대분류별 소분류 정의
+        const subCategories = {
+            '재료비': ['먹이비', '사료', '과일', '채소', '육류', '기타 재료'],
+            '경비': ['공공요금', '통신비', '운영비', '유지보수비', '기타 경비'],
+            '인건비': ['급여', '상여금', '퇴직금', '4대보험', '복리후생비'],
+            '사무실조성': ['통신망', '정보기기', '가구', '안전설비', '기타 비품'],
+            '진료실조성': ['대형의료장비', '시설 인프라', '수술실장비', '수납 보관시설', '진단검사장비']
+        };
+
+        // 대분류별 할당 예산
+        const mainCategoryBudgets = {
+            '인건비': 69000000,
+            '재료비': 10000000,
+            '경비': 139000000,
+            '사무실조성': 100000000,
+            '진료실조성': 540000000
+        };
+
+        // 소분류 옵션 업데이트
+        function updateSubCategoryOptions() {
+            const mainSelect = document.getElementById('categoryMain').value;
+            const subSelect = document.getElementById('categorySub');
+            const subGroup = document.getElementById('subCategoryGroup');
+
+            subSelect.innerHTML = '<option value="">▷ 선택하세요 (선택사항)</option>';
+
+            if (mainSelect && subCategories[mainSelect]) {
+                subGroup.style.display = 'block';
+                subCategories[mainSelect].forEach(sub => {
+                    const option = document.createElement('option');
+                    option.value = sub;
+                    option.textContent = sub;
+                    subSelect.appendChild(option);
+                });
+            } else {
+                subGroup.style.display = 'none';
+            }
+        }
+
+        // 필요 서류 규칙
+        function getRequiredDocuments(categoryType, amount) {
+            // 100만원 미만인 경우 간소화된 서류만 요구
+            if (amount < 1000000) {
+                return {
+                    시행결의: ['견적서'],
+                    결과보고서: ['물납조서'],
+                    지출: ['지출증빙 영수증']
+                };
+            }
+
+            // 100만원 이상인 경우 기존 규칙 적용
+            const docs = {
+                시행결의: ['견적서'],
+                결과보고서: [],
+                지출: ['사업자등록증', '전자세금계산서', '통장사본']
+            };
+
+            // 물품인 경우 물납조서 추가
+            if (categoryType === '물품') {
+                docs.결과보고서.push('물납조서');
+            }
+
+            // 공사인 경우 안전보건관리계획서 추가
+            if (categoryType === '공사') {
+                docs.시행결의.push('안전보건관리계획서');
+            }
+
+            // 100만원 이상인 경우 승낙서 추가
+            docs.지출.push('승낙서');
+
+            return docs;
+        }
+
+        // 서류 안내 업데이트
+        function updateDocGuide() {
+            const categoryName = document.getElementById('itemCategory').value;
+            const price = parseInt(document.getElementById('itemPrice').value) || 0;
+            const quantity = parseInt(document.getElementById('itemQuantity').value) || 1;
+            const container = document.getElementById('docGuideContainer');
+            const checklistContainer = document.getElementById('docChecklist');
+            const checklistGroup = document.getElementById('checklistGroup');
+
+            if (!categoryName || !price) {
+                container.innerHTML = '';
+                checklistContainer.innerHTML = '';
+                checklistGroup.style.display = 'none';
+                return;
+            }
+
+            const category = budgetData.categories[categoryName];
+            if (!category) return;
+
+            const totalAmount = price * quantity;
+            const docs = getRequiredDocuments(category.type, totalAmount);
+
+            let html = `
+                <div class="doc-guide">
+                    <div class="doc-guide-title">
+                        구비서류 안내 (총액: ${totalAmount.toLocaleString()}원)
+                    </div>
+            `;
+
+            for (const [stage, docList] of Object.entries(docs)) {
+                if (docList.length > 0) {
+                    html += `
+                        <div class="doc-section">
+                            <div class="doc-section-title">[${stage}]</div>
+                            <div class="doc-list">
+                    `;
+                    docList.forEach(doc => {
+                        html += `<div class="doc-item">${doc}</div>`;
+                    });
+                    html += `</div></div>`;
+                }
+            }
+
+            html += `</div>`;
+            container.innerHTML = html;
+
+            // 체크리스트 생성
+            let checklistHtml = '';
+            const allDocs = [...docs.시행결의, ...docs.결과보고서, ...docs.지출];
+            allDocs.forEach((doc, index) => {
+                checklistHtml += `
+                    <div class="checklist-item">
+                        <input type="checkbox" id="doc_${index}" data-doc="${doc}">
+                        <label for="doc_${index}">${doc}</label>
+                    </div>
+                `;
+            });
+            checklistContainer.innerHTML = checklistHtml;
+            checklistGroup.style.display = 'block';
+        }
+
+        // 숫자 포맷팅
+        function formatNumber(num) {
+            return num.toLocaleString('ko-KR');
+        }
+
+        // 날짜 포맷팅
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return `${date.getFullYear()}.${String(date.getMonth() + 1).padStart(2, '0')}.${String(date.getDate()).padStart(2, '0')}`;
+        }
+
+        // 데이터 로드
+        function loadData() {
+            const saved = localStorage.getItem(STORAGE_KEY);
+            if (saved) {
+                budgetData = JSON.parse(saved);
+            }
+            renderAll();
+        }
+
+        // 데이터 저장
+        function saveData() {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(budgetData));
+        }
+
+        // 전체 렌더링
+        function renderAll() {
+            renderCategoryBreakdown();
+            renderStats();
+            renderCategoryTable();
+            renderItemTable();
+            updateCategorySelect();
+        }
+
+        // 대분류별 예산 현황 렌더링
+        function renderCategoryBreakdown() {
+            const container = document.getElementById('categoryBreakdownContainer');
+            container.innerHTML = '';
+
+            // 필터링된 데이터 가져오기
+            const filteredData = getFilteredCategories();
+
+            // 대분류별로 그룹화
+            const grouped = {};
+            for (const [name, data] of Object.entries(filteredData)) {
+                const mainCat = data.mainCategory || '미분류';
+                if (!grouped[mainCat]) {
+                    grouped[mainCat] = [];
+                }
+                grouped[mainCat].push({ name, ...data });
+            }
+
+            // 대분류별로 렌더링 (할당 예산 기준으로 정렬)
+            const sortedCategories = Object.keys(mainCategoryBudgets);
+
+            for (const mainCat of sortedCategories) {
+                const items = grouped[mainCat] || [];
+
+                // 할당 예산 (고정값)
+                const allocatedBudget = mainCategoryBudgets[mainCat] || 0;
+
+                // 사용액 계산 (지출완료된 항목만)
+                let usedBudget = 0;
+                items.forEach(item => {
+                    if (item.status === '지출완료') {
+                        // 품목이 있으면 품목 합계, 없으면 예산액
+                        const itemTotal = item.items.reduce((sum, subItem) => sum + (subItem.price * subItem.quantity), 0);
+                        usedBudget += itemTotal > 0 ? itemTotal : item.budget;
+                    }
+                });
+
+                // 잔액 계산
+                const remaining = allocatedBudget - usedBudget;
+                const usageRate = allocatedBudget > 0 ? ((usedBudget / allocatedBudget) * 100).toFixed(1) : 0;
+
+                // 카테고리 박스 생성
+                const breakdownDiv = document.createElement('div');
+                breakdownDiv.className = 'category-breakdown';
+                breakdownDiv.innerHTML = `
+                    <div class="breakdown-header" onclick="toggleBreakdown('${mainCat}')">
+                        <div class="breakdown-header-left">
+                            <div class="breakdown-category-name">${mainCat}</div>
+                            <div class="breakdown-budget-info">
+                                <span class="breakdown-label">총 예산:</span> <span class="breakdown-total">${formatNumber(allocatedBudget)}원</span>
+                                <span class="breakdown-separator">|</span>
+                                <span class="breakdown-label">사용:</span> <span class="breakdown-used">${formatNumber(usedBudget)}원</span>
+                                <span class="breakdown-separator">|</span>
+                                <span class="breakdown-label">잔액:</span> <span class="breakdown-remaining ${remaining < 0 ? 'negative' : 'positive'}">${formatNumber(remaining)}원</span>
+                                <span class="breakdown-separator">|</span>
+                                <span class="breakdown-label">집행률:</span> <span class="breakdown-rate" style="color: ${usageRate >= 100 ? '#c62828' : usageRate >= 80 ? '#f57c00' : '#2e7d32'};">${usageRate}%</span>
+                            </div>
+                        </div>
+                        <i class="fas fa-chevron-down breakdown-toggle" id="toggle-${mainCat}"></i>
+                    </div>
+                    <div class="breakdown-body" id="body-${mainCat}">
+                        <table class="breakdown-table">
+                            <thead>
+                                <tr>
+                                    <th style="width: 20%">사업명</th>
+                                    <th style="width: 15%">예산액</th>
+                                    <th style="width: 65%">세부 내역</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${items.map(item => {
+                                    // 세부 품목 리스트 생성
+                                    let detailsHtml = '';
+                                    if (item.items && item.items.length > 0) {
+                                        detailsHtml = '<ul class="breakdown-item-details">';
+                                        item.items.forEach(subItem => {
+                                            const itemTotal = subItem.price * subItem.quantity;
+                                            detailsHtml += `<li>- ${subItem.name} ${formatNumber(itemTotal)}원`;
+                                            if (subItem.quantity > 1) {
+                                                detailsHtml += ` (${formatNumber(subItem.price)}원 × ${subItem.quantity}개)`;
+                                            }
+                                            if (subItem.company) {
+                                                detailsHtml += ` [${subItem.company}]`;
+                                            }
+                                            detailsHtml += '</li>';
+                                        });
+                                        detailsHtml += '</ul>';
+                                    } else {
+                                        detailsHtml = '<div class="breakdown-item-details">- 세부 품목 미등록</div>';
+                                    }
+
+                                    return `
+                                        <tr>
+                                            <td><div class="breakdown-item-name">${item.name}</div></td>
+                                            <td style="text-align: right; font-weight: 600; font-family: 'Courier New', monospace;">${formatNumber(item.budget || 0)}원</td>
+                                            <td>${detailsHtml}</td>
+                                        </tr>
+                                    `;
+                                }).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+                `;
+
+                container.appendChild(breakdownDiv);
+            }
+        }
+
+        // 개별 카테고리 토글
+        function toggleBreakdown(category) {
+            const body = document.getElementById(`body-${category}`);
+            const toggle = document.getElementById(`toggle-${category}`);
+
+            if (body.classList.contains('expanded')) {
+                body.classList.remove('expanded');
+                toggle.classList.remove('expanded');
+            } else {
+                body.classList.add('expanded');
+                toggle.classList.add('expanded');
+            }
+        }
+
+        // 전체 펼치기/접기
+        let allExpanded = false;
+        function toggleAllCategories() {
+            const bodies = document.querySelectorAll('.breakdown-body');
+            const toggles = document.querySelectorAll('.breakdown-toggle');
+
+            if (allExpanded) {
+                bodies.forEach(body => body.classList.remove('expanded'));
+                toggles.forEach(toggle => toggle.classList.remove('expanded'));
+            } else {
+                bodies.forEach(body => body.classList.add('expanded'));
+                toggles.forEach(toggle => toggle.classList.add('expanded'));
+            }
+
+            allExpanded = !allExpanded;
+        }
+
+        // 통계 렌더링
+        function renderStats() {
+            // 총 할당 예산 (고정값)
+            const totalAllocated = Object.values(mainCategoryBudgets).reduce((sum, val) => sum + val, 0);
+
+            let completedBudget = 0;  // 지출완료 (실제 사용액)
+            let inProgressBudget = 0; // 지출진행 예산
+            let plannedBudget = 0;    // 계획 예산
+
+            for (const [name, data] of Object.entries(budgetData.categories)) {
+                const budget = data.budget || 0;
+                const status = data.status || '계획';
+
+                // 각 상태별로 예산 분류
+                if (status === '지출완료') {
+                    // 지출완료는 실제 집행액으로 계산
+                    const used = data.items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+                    completedBudget += used > 0 ? used : budget;
+                } else if (status === '지출진행') {
+                    inProgressBudget += budget;
+                } else if (status === '계획') {
+                    plannedBudget += budget;
+                }
+            }
+
+            document.getElementById('totalBudget').textContent = formatNumber(totalAllocated) + '원';
+            document.getElementById('completedBudget').textContent = formatNumber(completedBudget) + '원';
+            document.getElementById('inProgressBudget').textContent = formatNumber(inProgressBudget) + '원';
+            document.getElementById('plannedBudget').textContent = formatNumber(plannedBudget) + '원';
+        }
+
+        // 카테고리 테이블 렌더링
+        function renderCategoryTable() {
+            const tbody = document.getElementById('categoryTableBody');
+            tbody.innerHTML = '';
+
+            // 필터링된 데이터 사용
+            const filteredData = getFilteredCategories();
+            const categories = Object.entries(filteredData);
+
+            if (categories.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="14" class="empty-state">
+                            <i class="fas fa-folder-open"></i>
+                            <p>등록된 사업이 없습니다.<br>상단 '사업 등록' 버튼을 클릭하거나 '초기 데이터 불러오기'를 이용하세요.</p>
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            // 대분류별로 그룹화
+            const grouped = {};
+            categories.forEach(([name, data]) => {
+                const mainCat = data.mainCategory || '미분류';
+                if (!grouped[mainCat]) {
+                    grouped[mainCat] = [];
+                }
+                grouped[mainCat].push([name, data]);
+            });
+
+            // 대분류별로 렌더링
+            let globalIndex = 1;
+            for (const [mainCat, items] of Object.entries(grouped)) {
+                // 대분류별 합계 계산
+                let mainBudget = 0;
+                let mainUsed = 0;
+                items.forEach(([name, data]) => {
+                    mainBudget += data.budget;
+                    // 지출완료인 경우만 사용액으로 계산
+                    if (data.status === '지출완료') {
+                        mainUsed += data.items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+                    }
+                });
+                const mainRemaining = mainBudget - mainUsed;
+                const mainRate = mainBudget > 0 ? ((mainUsed / mainBudget) * 100).toFixed(1) : 0;
+
+                // 대분류 헤더
+                const headerRow = document.createElement('tr');
+                headerRow.style.background = 'linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%)';
+                headerRow.style.fontWeight = '700';
+                headerRow.style.borderTop = '2px solid #003876';
+                headerRow.style.borderBottom = '2px solid #003876';
+                headerRow.innerHTML = `
+                    <td style="background: rgba(255,255,255,0.5);"></td>
+                    <td colspan="3" class="text-left" style="padding: 14px 12px; color: #003876; font-size: 15px; font-weight: 700;">
+                        <i class="fas fa-folder" style="margin-right: 8px;"></i>${mainCat}
+                    </td>
+                    <td class="text-right" style="color: #003876; font-size: 13px;">총 ${items.length}개 사업</td>
+                    <td style="background: rgba(255,255,255,0.5);"></td>
+                    <td class="text-right amount" style="color: #003876; font-size: 14px; background: rgba(255,255,255,0.5);">${formatNumber(mainBudget)}</td>
+                    <td class="text-right amount" style="color: #1565c0; font-size: 14px; background: rgba(255,255,255,0.5);">${formatNumber(mainUsed)}</td>
+                    <td class="text-right ${mainRemaining >= 0 ? 'positive' : 'negative'}" style="font-size: 14px; background: rgba(255,255,255,0.5);">${formatNumber(mainRemaining)}</td>
+                    <td style="color: ${mainRate >= 100 ? '#c62828' : mainRate >= 80 ? '#f57c00' : '#2e7d32'}; font-size: 14px; font-weight: 700; background: rgba(255,255,255,0.5);">${mainRate}%</td>
+                    <td colspan="4" style="background: rgba(255,255,255,0.5);"></td>
+                `;
+                tbody.appendChild(headerRow);
+
+                // 세부 사업
+                items.forEach(([name, data]) => {
+                    // 지출완료인 경우만 사용액으로 계산
+                    let used = 0;
+                    if (data.status === '지출완료') {
+                        used = data.items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+                    }
+                    const remaining = data.budget - used;
+                    const rate = data.budget > 0 ? ((used / data.budget) * 100).toFixed(1) : 0;
+
+                    let statusBadge = '';
+                    if (rate >= 100) {
+                        statusBadge = '<span class="badge-status danger">예산초과</span>';
+                    } else if (rate >= 80) {
+                        statusBadge = '<span class="badge-status warning">주의</span>';
+                    } else {
+                        statusBadge = '<span class="badge-status normal">정상</span>';
+                    }
+
+                    const row = document.createElement('tr');
+                    const paymentStatus = data.status || '계획';
+                    const escapedName = name.replace(/'/g, "\\'");
+                    const paymentDate = data.paymentDate ? formatDate(data.paymentDate) : '-';
+                    row.innerHTML = `
+                        <td><input type="checkbox" class="category-checkbox" data-category="${escapedName}"></td>
+                        <td>${globalIndex++}</td>
+                        <td class="text-left" style="padding-left: 20px; color: #666; font-size: 12px;">└ ${mainCat}</td>
+                        <td class="text-left" style="color: #888; font-size: 12px;">${data.subCategory ? data.subCategory : '-'}</td>
+                        <td class="text-left">${name}</td>
+                        <td><span class="category-badge ${data.type}">${data.type}</span></td>
+                        <td class="text-right amount">${formatNumber(data.budget)}</td>
+                        <td class="text-right amount">${formatNumber(used)}</td>
+                        <td class="text-right ${remaining >= 0 ? 'positive' : 'negative'}">${formatNumber(remaining)}</td>
+                        <td>${rate}%</td>
+                        <td><span class="status-badge ${paymentStatus}">${paymentStatus}</span></td>
+                        <td style="font-size: 12px;">${paymentDate}</td>
+                        <td>${statusBadge}</td>
+                        <td>
+                            <button class="btn btn-success btn-sm" onclick="viewCategoryDocs('${escapedName}')">
+                                서류확인
+                            </button>
+                            <button class="btn btn-danger btn-sm" onclick="deleteCategory('${escapedName}')">
+                                삭제
+                            </button>
+                        </td>
+                    `;
+                    tbody.appendChild(row);
+                });
+            }
+        }
+
+        // 품목 테이블 렌더링
+        function renderItemTable() {
+            const tbody = document.getElementById('itemTableBody');
+            tbody.innerHTML = '';
+
+            // 필터링된 데이터에서 품목 그룹화
+            const filteredData = getFilteredCategories();
+            const groupedByMain = {};
+            for (const [categoryName, data] of Object.entries(filteredData)) {
+                const mainCat = data.mainCategory || '미분류';
+                if (!groupedByMain[mainCat]) {
+                    groupedByMain[mainCat] = [];
+                }
+                data.items.forEach((item, index) => {
+                    groupedByMain[mainCat].push({
+                        category: categoryName,
+                        categoryType: data.type,
+                        categoryIndex: index,
+                        mainCategory: mainCat,
+                        ...item
+                    });
+                });
+            }
+
+            // 전체 품목이 없으면
+            let totalItems = 0;
+            for (const items of Object.values(groupedByMain)) {
+                totalItems += items.length;
+            }
+
+            if (totalItems === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="12" class="empty-state">
+                            <i class="fas fa-inbox"></i>
+                            <p>등록된 품목이 없습니다.</p>
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            // 대분류별로 렌더링
+            let globalIndex = 1;
+            for (const [mainCat, items] of Object.entries(groupedByMain)) {
+                // 대분류 헤더
+                const headerRow = document.createElement('tr');
+                headerRow.style.background = 'linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%)';
+                headerRow.style.borderTop = '2px solid #f57c00';
+                headerRow.style.borderBottom = '1px solid #f57c00';
+                headerRow.innerHTML = `
+                    <td colspan="12" class="text-left" style="padding: 12px; color: #e65100; font-size: 14px; font-weight: 700;">
+                        <i class="fas fa-folder-open" style="margin-right: 8px;"></i>${mainCat} (${items.length}개 품목)
+                    </td>
+                `;
+                tbody.appendChild(headerRow);
+
+                // 품목들
+                items.forEach((item) => {
+                    const total = item.price * item.quantity;
+                    const row = document.createElement('tr');
+                    const escapedCategory = item.category.replace(/'/g, "\\'");
+                    row.innerHTML = `
+                        <td><input type="checkbox" class="item-checkbox" data-category="${escapedCategory}" data-index="${item.categoryIndex}"></td>
+                        <td>${globalIndex++}</td>
+                        <td class="text-left">${item.category}</td>
+                        <td><span class="category-badge ${item.categoryType}">${item.categoryType}</span></td>
+                        <td class="text-left">${item.name}</td>
+                        <td class="text-left">${item.company || '-'}</td>
+                        <td>${item.phone || '-'}</td>
+                        <td class="text-right">${formatNumber(item.price)}</td>
+                        <td>${item.quantity}</td>
+                        <td class="text-right amount">${formatNumber(total)}</td>
+                        <td class="text-left">${item.note || '-'}</td>
+                        <td>
+                            <button class="btn btn-warning btn-sm" onclick="viewItemDocs('${escapedCategory}', ${item.categoryIndex})">
+                                서류
+                            </button>
+                            <button class="btn btn-danger btn-sm" onclick="deleteItem('${escapedCategory}', ${item.categoryIndex})">
+                                삭제
+                            </button>
+                        </td>
+                    `;
+                    tbody.appendChild(row);
+                });
+            }
+        }
+
+        // 카테고리 선택 업데이트
+        function updateCategorySelect() {
+            const select = document.getElementById('itemCategory');
+            select.innerHTML = '<option value="">▷ 사업을 선택하세요</option>';
+
+            for (const [name, data] of Object.entries(budgetData.categories)) {
+                const option = document.createElement('option');
+                option.value = name;
+                option.textContent = `${name} (${data.type})`;
+                select.appendChild(option);
+            }
+        }
+
+        // 카테고리 모달
+        function openCategoryModal() {
+            document.getElementById('categoryModal').classList.add('active');
+            document.getElementById('categoryMain').value = '';
+            document.getElementById('categoryMainCustom').value = '';
+            document.getElementById('categorySub').value = '';
+            document.getElementById('categorySubCustom').value = '';
+            document.getElementById('subCategoryGroup').style.display = 'none';
+            document.getElementById('categoryName').value = '';
+            document.getElementById('categoryType').value = '';
+            document.getElementById('categoryBudget').value = '';
+            document.getElementById('categoryStatus').value = '';
+            document.getElementById('categoryPaymentDate').value = '';
+            document.getElementById('categoryNote').value = '';
+        }
+
+        function closeCategoryModal() {
+            document.getElementById('categoryModal').classList.remove('active');
+        }
+
+        function saveCategory() {
+            const mainSelect = document.getElementById('categoryMain').value;
+            const mainCustom = document.getElementById('categoryMainCustom').value.trim();
+            const mainCategory = mainCustom || mainSelect;
+
+            const subSelect = document.getElementById('categorySub').value;
+            const subCustom = document.getElementById('categorySubCustom').value.trim();
+            const subCategory = subCustom || subSelect;
+
+            const name = document.getElementById('categoryName').value.trim();
+            const type = document.getElementById('categoryType').value;
+            const budget = parseInt(document.getElementById('categoryBudget').value) || 0;
+            const status = document.getElementById('categoryStatus').value;
+            const paymentDate = document.getElementById('categoryPaymentDate').value;
+            const note = document.getElementById('categoryNote').value.trim();
+
+            if (!mainCategory) {
+                alert('대분류를 선택하거나 입력하세요.');
+                return;
+            }
+
+            if (!name) {
+                alert('사업명을 입력하세요.');
+                return;
+            }
+
+            if (!type) {
+                alert('사업 구분을 선택하세요.');
+                return;
+            }
+
+            if (budget <= 0) {
+                alert('올바른 예산액을 입력하세요.');
+                return;
+            }
+
+            if (!status) {
+                alert('지출 상태를 선택하세요.');
+                return;
+            }
+
+            if (budgetData.categories[name]) {
+                if (!confirm('이미 등록된 사업입니다. 수정하시겠습니까?')) {
+                    return;
+                }
+                budgetData.categories[name].mainCategory = mainCategory;
+                budgetData.categories[name].subCategory = subCategory;
+                budgetData.categories[name].type = type;
+                budgetData.categories[name].budget = budget;
+                budgetData.categories[name].status = status;
+                budgetData.categories[name].paymentDate = paymentDate;
+                budgetData.categories[name].note = note;
+            } else {
+                budgetData.categories[name] = {
+                    mainCategory: mainCategory,
+                    subCategory: subCategory,
+                    type: type,
+                    budget: budget,
+                    status: status,
+                    paymentDate: paymentDate,
+                    note: note,
+                    items: []
+                };
+            }
+
+            saveData();
+            renderAll();
+            closeCategoryModal();
+        }
+
+        function deleteCategory(name) {
+            if (!confirm(`'${name}' 사업을 삭제하시겠습니까?\n※ 등록된 모든 품목도 함께 삭제됩니다.`)) {
+                return;
+            }
+            delete budgetData.categories[name];
+            saveData();
+            renderAll();
+        }
+
+        // 품목 모달
+        function openItemModal() {
+            if (Object.keys(budgetData.categories).length === 0) {
+                alert('먼저 사업을 등록해주세요.');
+                return;
+            }
+            document.getElementById('itemModal').classList.add('active');
+            document.getElementById('itemCategory').value = '';
+            document.getElementById('itemName').value = '';
+            document.getElementById('itemCompany').value = '';
+            document.getElementById('itemPhone').value = '';
+            document.getElementById('itemPrice').value = '';
+            document.getElementById('itemQuantity').value = '1';
+            document.getElementById('itemNote').value = '';
+            document.getElementById('docGuideContainer').innerHTML = '';
+            document.getElementById('docChecklist').innerHTML = '';
+            document.getElementById('checklistGroup').style.display = 'none';
+        }
+
+        function closeItemModal() {
+            document.getElementById('itemModal').classList.remove('active');
+        }
+
+        function saveItem() {
+            const category = document.getElementById('itemCategory').value;
+            const name = document.getElementById('itemName').value.trim();
+            const company = document.getElementById('itemCompany').value.trim();
+            const phone = document.getElementById('itemPhone').value.trim();
+            const price = parseInt(document.getElementById('itemPrice').value) || 0;
+            const quantity = parseInt(document.getElementById('itemQuantity').value) || 1;
+            const note = document.getElementById('itemNote').value.trim();
+
+            if (!category) {
+                alert('사업을 선택하세요.');
+                return;
+            }
+
+            if (!name) {
+                alert('품목명을 입력하세요.');
+                return;
+            }
+
+            if (price <= 0) {
+                alert('올바른 단가를 입력하세요.');
+                return;
+            }
+
+            // 체크된 서류 수집
+            const checkedDocs = [];
+            document.querySelectorAll('#docChecklist input[type="checkbox"]:checked').forEach(cb => {
+                checkedDocs.push(cb.getAttribute('data-doc'));
+            });
+
+            budgetData.categories[category].items.push({
+                name: name,
+                company: company,
+                phone: phone,
+                price: price,
+                quantity: quantity,
+                note: note,
+                date: new Date().toISOString(),
+                checkedDocs: checkedDocs
+            });
+
+            saveData();
+            renderAll();
+            closeItemModal();
+        }
+
+        function deleteItem(category, index) {
+            if (!confirm('이 품목을 삭제하시겠습니까?')) {
+                return;
+            }
+            budgetData.categories[category].items.splice(index, 1);
+            saveData();
+            renderAll();
+        }
+
+        // 서류 확인 모달
+        function viewCategoryDocs(categoryName) {
+            const category = budgetData.categories[categoryName];
+            if (!category || category.items.length === 0) {
+                alert('등록된 품목이 없습니다.');
+                return;
+            }
+
+            let html = `
+                <h4 style="margin-bottom: 15px; color: #003876; font-weight: 700;">[${categoryName}] 구비서류 제출 현황</h4>
+            `;
+
+            category.items.forEach((item, index) => {
+                const totalAmount = item.price * item.quantity;
+                const docs = getRequiredDocuments(category.type, totalAmount);
+                const allDocs = [...docs.시행결의, ...docs.결과보고서, ...docs.지출];
+                const checkedCount = item.checkedDocs ? item.checkedDocs.length : 0;
+
+                html += `
+                    <div class="doc-guide" style="margin-bottom: 15px;">
+                        <div class="doc-guide-title">
+                            ${index + 1}. ${item.name} (${formatNumber(totalAmount)}원)
+                            <span style="margin-left: 10px; color: #2e7d32; font-weight: 700;">[제출: ${checkedCount}/${allDocs.length}건]</span>
+                        </div>
+                        ${item.company ? `<div style="font-size: 12px; color: #666; margin: 5px 0;">· 계약업체: ${item.company} ${item.phone ? '/ 연락처: ' + item.phone : ''}</div>` : ''}
+                `;
+
+                for (const [stage, docList] of Object.entries(docs)) {
+                    if (docList.length > 0) {
+                        html += `
+                            <div class="doc-section">
+                                <div class="doc-section-title">[${stage}]</div>
+                                <div class="doc-list">
+                        `;
+                        docList.forEach(doc => {
+                            const checked = item.checkedDocs && item.checkedDocs.includes(doc);
+                            html += `
+                                <div class="doc-item">
+                                    ${checked ? '<span style="color: #2e7d32; font-weight: 700;">[✓]</span>' : '<span style="color: #999;">[  ]</span>'}
+                                    <span style="${checked ? 'color: #111; font-weight: 700; text-decoration: underline;' : 'color: #666;'}">${doc}</span>
+                                </div>
+                            `;
+                        });
+                        html += `</div></div>`;
+                    }
+                }
+
+                html += `</div>`;
+            });
+
+            document.getElementById('docModalBody').innerHTML = html;
+            document.getElementById('docModal').classList.add('active');
+        }
+
+        function viewItemDocs(categoryName, itemIndex) {
+            const category = budgetData.categories[categoryName];
+            const item = category.items[itemIndex];
+            const totalAmount = item.price * item.quantity;
+            const docs = getRequiredDocuments(category.type, totalAmount);
+            const allDocs = [...docs.시행결의, ...docs.결과보고서, ...docs.지출];
+            const checkedCount = item.checkedDocs ? item.checkedDocs.length : 0;
+
+            let html = `
+                <h4 style="margin-bottom: 10px; color: #003876; font-weight: 700;">${item.name}</h4>
+                <p style="margin-bottom: 15px; color: #666; line-height: 1.8;">
+                    · 집행금액: ${formatNumber(totalAmount)}원<br>
+                    · 사업구분: ${category.type}<br>
+                    ${item.company ? `· 계약업체: ${item.company}<br>` : ''}
+                    ${item.phone ? `· 연락처: ${item.phone}<br>` : ''}
+                </p>
+                <p style="margin-bottom: 15px; font-weight: 700; color: #2e7d32;">
+                    서류 제출 현황: ${checkedCount}/${allDocs.length}건 완료
+                </p>
+                <div class="doc-guide">
+            `;
+
+            for (const [stage, docList] of Object.entries(docs)) {
+                if (docList.length > 0) {
+                    html += `
+                        <div class="doc-section">
+                            <div class="doc-section-title">[${stage}]</div>
+                            <div class="doc-list">
+                    `;
+                    docList.forEach(doc => {
+                        const checked = item.checkedDocs && item.checkedDocs.includes(doc);
+                        html += `
+                            <div class="doc-item">
+                                ${checked ? '<span style="color: #2e7d32; font-weight: 700;">[✓]</span>' : '<span style="color: #999;">[  ]</span>'}
+                                <span style="${checked ? 'color: #111; font-weight: 700; text-decoration: underline;' : 'color: #666;'}">${doc}</span>
+                            </div>
+                        `;
+                    });
+                    html += `</div></div>`;
+                }
+            }
+
+            html += `</div>`;
+
+            document.getElementById('docModalBody').innerHTML = html;
+            document.getElementById('docModal').classList.add('active');
+        }
+
+        function closeDocModal() {
+            document.getElementById('docModal').classList.remove('active');
+        }
+
+        // 전체 초기화
+        function resetAllData() {
+            if (!confirm('※ 주의: 모든 예산 데이터가 삭제됩니다.\n정말로 초기화하시겠습니까?')) {
+                return;
+            }
+            budgetData = { categories: {} };
+            saveData();
+            renderAll();
+            alert('전체 데이터가 초기화되었습니다.');
+        }
+
+        // 초기 예산안 불러오기
+        function loadInitialBudget() {
+            if (Object.keys(budgetData.categories).length > 0) {
+                if (!confirm('기존 데이터가 존재합니다.\n초기 예산안을 불러오면 기존 데이터와 병합됩니다.\n계속하시겠습니까?')) {
+                    return;
+                }
+            }
+
+            // 초기 예산안 데이터 - 사무실조성 (100,000,000원)
+            const initialBudget = {
+                "통신망 구축": { mainCategory: "사무실조성", type: "물품", budget: 7580000, status: "계획", note: "키폰 및 네트워크 장비", items: [
+                    {name: "키폰 주장치", company: "", phone: "", price: 1800000, quantity: 1, note: "", date: new Date().toISOString(), checkedDocs: []},
+                    {name: "키폰 전화기", company: "", phone: "", price: 180000, quantity: 20, note: "", date: new Date().toISOString(), checkedDocs: []},
+                    {name: "HUB, AP, 멀티탭 등", company: "", phone: "", price: 2180000, quantity: 1, note: "1식", date: new Date().toISOString(), checkedDocs: []}
+                ]},
+                "정보기기 조달": { mainCategory: "사무실조성", type: "물품", budget: 14109010, status: "계획", note: "컴퓨터 및 주변기기", items: [
+                    {name: "데스크톱 컴퓨터", company: "", phone: "", price: 740901, quantity: 10, note: "", date: new Date().toISOString(), checkedDocs: []},
+                    {name: "윈도우11 Pro", company: "", phone: "", price: 173000, quantity: 10, note: "", date: new Date().toISOString(), checkedDocs: []},
+                    {name: "액정 모니터", company: "", phone: "", price: 399000, quantity: 10, note: "", date: new Date().toISOString(), checkedDocs: []},
+                    {name: "문서세단기", company: "", phone: "", price: 490000, quantity: 2, note: "", date: new Date().toISOString(), checkedDocs: []}
+                ]},
+                "프린터/복사기": { mainCategory: "사무실조성", type: "물품", budget: 7854000, status: "계획", note: "출력 장비", items: [
+                    {name: "전자복사기 및 부속품", company: "", phone: "", price: 3432000, quantity: 2, note: "", date: new Date().toISOString(), checkedDocs: []},
+                    {name: "복합기 토너", company: "", phone: "", price: 99000, quantity: 10, note: "", date: new Date().toISOString(), checkedDocs: []}
+                ]},
+                "사무용품": { mainCategory: "사무실조성", type: "물품", budget: 2000000, status: "계획", note: "각종 사무용품", items: [
+                    {name: "각종 사무용품", company: "", phone: "", price: 2000000, quantity: 1, note: "1식", date: new Date().toISOString(), checkedDocs: []}
+                ]},
+                "가구 조달": { mainCategory: "사무실조성", type: "물품", budget: 26499900, status: "계획", note: "사무실 가구", items: [
+                    {name: "파티션", company: "", phone: "", price: 2528000, quantity: 1, note: "1식", date: new Date().toISOString(), checkedDocs: []},
+                    {name: "의자", company: "", phone: "", price: 297200, quantity: 20, note: "", date: new Date().toISOString(), checkedDocs: []},
+                    {name: "책상", company: "", phone: "", price: 349800, quantity: 20, note: "", date: new Date().toISOString(), checkedDocs: []},
+                    {name: "회의용 탁자", company: "", phone: "", price: 1152000, quantity: 4, note: "", date: new Date().toISOString(), checkedDocs: []},
+                    {name: "캐비닛/로커", company: "", phone: "", price: 6503900, quantity: 1, note: "1식", date: new Date().toISOString(), checkedDocs: []}
+                ]},
+                "휴게환경 가전제품": { mainCategory: "사무실조성", type: "물품", budget: 3817000, status: "계획", note: "휴게실 전자제품", items: [
+                    {name: "냉장고", company: "", phone: "", price: 1450000, quantity: 1, note: "", date: new Date().toISOString(), checkedDocs: []},
+                    {name: "전자레인지", company: "", phone: "", price: 119000, quantity: 1, note: "", date: new Date().toISOString(), checkedDocs: []},
+                    {name: "청소기", company: "", phone: "", price: 324000, quantity: 2, note: "", date: new Date().toISOString(), checkedDocs: []},
+                    {name: "정수기 (설치비 포함)", company: "", phone: "", price: 550000, quantity: 2, note: "", date: new Date().toISOString(), checkedDocs: []},
+                    {name: "비데 (설치비 포함)", company: "", phone: "", price: 550000, quantity: 2, note: "", date: new Date().toISOString(), checkedDocs: []},
+                    {name: "공기청정기 (설치비 포함)", company: "", phone: "", price: 1100000, quantity: 1, note: "", date: new Date().toISOString(), checkedDocs: []}
+                ]},
+                "휴게환경 비품": { mainCategory: "사무실조성", type: "물품", budget: 1700000, status: "계획", note: "휴게실 비품 및 정비", items: [
+                    {name: "매트릭스 및 침구류", company: "", phone: "", price: 300000, quantity: 1, note: "", date: new Date().toISOString(), checkedDocs: []},
+                    {name: "다용도 테이블 의자", company: "", phone: "", price: 600000, quantity: 1, note: "", date: new Date().toISOString(), checkedDocs: []},
+                    {name: "바닥/벽 정비", company: "", phone: "", price: 800000, quantity: 1, note: "", date: new Date().toISOString(), checkedDocs: []}
+                ]},
+                "싱크대 설치": { mainCategory: "사무실조성", type: "공사", budget: 8400000, status: "계획", note: "철거 및 설치", items: [
+                    {name: "철거 및 설치", company: "", phone: "", price: 8400000, quantity: 1, note: "1식", date: new Date().toISOString(), checkedDocs: []}
+                ]},
+                "산업안전관리": { mainCategory: "사무실조성", type: "물품", budget: 2430000, status: "계획", note: "안전관리 용품", items: [
+                    {name: "미끄럼방지", company: "", phone: "", price: 960000, quantity: 1, note: "", date: new Date().toISOString(), checkedDocs: []},
+                    {name: "소방/피난 설비", company: "", phone: "", price: 350000, quantity: 1, note: "", date: new Date().toISOString(), checkedDocs: []},
+                    {name: "보호구", company: "", phone: "", price: 250000, quantity: 1, note: "", date: new Date().toISOString(), checkedDocs: []},
+                    {name: "위험물질 관리", company: "", phone: "", price: 200000, quantity: 1, note: "", date: new Date().toISOString(), checkedDocs: []},
+                    {name: "안전표지/게시물", company: "", phone: "", price: 320000, quantity: 1, note: "", date: new Date().toISOString(), checkedDocs: []},
+                    {name: "측정/점검 장비", company: "", phone: "", price: 150000, quantity: 1, note: "", date: new Date().toISOString(), checkedDocs: []},
+                    {name: "응급/구호 용품", company: "", phone: "", price: 100000, quantity: 1, note: "", date: new Date().toISOString(), checkedDocs: []},
+                    {name: "장애인 편의시설", company: "", phone: "", price: 100000, quantity: 1, note: "", date: new Date().toISOString(), checkedDocs: []}
+                ]},
+                "출입통제시스템": { mainCategory: "사무실조성", type: "물품", budget: 1800000, status: "계획", note: "보안 장비", items: [
+                    {name: "도어락", company: "", phone: "", price: 1800000, quantity: 1, note: "", date: new Date().toISOString(), checkedDocs: []}
+                ]},
+                "신규인사관리": { mainCategory: "사무실조성", type: "물품", budget: 440000, status: "계획", note: "직원 복지", items: [
+                    {name: "등산화 지급", company: "", phone: "", price: 440000, quantity: 1, note: "", date: new Date().toISOString(), checkedDocs: []}
+                ]},
+                "사육장 관리": { mainCategory: "사무실조성", type: "물품", budget: 5000000, status: "계획", note: "사육장 운영 물품", items: [
+                    {name: "사육장 관리 물품", company: "", phone: "", price: 5000000, quantity: 1, note: "1식", date: new Date().toISOString(), checkedDocs: []}
+                ]},
+                "시설 관리": { mainCategory: "사무실조성", type: "물품", budget: 10000000, status: "계획", note: "시설 유지보수", items: [
+                    {name: "시설 관리 물품", company: "", phone: "", price: 10000000, quantity: 1, note: "", date: new Date().toISOString(), checkedDocs: []}
+                ]},
+                "청소 용역": { mainCategory: "사무실조성", type: "용역", budget: 1700000, status: "계획", note: "엘리트빌딩케어", items: [
+                    {name: "청소 용역 (12개월)", company: "엘리트빌딩케어", phone: "", price: 1700000, quantity: 1, note: "", date: new Date().toISOString(), checkedDocs: []}
+                ]},
+                "기타 운영비": { mainCategory: "사무실조성", type: "물품", budget: 120970, status: "계획", note: "잡비", items: [
+                    {name: "기타 잡비", company: "", phone: "", price: 120970, quantity: 1, note: "", date: new Date().toISOString(), checkedDocs: []}
+                ]},
+                "예비비": { mainCategory: "사무실조성", type: "물품", budget: 5949120, status: "계획", note: "예비비", items: [] },
+
+                // 경비 카테고리
+                "컴프레셔 구매": { mainCategory: "경비", subCategory: "운영비", type: "물품", budget: 7851500, status: "지출완료", note: "", items: [
+                    {name: "컴프레셔", company: "", phone: "", price: 7851500, quantity: 1, note: "", date: "2025-09-26T00:00:00.000Z", checkedDocs: []}
+                ]},
+                "청소시스템 전기선 시공": { mainCategory: "경비", subCategory: "유지보수비", type: "공사", budget: 4026000, status: "지출완료", note: "", items: [
+                    {name: "청소시스템 전기선 시공", company: "", phone: "", price: 4026000, quantity: 1, note: "", date: "2025-09-09T00:00:00.000Z", checkedDocs: []}
+                ]},
+                "케이지 제작": { mainCategory: "경비", subCategory: "운영비", type: "공사", budget: 20790000, status: "지출완료", note: "성창", items: [
+                    {name: "케이지 제작", company: "성창", phone: "", price: 20790000, quantity: 1, note: "", date: "2025-09-02T00:00:00.000Z", checkedDocs: []}
+                ]},
+                "울타리 설치공사": { mainCategory: "경비", subCategory: "유지보수비", type: "공사", budget: 12100000, status: "지출완료", note: "에스콤코리아남부점", items: [
+                    {name: "울타리 설치공사", company: "에스콤코리아남부점", phone: "", price: 12100000, quantity: 1, note: "", date: "2025-09-02T00:00:00.000Z", checkedDocs: []}
+                ]},
+                "물펌프공사 설치": { mainCategory: "경비", subCategory: "유지보수비", type: "공사", budget: 19600000, status: "지출완료", note: "천보", items: [
+                    {name: "물펌프공사 설치", company: "천보", phone: "", price: 19600000, quantity: 1, note: "", date: "2025-09-02T00:00:00.000Z", checkedDocs: []}
+                ]},
+                "CCTV 설치": { mainCategory: "경비", subCategory: "기타 경비", type: "공사", budget: 54890460, status: "지출완료", note: "보안시스템", items: [
+                    {name: "CCTV 설치", company: "", phone: "", price: 54890460, quantity: 1, note: "", date: new Date().toISOString(), checkedDocs: []}
+                ]}
+            };
+
+            // 데이터 병합
+            for (const [name, data] of Object.entries(initialBudget)) {
+                if (!budgetData.categories[name]) {
+                    budgetData.categories[name] = data;
+                }
+            }
+
+            saveData();
+            renderAll();
+            alert('초기 예산안을 불러왔습니다.\n총 예산: 219,257,960원\n- 사무실조성: 100,000,000원\n- 경비: 119,257,960원');
+        }
+
+        // 엑셀 내보내기
+        function exportToExcel() {
+            if (Object.keys(budgetData.categories).length === 0) {
+                alert('내보낼 데이터가 없습니다.');
+                return;
+            }
+
+            const wb = XLSX.utils.book_new();
+
+            // 1. 전체 요약 시트
+            const summaryData = [];
+            summaryData.push(['[국립공원 사육곰 관리센터] 2025년도 예산 집행 관리 대장']);
+            summaryData.push(['작성일자', new Date().toLocaleDateString('ko-KR')]);
+            summaryData.push([]);
+
+            let totalBudget = 0;
+            let totalUsed = 0;
+
+            for (const [name, data] of Object.entries(budgetData.categories)) {
+                totalBudget += data.budget;
+                const used = data.items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+                totalUsed += used;
+            }
+
+            summaryData.push(['구분', '금액(원)']);
+            summaryData.push(['총 편성예산', totalBudget]);
+            summaryData.push(['집행액', totalUsed]);
+            summaryData.push(['잔액', totalBudget - totalUsed]);
+            summaryData.push(['집행률(%)', ((totalUsed / totalBudget) * 100).toFixed(1)]);
+            summaryData.push([]);
+            summaryData.push(['사업별 예산 집행 현황 (대분류별)']);
+            summaryData.push(['연번', '대분류', '소분류', '사업명', '구분', '편성예산', '집행액', '잔액', '집행률(%)', '상태', '비고']);
+
+            // 대분류별로 그룹화
+            const grouped = {};
+            Object.entries(budgetData.categories).forEach(([name, data]) => {
+                const mainCat = data.mainCategory || '미분류';
+                if (!grouped[mainCat]) {
+                    grouped[mainCat] = [];
+                }
+                grouped[mainCat].push([name, data]);
+            });
+
+            let index = 1;
+            for (const [mainCat, items] of Object.entries(grouped)) {
+                // 대분류별 합계 계산
+                let mainBudget = 0;
+                let mainUsed = 0;
+                items.forEach(([name, data]) => {
+                    mainBudget += data.budget;
+                    mainUsed += data.items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+                });
+                const mainRemaining = mainBudget - mainUsed;
+                const mainRate = mainBudget > 0 ? ((mainUsed / mainBudget) * 100).toFixed(1) : 0;
+
+                // 대분류 합계 행
+                summaryData.push([
+                    '',
+                    `■ ${mainCat}`,
+                    '',
+                    `총 ${items.length}개`,
+                    '',
+                    mainBudget,
+                    mainUsed,
+                    mainRemaining,
+                    mainRate,
+                    '',
+                    ''
+                ]);
+
+                // 세부 사업
+                items.forEach(([name, data]) => {
+                    const used = data.items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+                    const remaining = data.budget - used;
+                    const rate = data.budget > 0 ? ((used / data.budget) * 100).toFixed(1) : 0;
+                    const status = rate >= 100 ? '예산초과' : rate >= 80 ? '주의' : '정상';
+
+                    summaryData.push([
+                        index++,
+                        mainCat,
+                        data.subCategory || '-',
+                        name,
+                        data.type,
+                        data.budget,
+                        used,
+                        remaining,
+                        rate,
+                        status,
+                        data.note || ''
+                    ]);
+                });
+            }
+
+            const ws1 = XLSX.utils.aoa_to_sheet(summaryData);
+            ws1['!cols'] = [{wch: 8}, {wch: 18}, {wch: 15}, {wch: 25}, {wch: 8}, {wch: 15}, {wch: 15}, {wch: 15}, {wch: 12}, {wch: 10}, {wch: 30}];
+            XLSX.utils.book_append_sheet(wb, ws1, '전체요약');
+
+            // 2. 사업별 세부 시트
+            for (const [name, data] of Object.entries(budgetData.categories)) {
+                const sheetData = [];
+                sheetData.push([`[${name}] 세부 품목별 집행내역`]);
+                sheetData.push(['대분류', data.mainCategory || '미분류']);
+                sheetData.push(['소분류', data.subCategory || '-']);
+                sheetData.push(['사업구분', data.type]);
+                sheetData.push(['편성예산', data.budget + '원']);
+                sheetData.push(['비고사항', data.note || '-']);
+                sheetData.push([]);
+                sheetData.push(['연번', '품목명', '계약업체', '연락처', '단가(원)', '수량', '합계(원)', '비고', '필요서류', '제출서류']);
+
+                data.items.forEach((item, idx) => {
+                    const total = item.price * item.quantity;
+                    const docs = getRequiredDocuments(data.type, total);
+                    const allDocs = [...docs.시행결의, ...docs.결과보고서, ...docs.지출];
+                    const docStr = allDocs.join(', ');
+                    const checkedDocsStr = item.checkedDocs && item.checkedDocs.length > 0 ? item.checkedDocs.join(', ') : '-';
+
+                    sheetData.push([
+                        idx + 1,
+                        item.name,
+                        item.company || '-',
+                        item.phone || '-',
+                        item.price,
+                        item.quantity,
+                        total,
+                        item.note || '-',
+                        docStr,
+                        checkedDocsStr
+                    ]);
+                });
+
+                const used = data.items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+                sheetData.push([]);
+                sheetData.push(['', '', '', '', '소계', used]);
+                sheetData.push(['', '', '', '', '잔액', data.budget - used]);
+
+                const ws = XLSX.utils.aoa_to_sheet(sheetData);
+                ws['!cols'] = [{wch: 6}, {wch: 25}, {wch: 20}, {wch: 15}, {wch: 12}, {wch: 8}, {wch: 12}, {wch: 20}, {wch: 50}, {wch: 50}];
+
+                const sheetName = name.length > 31 ? name.substring(0, 31) : name;
+                XLSX.utils.book_append_sheet(wb, ws, sheetName);
+            }
+
+            // 3. 전체 품목 리스트
+            const allItemsData = [];
+            allItemsData.push(['전체 품목별 집행내역 (구비서류 포함)']);
+            allItemsData.push([]);
+            allItemsData.push(['연번', '대분류', '소분류', '사업명', '구분', '품목명', '계약업체', '연락처', '단가(원)', '수량', '합계(원)', '비고', '필요서류', '제출서류', '제출율']);
+
+            let itemNumber = 1;
+            for (const [categoryName, data] of Object.entries(budgetData.categories)) {
+                data.items.forEach(item => {
+                    const total = item.price * item.quantity;
+                    const docs = getRequiredDocuments(data.type, total);
+                    const allDocs = [...docs.시행결의, ...docs.결과보고서, ...docs.지출];
+                    const checkedDocs = item.checkedDocs ? item.checkedDocs.join(', ') : '-';
+                    const completionRate = item.checkedDocs ? `${item.checkedDocs.length}/${allDocs.length}` : `0/${allDocs.length}`;
+
+                    allItemsData.push([
+                        itemNumber++,
+                        data.mainCategory || '미분류',
+                        data.subCategory || '-',
+                        categoryName,
+                        data.type,
+                        item.name,
+                        item.company || '-',
+                        item.phone || '-',
+                        item.price,
+                        item.quantity,
+                        total,
+                        item.note || '-',
+                        allDocs.join(', '),
+                        checkedDocs,
+                        completionRate
+                    ]);
+                });
+            }
+
+            const ws3 = XLSX.utils.aoa_to_sheet(allItemsData);
+            ws3['!cols'] = [{wch: 6}, {wch: 18}, {wch: 15}, {wch: 20}, {wch: 8}, {wch: 25}, {wch: 20}, {wch: 15}, {wch: 12}, {wch: 8}, {wch: 12}, {wch: 20}, {wch: 50}, {wch: 50}, {wch: 10}];
+            XLSX.utils.book_append_sheet(wb, ws3, '전체품목');
+
+            // 파일 다운로드
+            const today = new Date();
+            const dateStr = `${today.getFullYear()}${String(today.getMonth() + 1).padStart(2, '0')}${String(today.getDate()).padStart(2, '0')}`;
+            const fileName = `[국립공원]사육곰센터_예산관리대장_${dateStr}.xlsx`;
+
+            XLSX.writeFile(wb, fileName);
+        }
+
+        // 모달 배경 클릭시 닫기
+        document.getElementById('categoryModal').addEventListener('click', function(e) {
+            if (e.target === this) closeCategoryModal();
+        });
+
+        document.getElementById('itemModal').addEventListener('click', function(e) {
+            if (e.target === this) closeItemModal();
+        });
+
+        document.getElementById('docModal').addEventListener('click', function(e) {
+            if (e.target === this) closeDocModal();
+        });
+
+        // 체크박스 전체 선택/해제 - 사업
+        function toggleAllCategorySelection() {
+            const masterCheckbox = document.getElementById('selectAllCategories');
+            const checkboxes = document.querySelectorAll('.category-checkbox');
+            checkboxes.forEach(cb => {
+                cb.checked = masterCheckbox.checked;
+            });
+        }
+
+        // 체크박스 전체 선택/해제 - 품목
+        function toggleAllItemSelection() {
+            const masterCheckbox = document.getElementById('selectAllItems');
+            const checkboxes = document.querySelectorAll('.item-checkbox');
+            checkboxes.forEach(cb => {
+                cb.checked = masterCheckbox.checked;
+            });
+        }
+
+        // 선택된 사업 가져오기
+        function getSelectedCategories() {
+            const selected = [];
+            document.querySelectorAll('.category-checkbox:checked').forEach(cb => {
+                selected.push(cb.getAttribute('data-category'));
+            });
+            return selected;
+        }
+
+        // 선택된 품목 가져오기
+        function getSelectedItems() {
+            const selected = [];
+            document.querySelectorAll('.item-checkbox:checked').forEach(cb => {
+                selected.push({
+                    category: cb.getAttribute('data-category'),
+                    index: parseInt(cb.getAttribute('data-index'))
+                });
+            });
+            return selected;
+        }
+
+        // 필터 상태
+        let currentFilters = {
+            mainCategory: '',
+            status: '',
+            type: '',
+            dateStart: '',
+            dateEnd: '',
+            search: ''
+        };
+
+        // 필터 적용
+        function applyFilters() {
+            currentFilters.mainCategory = document.getElementById('filterMainCategory').value;
+            currentFilters.status = document.getElementById('filterStatus').value;
+            currentFilters.type = document.getElementById('filterType').value;
+            currentFilters.dateStart = document.getElementById('filterDateStart').value;
+            currentFilters.dateEnd = document.getElementById('filterDateEnd').value;
+            currentFilters.search = document.getElementById('filterSearch').value.toLowerCase();
+
+            renderAll();
+        }
+
+        // 필터 초기화
+        function resetFilters() {
+            document.getElementById('filterMainCategory').value = '';
+            document.getElementById('filterStatus').value = '';
+            document.getElementById('filterType').value = '';
+            document.getElementById('filterDateStart').value = '';
+            document.getElementById('filterDateEnd').value = '';
+            document.getElementById('filterSearch').value = '';
+
+            currentFilters = {
+                mainCategory: '',
+                status: '',
+                type: '',
+                dateStart: '',
+                dateEnd: '',
+                search: ''
+            };
+
+            renderAll();
+        }
+
+        // 데이터 필터링 함수
+        function getFilteredCategories() {
+            const filtered = {};
+
+            for (const [name, data] of Object.entries(budgetData.categories)) {
+                // 대분류 필터
+                if (currentFilters.mainCategory && data.mainCategory !== currentFilters.mainCategory) {
+                    continue;
+                }
+
+                // 지출상태 필터
+                if (currentFilters.status && data.status !== currentFilters.status) {
+                    continue;
+                }
+
+                // 구분 필터
+                if (currentFilters.type && data.type !== currentFilters.type) {
+                    continue;
+                }
+
+                // 지출일 필터
+                if (currentFilters.dateStart || currentFilters.dateEnd) {
+                    const paymentDate = data.paymentDate;
+
+                    // 지출일이 없으면 제외
+                    if (!paymentDate) {
+                        continue;
+                    }
+
+                    // 시작일 체크
+                    if (currentFilters.dateStart && paymentDate < currentFilters.dateStart) {
+                        continue;
+                    }
+
+                    // 종료일 체크
+                    if (currentFilters.dateEnd && paymentDate > currentFilters.dateEnd) {
+                        continue;
+                    }
+                }
+
+                // 검색어 필터
+                if (currentFilters.search && !name.toLowerCase().includes(currentFilters.search)) {
+                    continue;
+                }
+
+                filtered[name] = data;
+            }
+
+            return filtered;
+        }
+
+        // 초기 로드
+        window.addEventListener('DOMContentLoaded', loadData);
+    </script>
+</body>
+</html>
