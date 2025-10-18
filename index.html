@@ -2557,19 +2557,33 @@
 
             cell.classList.add('editing');
 
-            // 지출상태는 select로 처리
-            if (field === 'status') {
+            // 지출상태와 대분류는 select로 처리
+            if (field === 'status' || field === 'mainCategory') {
                 const select = document.createElement('select');
                 select.style.cssText = 'width: 100%; border: 2px solid #2196F3; padding: 8px; font-size: inherit; font-family: inherit;';
-                const statuses = ['계획', '진행중', '지출완료', '보류'];
-                statuses.forEach(status => {
-                    const option = document.createElement('option');
-                    option.value = status;
-                    option.textContent = status;
-                    if (status === originalValue) {
-                        option.selected = true;
+
+                let options = [];
+                let currentValue = originalValue;
+
+                if (field === 'status') {
+                    options = ['계획', '진행중', '지출완료', '보류'];
+                } else if (field === 'mainCategory') {
+                    // 대분류 옵션 (기존에 사용된 것들 + 일반적인 예산 항목)
+                    options = ['인건비', '재료비', '경비', '사무실조성', '시설비', '운영비', '사업비', '기타'];
+                    // '└ ' 제거
+                    if (currentValue.startsWith('└ ')) {
+                        currentValue = currentValue.substring(2).trim();
                     }
-                    select.appendChild(option);
+                }
+
+                options.forEach(option => {
+                    const optionElement = document.createElement('option');
+                    optionElement.value = option;
+                    optionElement.textContent = option;
+                    if (option === currentValue) {
+                        optionElement.selected = true;
+                    }
+                    select.appendChild(optionElement);
                 });
 
                 cell.innerHTML = '';
@@ -2604,11 +2618,6 @@
             const input = document.createElement('input');
             input.type = inputType;
             input.value = originalValue;
-
-            // 대분류의 경우 '└ ' 제거
-            if (field === 'mainCategory' && originalValue.startsWith('└ ')) {
-                input.value = originalValue.substring(2);
-            }
 
             cell.innerHTML = '';
             cell.appendChild(input);
