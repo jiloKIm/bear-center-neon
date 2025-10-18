@@ -556,6 +556,37 @@
             font-size: 12px;
         }
 
+        /* Inline 편집 스타일 */
+        .editable-cell {
+            cursor: pointer;
+            position: relative;
+            transition: background-color 0.2s;
+        }
+
+        .editable-cell:hover {
+            background-color: #f0f7ff !important;
+        }
+
+        .editable-cell.editing {
+            padding: 0 !important;
+            background-color: #fff3cd !important;
+        }
+
+        .editable-cell input {
+            width: 100%;
+            border: 2px solid #2196F3;
+            padding: 8px;
+            font-size: inherit;
+            font-family: inherit;
+            text-align: inherit;
+            box-sizing: border-box;
+        }
+
+        .editable-cell input:focus {
+            outline: none;
+            border-color: #1976D2;
+        }
+
         /* 테이블 - 공문서 표 스타일 */
         .data-table {
             width: 100%;
@@ -2017,21 +2048,18 @@
                         <td>${globalIndex++}</td>
                         <td class="text-left" style="padding-left: 20px; color: #666; font-size: 12px;">└ ${mainCat}</td>
                         <td class="text-left" style="color: #888; font-size: 12px;">${data.subCategory ? data.subCategory : '-'}</td>
-                        <td class="text-left">${name}</td>
+                        <td class="text-left editable-cell" data-field="name" data-category="${escapedName}" ondblclick="makeCellEditable(this, 'category', '${escapedName}')">${name}</td>
                         <td><span class="category-badge ${data.type}">${data.type}</span></td>
-                        <td class="text-right amount">${formatNumber(data.budget)}</td>
+                        <td class="text-right amount editable-cell" data-field="budget" data-category="${escapedName}" ondblclick="makeCellEditable(this, 'category', '${escapedName}')">${formatNumber(data.budget)}</td>
                         <td class="text-right amount">${formatNumber(used)}</td>
                         <td class="text-right ${remaining >= 0 ? 'positive' : 'negative'}">${formatNumber(remaining)}</td>
                         <td>${rate}%</td>
                         <td><span class="status-badge ${paymentStatus}">${paymentStatus}</span></td>
-                        <td style="font-size: 12px;">${paymentDate}</td>
+                        <td style="font-size: 12px;" class="editable-cell" data-field="paymentDate" data-category="${escapedName}" ondblclick="makeCellEditable(this, 'category', '${escapedName}')">${paymentDate}</td>
                         <td>${statusBadge}</td>
                         <td>
                             <button class="btn btn-success btn-sm" onclick="viewCategoryDocs('${escapedName}')">
                                 서류확인
-                            </button>
-                            <button class="btn btn-primary btn-sm" onclick="editCategory('${escapedName}')">
-                                수정
                             </button>
                             <button class="btn btn-danger btn-sm" onclick="deleteCategory('${escapedName}')">
                                 삭제
@@ -2110,17 +2138,14 @@
                         <td>${globalIndex++}</td>
                         <td class="text-left">${item.category}</td>
                         <td><span class="category-badge ${item.categoryType}">${item.categoryType}</span></td>
-                        <td class="text-left">${item.name}</td>
-                        <td class="text-left">${item.company || '-'}</td>
-                        <td>${item.phone || '-'}</td>
-                        <td class="text-right">${formatNumber(item.price)}</td>
-                        <td>${item.quantity}</td>
+                        <td class="text-left editable-cell" data-field="name" data-item-id="${item.itemId}" ondblclick="makeCellEditable(this, 'item', ${item.itemId})">${item.name}</td>
+                        <td class="text-left editable-cell" data-field="company" data-item-id="${item.itemId}" ondblclick="makeCellEditable(this, 'item', ${item.itemId})">${item.company || '-'}</td>
+                        <td class="editable-cell" data-field="phone" data-item-id="${item.itemId}" ondblclick="makeCellEditable(this, 'item', ${item.itemId})">${item.phone || '-'}</td>
+                        <td class="text-right editable-cell" data-field="price" data-item-id="${item.itemId}" ondblclick="makeCellEditable(this, 'item', ${item.itemId})">${formatNumber(item.price)}</td>
+                        <td class="editable-cell" data-field="quantity" data-item-id="${item.itemId}" ondblclick="makeCellEditable(this, 'item', ${item.itemId})">${item.quantity}</td>
                         <td class="text-right amount">${formatNumber(total)}</td>
-                        <td class="text-left">${item.note || '-'}</td>
+                        <td class="text-left editable-cell" data-field="note" data-item-id="${item.itemId}" ondblclick="makeCellEditable(this, 'item', ${item.itemId})">${item.note || '-'}</td>
                         <td>
-                            <button class="btn btn-primary btn-sm" onclick="editItem('${escapedCategory}', ${item.itemId})">
-                                수정
-                            </button>
                             <button class="btn btn-danger btn-sm" onclick="deleteItem('${escapedCategory}', ${item.itemId})">
                                 삭제
                             </button>
@@ -2492,6 +2517,209 @@
                 console.error('품목 삭제 오류:', error);
                 alert('삭제 중 오류가 발생했습니다.');
             }
+        }
+
+        // Inline 편집 기능
+        let currentEditingCell = null;
+
+        function makeCellEditable(cell, type, id) {
+            // 이미 편집 중이면 무시
+            if (currentEditingCell) {
+                return;
+            }
+
+            currentEditingCell = cell;
+            const field = cell.dataset.field;
+            let originalValue = cell.textContent.trim();
+
+            // '-'는 빈 값으로 처리
+            if (originalValue === '-') {
+                originalValue = '';
+            }
+
+            // 숫자 필드인 경우 콤마 제거
+            if (field === 'budget' || field === 'price') {
+                originalValue = originalValue.replace(/,/g, '');
+            }
+
+            // 날짜 필드인 경우 형식 변환
+            if (field === 'paymentDate' && originalValue && originalValue !== '-') {
+                // YYYY-MM-DD 형식으로 변환
+                const parts = originalValue.split('-');
+                if (parts.length === 3) {
+                    originalValue = `${parts[0]}-${parts[1].padStart(2, '0')}-${parts[2].padStart(2, '0')}`;
+                }
+            }
+
+            cell.classList.add('editing');
+
+            // input 타입 결정
+            let inputType = 'text';
+            if (field === 'paymentDate') {
+                inputType = 'date';
+            } else if (field === 'budget' || field === 'price' || field === 'quantity') {
+                inputType = 'number';
+            }
+
+            const input = document.createElement('input');
+            input.type = inputType;
+            input.value = originalValue;
+
+            cell.innerHTML = '';
+            cell.appendChild(input);
+            input.focus();
+            input.select();
+
+            // Enter 키로 저장
+            input.addEventListener('keydown', async (e) => {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    await saveCellEdit(cell, type, id, field, input.value, originalValue);
+                } else if (e.key === 'Escape') {
+                    cancelCellEdit(cell, originalValue, field);
+                }
+            });
+
+            // 포커스를 잃으면 저장
+            input.addEventListener('blur', async () => {
+                if (currentEditingCell === cell) {
+                    await saveCellEdit(cell, type, id, field, input.value, originalValue);
+                }
+            });
+        }
+
+        async function saveCellEdit(cell, type, id, field, newValue, originalValue) {
+            newValue = newValue.trim();
+
+            // 값이 변경되지 않았으면 취소
+            if (newValue === originalValue || (newValue === '' && originalValue === '-')) {
+                cancelCellEdit(cell, originalValue, field);
+                return;
+            }
+
+            try {
+                if (type === 'category') {
+                    await updateCategoryField(id, field, newValue);
+                } else if (type === 'item') {
+                    await updateItemField(id, field, newValue);
+                }
+
+                // 데이터 다시 로드
+                await loadData();
+                currentEditingCell = null;
+            } catch (error) {
+                console.error('저장 오류:', error);
+                alert('저장 중 오류가 발생했습니다.');
+                cancelCellEdit(cell, originalValue, field);
+            }
+        }
+
+        function cancelCellEdit(cell, originalValue, field) {
+            cell.classList.remove('editing');
+
+            // 표시 형식으로 복원
+            let displayValue = originalValue;
+            if (field === 'budget' || field === 'price') {
+                displayValue = formatNumber(parseInt(originalValue) || 0);
+            } else if (!originalValue) {
+                displayValue = '-';
+            }
+
+            cell.textContent = displayValue;
+            currentEditingCell = null;
+        }
+
+        async function updateCategoryField(categoryName, field, value) {
+            const category = budgetData.categories[categoryName];
+            if (!category) {
+                throw new Error('카테고리를 찾을 수 없습니다.');
+            }
+
+            // 필드 값 변환
+            let updateData = {
+                name: category.name,
+                mainCategory: category.mainCategory,
+                subCategory: category.subCategory,
+                type: category.type,
+                budget: category.budget,
+                status: category.status,
+                paymentDate: category.paymentDate,
+                note: category.note
+            };
+
+            // 해당 필드만 업데이트
+            if (field === 'budget') {
+                updateData.budget = parseInt(value) || 0;
+            } else if (field === 'paymentDate') {
+                updateData.paymentDate = value || null;
+            } else if (field === 'name') {
+                updateData.name = value;
+            }
+
+            const response = await fetch(`${API_BASE_URL}/categories/${category.id}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(updateData)
+            });
+
+            if (!response.ok) throw new Error('업데이트 실패');
+        }
+
+        async function updateItemField(itemId, field, value) {
+            // 먼저 해당 품목 찾기
+            let itemData = null;
+            let categoryId = null;
+
+            for (const [catName, catData] of Object.entries(budgetData.categories)) {
+                const item = catData.items.find(i => i.id === itemId);
+                if (item) {
+                    itemData = item;
+                    categoryId = catData.id;
+                    break;
+                }
+            }
+
+            if (!itemData) {
+                throw new Error('품목을 찾을 수 없습니다.');
+            }
+
+            // 업데이트할 데이터 준비
+            let updateData = {
+                categoryId: categoryId,
+                name: itemData.name,
+                company: itemData.company || '',
+                phone: itemData.phone || '',
+                price: itemData.price,
+                quantity: itemData.quantity,
+                note: itemData.note || ''
+            };
+
+            // 해당 필드만 업데이트
+            if (field === 'name') {
+                updateData.name = value;
+            } else if (field === 'company') {
+                updateData.company = value;
+            } else if (field === 'phone') {
+                updateData.phone = value;
+            } else if (field === 'price') {
+                updateData.price = parseInt(value) || 0;
+            } else if (field === 'quantity') {
+                updateData.quantity = parseInt(value) || 1;
+            } else if (field === 'note') {
+                updateData.note = value;
+            }
+
+            const response = await fetch(`${API_BASE_URL}/items/${itemId}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(updateData)
+            });
+
+            if (!response.ok) throw new Error('업데이트 실패');
         }
 
         // 서류 확인 모달
