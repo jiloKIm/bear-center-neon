@@ -60,13 +60,17 @@
         .gov-logo-img {
             width: 40px;
             height: 40px;
-            background: #003876;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            color: white;
-            font-size: 20px;
+            overflow: hidden;
+        }
+
+        .gov-logo-img img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
         }
 
         .gov-org-name {
@@ -1163,7 +1167,7 @@
             <div class="gov-header-left">
                 <div class="gov-logo-area">
                     <div class="gov-logo-img">
-                        <i class="fas fa-landmark"></i>
+                        <img src="logo.png" alt="국립공원 로고">
                     </div>
                     <div class="gov-org-name">국립공원 사육곰 관리센터</div>
                 </div>
