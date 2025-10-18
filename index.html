@@ -3004,7 +3004,8 @@
                 return;
             }
 
-            const wb = XLSX.utils.book_new();
+            try {
+                const wb = XLSX.utils.book_new();
 
             // 1. 전체 요약 시트
             const summaryData = [];
@@ -3179,10 +3180,15 @@
 
             // 파일 다운로드
             const today = new Date();
-            const dateStr = `${today.getFullYear()}${String(today.getMonth() + 1).padStart(2, '0')}${String(today.getDate()).padStart(2, '0')}`;
-            const fileName = `[국립공원]사육곰센터_예산관리대장_${dateStr}.xlsx`;
+                const dateStr = `${today.getFullYear()}${String(today.getMonth() + 1).padStart(2, '0')}${String(today.getDate()).padStart(2, '0')}`;
+                const fileName = `[국립공원]사육곰센터_예산관리대장_${dateStr}.xlsx`;
 
-            XLSX.writeFile(wb, fileName);
+                XLSX.writeFile(wb, fileName);
+                console.log('엑셀 파일 다운로드 완료:', fileName);
+            } catch (error) {
+                console.error('엑셀 다운로드 오류:', error);
+                alert('엑셀 다운로드 중 오류가 발생했습니다.\n브라우저 콘솔을 확인해주세요.\n\n오류: ' + error.message);
+            }
         }
 
         // 모달 배경 클릭시 닫기
