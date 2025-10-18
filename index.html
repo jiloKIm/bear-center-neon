@@ -2023,6 +2023,9 @@
                             <button class="btn btn-success btn-sm" onclick="viewCategoryDocs('${escapedName}')">
                                 서류확인
                             </button>
+                            <button class="btn btn-primary btn-sm" onclick="editCategory('${escapedName}')">
+                                수정
+                            </button>
                             <button class="btn btn-danger btn-sm" onclick="deleteCategory('${escapedName}')">
                                 삭제
                             </button>
@@ -2108,6 +2111,9 @@
                         <td class="text-right amount">${formatNumber(total)}</td>
                         <td class="text-left">${item.note || '-'}</td>
                         <td>
+                            <button class="btn btn-primary btn-sm" onclick="editItem('${escapedCategory}', ${item.itemId})">
+                                수정
+                            </button>
                             <button class="btn btn-danger btn-sm" onclick="deleteItem('${escapedCategory}', ${item.itemId})">
                                 삭제
                             </button>
@@ -2132,7 +2138,12 @@
         }
 
         // 카테고리 모달
+        let editingCategoryId = null;
+
         function openCategoryModal() {
+            // 새로 만들기 모드로 설정
+            editingCategoryId = null;
+
             document.getElementById('categoryModal').classList.add('active');
             document.getElementById('categoryMain').value = '';
             document.getElementById('categoryMainCustom').value = '';
@@ -2145,6 +2156,12 @@
             document.getElementById('categoryStatus').value = '';
             document.getElementById('categoryPaymentDate').value = '';
             document.getElementById('categoryNote').value = '';
+
+            // 버튼 텍스트 초기화
+            const saveBtn = document.querySelector('#categoryModal .btn-primary');
+            if (saveBtn) {
+                saveBtn.textContent = '등록';
+            }
         }
 
         function closeCategoryModal() {
@@ -2195,17 +2212,24 @@
             try {
                 const categoryData = {
                     name: name,
-                    main_category: mainCategory,
-                    sub_category: subCategory,
+                    mainCategory: mainCategory,
+                    subCategory: subCategory,
                     type: type,
                     budget: budget,
                     status: status,
-                    payment_date: paymentDate || null,
+                    paymentDate: paymentDate || null,
                     note: note
                 };
 
-                const response = await fetch(`${API_BASE_URL}/categories`, {
-                    method: 'POST',
+                // 수정 모드인지 확인
+                const isEdit = editingCategoryId !== null;
+                const url = isEdit
+                    ? `${API_BASE_URL}/categories/${editingCategoryId}`
+                    : `${API_BASE_URL}/categories`;
+                const method = isEdit ? 'PUT' : 'POST';
+
+                const response = await fetch(url, {
+                    method: method,
                     headers: {
                         'Content-Type': 'application/json',
                     },
@@ -2213,6 +2237,9 @@
                 });
 
                 if (!response.ok) throw new Error('저장 실패');
+
+                // 수정 모드 초기화
+                editingCategoryId = null;
 
                 await loadData();
                 closeCategoryModal();
@@ -2222,13 +2249,69 @@
             }
         }
 
+        async function editCategory(name) {
+            const category = budgetData.categories[name];
+            if (!category) {
+                alert('카테고리를 찾을 수 없습니다.');
+                return;
+            }
+
+            // 수정 모드로 설정
+            editingCategoryId = category.id;
+
+            // 모달 열기
+            document.getElementById('categoryModal').classList.add('active');
+
+            // 기존 데이터 채우기
+            const mainCustomInput = document.getElementById('categoryMainCustom');
+            const mainSelect = document.getElementById('categoryMain');
+
+            // 대분류 설정
+            if (mainSelect.querySelector(`option[value="${category.mainCategory}"]`)) {
+                mainSelect.value = category.mainCategory;
+                mainCustomInput.value = '';
+            } else {
+                mainSelect.value = '직접입력';
+                mainCustomInput.value = category.mainCategory;
+            }
+
+            // 중분류 설정
+            if (category.subCategory) {
+                updateSubCategoryOptions();
+                const subSelect = document.getElementById('categorySub');
+                const subCustomInput = document.getElementById('categorySubCustom');
+
+                if (subSelect.querySelector(`option[value="${category.subCategory}"]`)) {
+                    subSelect.value = category.subCategory;
+                    subCustomInput.value = '';
+                } else {
+                    subSelect.value = '직접입력';
+                    subCustomInput.value = category.subCategory;
+                }
+            }
+
+            document.getElementById('categoryName').value = category.name;
+            document.getElementById('categoryType').value = category.type;
+            document.getElementById('categoryBudget').value = category.budget;
+            document.getElementById('categoryStatus').value = category.status;
+            document.getElementById('categoryPaymentDate').value = category.paymentDate || '';
+            document.getElementById('categoryNote').value = category.note || '';
+
+            // 버튼 텍스트 변경
+            const saveBtn = document.querySelector('#categoryModal .btn-primary');
+            if (saveBtn) {
+                saveBtn.textContent = '수정';
+            }
+        }
+
         async function deleteCategory(name) {
             if (!confirm(`'${name}' 사업을 삭제하시겠습니까?\n※ 등록된 모든 품목도 함께 삭제됩니다.`)) {
                 return;
             }
 
             try {
-                const response = await fetch(`${API_BASE_URL}/categories/${encodeURIComponent(name)}`, {
+                const category = budgetData.categories[name];
+                const response = await fetch(`${API_BASE_URL}/categories/${category.id}`, {
                     method: 'DELETE'
                 });
 
@@ -2242,11 +2325,19 @@
         }
 
         // 품목 모달
+        let editingItemId = null;
+        let editingItemCategoryId = null;
+
         function openItemModal() {
             if (Object.keys(budgetData.categories).length === 0) {
                 alert('먼저 사업을 등록해주세요.');
                 return;
             }
+
+            // 새로 만들기 모드로 설정
+            editingItemId = null;
+            editingItemCategoryId = null;
+
             document.getElementById('itemModal').classList.add('active');
             document.getElementById('itemCategory').value = '';
             document.getElementById('itemName').value = '';
@@ -2258,6 +2349,12 @@
             document.getElementById('docGuideContainer').innerHTML = '';
             document.getElementById('docChecklist').innerHTML = '';
             document.getElementById('checklistGroup').style.display = 'none';
+
+            // 버튼 텍스트 초기화
+            const saveBtn = document.querySelector('#itemModal .btn-primary');
+            if (saveBtn) {
+                saveBtn.textContent = '등록';
+            }
         }
 
         function closeItemModal() {
@@ -2265,7 +2362,7 @@
         }
 
         async function saveItem() {
-            const category = document.getElementById('itemCategory').value;
+            const categoryName = document.getElementById('itemCategory').value;
             const name = document.getElementById('itemName').value.trim();
             const company = document.getElementById('itemCompany').value.trim();
             const phone = document.getElementById('itemPhone').value.trim();
@@ -2273,7 +2370,7 @@
             const quantity = parseInt(document.getElementById('itemQuantity').value) || 1;
             const note = document.getElementById('itemNote').value.trim();
 
-            if (!category) {
+            if (!categoryName) {
                 alert('사업을 선택하세요.');
                 return;
             }
@@ -2289,17 +2386,29 @@
             }
 
             try {
+                // 카테고리 ID 가져오기
+                const category = budgetData.categories[categoryName];
+                const categoryId = editingItemId ? editingItemCategoryId : category.id;
+
                 const itemData = {
-                    category_name: category,
+                    categoryId: categoryId,
                     name: name,
                     company: company,
                     phone: phone,
                     price: price,
-                    quantity: quantity
+                    quantity: quantity,
+                    note: note
                 };
 
-                const response = await fetch(`${API_BASE_URL}/items`, {
-                    method: 'POST',
+                // 수정 모드인지 확인
+                const isEdit = editingItemId !== null;
+                const url = isEdit
+                    ? `${API_BASE_URL}/items/${editingItemId}`
+                    : `${API_BASE_URL}/items`;
+                const method = isEdit ? 'PUT' : 'POST';
+
+                const response = await fetch(url, {
+                    method: method,
                     headers: {
                         'Content-Type': 'application/json',
                     },
@@ -2308,11 +2417,54 @@
 
                 if (!response.ok) throw new Error('저장 실패');
 
+                // 수정 모드 초기화
+                editingItemId = null;
+                editingItemCategoryId = null;
+
                 await loadData();
                 closeItemModal();
             } catch (error) {
                 console.error('품목 저장 오류:', error);
                 alert('저장 중 오류가 발생했습니다.');
+            }
+        }
+
+        async function editItem(categoryName, itemId) {
+            const category = budgetData.categories[categoryName];
+            if (!category) {
+                alert('카테고리를 찾을 수 없습니다.');
+                return;
+            }
+
+            const item = category.items.find(i => i.id === itemId);
+            if (!item) {
+                alert('품목을 찾을 수 없습니다.');
+                return;
+            }
+
+            // 수정 모드로 설정
+            editingItemId = itemId;
+            editingItemCategoryId = category.id;
+
+            // 모달 열기
+            document.getElementById('itemModal').classList.add('active');
+
+            // 기존 데이터 채우기
+            document.getElementById('itemCategory').value = categoryName;
+            document.getElementById('itemName').value = item.name;
+            document.getElementById('itemCompany').value = item.company || '';
+            document.getElementById('itemPhone').value = item.phone || '';
+            document.getElementById('itemPrice').value = item.price;
+            document.getElementById('itemQuantity').value = item.quantity;
+            document.getElementById('itemNote').value = item.note || '';
+
+            // 서류 가이드 업데이트
+            updateDocGuide();
+
+            // 버튼 텍스트 변경
+            const saveBtn = document.querySelector('#itemModal .btn-primary');
+            if (saveBtn) {
+                saveBtn.textContent = '수정';
             }
         }
 

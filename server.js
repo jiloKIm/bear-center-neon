@@ -123,7 +123,33 @@ app.post('/api/items', async (req, res) => {
     }
 });
 
-// 6. 품목 삭제
+// 6. 품목 수정
+app.put('/api/items/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { categoryId, name, company, phone, price, quantity, note } = req.body;
+
+        const result = await sql`
+            UPDATE items
+            SET category_id = ${categoryId},
+                name = ${name},
+                company = ${company},
+                phone = ${phone},
+                price = ${price},
+                quantity = ${quantity},
+                note = ${note}
+            WHERE id = ${id}
+            RETURNING *
+        `;
+
+        res.json(result[0]);
+    } catch (error) {
+        console.error('Error updating item:', error);
+        res.status(500).json({ error: 'Failed to update item' });
+    }
+});
+
+// 7. 품목 삭제
 app.delete('/api/items/:id', async (req, res) => {
     try {
         const { id } = req.params;
@@ -137,7 +163,7 @@ app.delete('/api/items/:id', async (req, res) => {
     }
 });
 
-// 7. 이름으로 카테고리 조회
+// 8. 이름으로 카테고리 조회
 app.get('/api/categories/by-name/:name', async (req, res) => {
     try {
         const { name } = req.params;
