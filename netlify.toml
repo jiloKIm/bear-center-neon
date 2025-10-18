@@ -1,7 +1,7 @@
 [build]
   publish = "."
   functions = "netlify/functions"
-  
+
 [build.processing]
   skip_processing = true
 
@@ -11,6 +11,11 @@
 [dev]
   port = 8888
   publish = "."
+
+[[redirects]]
+  from = "/api/*"
+  to = "/.netlify/functions/api/:splat"
+  status = 200
 
 [[headers]]
   for = "/*"
