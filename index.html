@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>예산 관리 시스템 - 사육곰 센터</title>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
     <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
     <style>
         * {
@@ -1351,13 +1351,12 @@
                             <th style="width: 5%">집행률(%)</th>
                             <th style="width: 6%">지출상태</th>
                             <th style="width: 7%">지출일</th>
-                            <th style="width: 6%">진행상태</th>
-                            <th style="width: 18%">관리</th>
+                            <th style="width: 24%">관리</th>
                         </tr>
                     </thead>
                     <tbody id="categoryTableBody">
                         <tr>
-                            <td colspan="14" class="empty-state">
+                            <td colspan="13" class="empty-state">
                                 <i class="fas fa-folder-open"></i>
                                 <p>등록된 사업이 없습니다.<br>상단 '사업 등록' 버튼을 클릭하거나 '초기 데이터 불러오기'를 이용하세요.</p>
                             </td>
@@ -1416,7 +1415,7 @@
     <div id="categoryModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
-                <h3 class="modal-title">사업 등록</h3>
+                <h3 class="modal-title"><i class="fas fa-folder-plus"></i> 사업 등록</h3>
                 <button class="modal-close" onclick="closeCategoryModal()">×</button>
             </div>
             <div class="modal-body">
@@ -1475,8 +1474,8 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button class="btn" onclick="closeCategoryModal()">취소</button>
-                <button class="btn btn-primary" onclick="saveCategory()">등록</button>
+                <button class="btn" onclick="closeCategoryModal()"><i class="fas fa-times"></i> 취소</button>
+                <button class="btn btn-primary" onclick="saveCategory()"><i class="fas fa-save"></i> 등록</button>
             </div>
         </div>
     </div>
@@ -1485,7 +1484,7 @@
     <div id="itemModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
-                <h3 class="modal-title">품목 등록</h3>
+                <h3 class="modal-title"><i class="fas fa-box"></i> 품목 등록</h3>
                 <button class="modal-close" onclick="closeItemModal()">×</button>
             </div>
             <div class="modal-body">
@@ -1532,8 +1531,8 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button class="btn" onclick="closeItemModal()">취소</button>
-                <button class="btn btn-success" onclick="saveItem()">등록</button>
+                <button class="btn" onclick="closeItemModal()"><i class="fas fa-times"></i> 취소</button>
+                <button class="btn btn-success" onclick="saveItem()"><i class="fas fa-save"></i> 등록</button>
             </div>
         </div>
     </div>
@@ -1542,14 +1541,14 @@
     <div id="docModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
-                <h3 class="modal-title">구비서류 제출 현황</h3>
+                <h3 class="modal-title"><i class="fas fa-file-alt"></i> 구비서류 제출 현황</h3>
                 <button class="modal-close" onclick="closeDocModal()">×</button>
             </div>
             <div class="modal-body" id="docModalBody">
                 <!-- 동적으로 생성됨 -->
             </div>
             <div class="modal-footer">
-                <button class="btn btn-primary" onclick="closeDocModal()">확인</button>
+                <button class="btn btn-primary" onclick="closeDocModal()"><i class="fas fa-check"></i> 확인</button>
             </div>
         </div>
     </div>
@@ -2020,7 +2019,7 @@
                     <td class="text-right amount" style="color: #1565c0; font-size: 14px; background: rgba(255,255,255,0.5);">${formatNumber(mainUsed)}</td>
                     <td class="text-right ${mainRemaining >= 0 ? 'positive' : 'negative'}" style="font-size: 14px; background: rgba(255,255,255,0.5);">${formatNumber(mainRemaining)}</td>
                     <td style="color: ${mainRate >= 100 ? '#c62828' : mainRate >= 80 ? '#f57c00' : '#2e7d32'}; font-size: 14px; font-weight: 700; background: rgba(255,255,255,0.5);">${mainRate}%</td>
-                    <td colspan="4" style="background: rgba(255,255,255,0.5);"></td>
+                    <td colspan="3" style="background: rgba(255,255,255,0.5);"></td>
                 `;
                 tbody.appendChild(headerRow);
 
@@ -2035,13 +2034,6 @@
                     const rate = data.budget > 0 ? ((used / data.budget) * 100).toFixed(1) : 0;
 
                     let statusBadge = '';
-                    if (rate >= 100) {
-                        statusBadge = '<span class="badge-status danger">예산초과</span>';
-                    } else if (rate >= 80) {
-                        statusBadge = '<span class="badge-status warning">주의</span>';
-                    } else {
-                        statusBadge = '<span class="badge-status normal">정상</span>';
-                    }
 
                     const row = document.createElement('tr');
                     const paymentStatus = data.status || '계획';
@@ -2060,7 +2052,6 @@
                         <td>${rate}%</td>
                         <td class="editable-cell" data-field="status" data-category="${escapedName}" ondblclick="makeCellEditable(this, 'category', '${escapedName}')"><span class="status-badge ${paymentStatus}">${paymentStatus}</span></td>
                         <td style="font-size: 12px;" class="editable-cell" data-field="paymentDate" data-category="${escapedName}" ondblclick="makeCellEditable(this, 'category', '${escapedName}')">${paymentDate}</td>
-                        <td>${statusBadge}</td>
                         <td>
                             <button class="btn btn-success btn-sm" onclick="viewCategoryDocs('${escapedName}')">
                                 서류확인
@@ -3077,7 +3068,6 @@
                     const used = data.items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
                     const remaining = data.budget - used;
                     const rate = data.budget > 0 ? ((used / data.budget) * 100).toFixed(1) : 0;
-                    const status = rate >= 100 ? '예산초과' : rate >= 80 ? '주의' : '정상';
 
                     summaryData.push([
                         index++,
@@ -3089,7 +3079,7 @@
                         used,
                         remaining,
                         rate,
-                        status,
+                        data.status || '계획',
                         data.note || ''
                     ]);
                 });
