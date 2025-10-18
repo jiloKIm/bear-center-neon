@@ -1200,7 +1200,7 @@
                     <div class="gov-logo-img">
                         <img src="logo.png" alt="국립공원 로고">
                     </div>
-                    <div class="gov-org-name">국립공원 사육곰 관리센터</div>
+                    <div class="gov-org-name">국립공원 사육곰 보호센터</div>
                 </div>
             </div>
             <div class="gov-header-right">
@@ -1221,7 +1221,10 @@
                     <i class="fas fa-print"></i>인쇄
                 </div>
                 <div class="nav-action-item" onclick="exportToExcel()">
-                    <i class="fas fa-file-excel"></i>엑셀 다운로드
+                    <i class="fas fa-file-excel"></i>전체 다운로드
+                </div>
+                <div class="nav-action-item" onclick="exportSelectedToExcel()">
+                    <i class="fas fa-check-square"></i>선택 다운로드
                 </div>
             </div>
         </div>
@@ -1759,6 +1762,9 @@
                         })) : []
                     };
                 });
+
+                // localStorage에서 서류 체크 상태 복원
+                loadDocChecksFromLocalStorage();
 
                 renderAll();
             } catch (error) {
@@ -2758,10 +2764,13 @@
                         `;
                         docList.forEach(doc => {
                             const checked = item.checkedDocs && item.checkedDocs.includes(doc);
+                            const escapedDoc = doc.replace(/'/g, "\\'");
                             html += `
                                 <div class="doc-item">
-                                    ${checked ? '<span style="color: #2e7d32; font-weight: 700;">[✓]</span>' : '<span style="color: #999;">[  ]</span>'}
-                                    <span style="${checked ? 'color: #111; font-weight: 700; text-decoration: underline;' : 'color: #666;'}">${doc}</span>
+                                    <input type="checkbox" ${checked ? 'checked' : ''}
+                                           onchange="toggleDocCheck('${categoryName}', ${item.id}, '${escapedDoc}', this.checked)"
+                                           style="margin-right: 8px; cursor: pointer;">
+                                    <span style="${checked ? 'color: #111; font-weight: 700;' : 'color: #666;'}">${doc}</span>
                                 </div>
                             `;
                         });
@@ -2807,10 +2816,13 @@
                     `;
                     docList.forEach(doc => {
                         const checked = item.checkedDocs && item.checkedDocs.includes(doc);
+                        const escapedDoc = doc.replace(/'/g, "\\'");
                         html += `
                             <div class="doc-item">
-                                ${checked ? '<span style="color: #2e7d32; font-weight: 700;">[✓]</span>' : '<span style="color: #999;">[  ]</span>'}
-                                <span style="${checked ? 'color: #111; font-weight: 700; text-decoration: underline;' : 'color: #666;'}">${doc}</span>
+                                <input type="checkbox" ${checked ? 'checked' : ''}
+                                       onchange="toggleDocCheck('${categoryName}', ${item.id}, '${escapedDoc}', this.checked)"
+                                       style="margin-right: 8px; cursor: pointer;">
+                                <span style="${checked ? 'color: #111; font-weight: 700;' : 'color: #666;'}">${doc}</span>
                             </div>
                         `;
                     });
@@ -2822,6 +2834,94 @@
 
             document.getElementById('docModalBody').innerHTML = html;
             document.getElementById('docModal').classList.add('active');
+        }
+
+        // 서류 체크박스 토글
+        function toggleDocCheck(categoryName, itemId, docName, isChecked) {
+            // budgetData에서 해당 품목 찾기
+            const category = budgetData.categories[categoryName];
+            if (!category) return;
+
+            const item = category.items.find(i => i.id === itemId);
+            if (!item) return;
+
+            // checkedDocs 배열 초기화
+            if (!item.checkedDocs) {
+                item.checkedDocs = [];
+            }
+
+            // 체크 상태에 따라 배열 업데이트
+            if (isChecked) {
+                if (!item.checkedDocs.includes(docName)) {
+                    item.checkedDocs.push(docName);
+                }
+            } else {
+                item.checkedDocs = item.checkedDocs.filter(d => d !== docName);
+            }
+
+            // localStorage에 저장 (임시)
+            saveDocChecksToLocalStorage();
+
+            // 제출 현황 업데이트
+            updateDocSubmissionCount(categoryName, itemId);
+        }
+
+        function updateDocSubmissionCount(categoryName, itemId) {
+            const category = budgetData.categories[categoryName];
+            if (!category) return;
+
+            const item = category.items.find(i => i.id === itemId);
+            if (!item) return;
+
+            const totalAmount = item.price * item.quantity;
+            const docs = getRequiredDocuments(category.type, totalAmount);
+            const allDocs = [...docs.시행결의, ...docs.결과보고서, ...docs.지출];
+            const checkedCount = item.checkedDocs ? item.checkedDocs.length : 0;
+
+            // 모달이 열려있으면 카운트 업데이트
+            const modalBody = document.getElementById('docModalBody');
+            if (modalBody && modalBody.innerHTML.includes(item.name)) {
+                // 현재 모달의 카운트 텍스트 찾아서 업데이트
+                const countSpans = modalBody.querySelectorAll('span');
+                countSpans.forEach(span => {
+                    if (span.textContent.includes('[제출:') || span.textContent.includes('서류 제출 현황:')) {
+                        if (span.textContent.includes(item.name) || span.parentElement.textContent.includes('서류 제출 현황:')) {
+                            const newText = span.textContent.replace(/\d+\/\d+/, `${checkedCount}/${allDocs.length}`);
+                            span.textContent = newText;
+                        }
+                    }
+                });
+            }
+        }
+
+        function saveDocChecksToLocalStorage() {
+            const docChecks = {};
+            for (const [catName, catData] of Object.entries(budgetData.categories)) {
+                catData.items.forEach(item => {
+                    if (item.checkedDocs && item.checkedDocs.length > 0) {
+                        docChecks[item.id] = item.checkedDocs;
+                    }
+                });
+            }
+            localStorage.setItem('bear_center_doc_checks', JSON.stringify(docChecks));
+        }
+
+        function loadDocChecksFromLocalStorage() {
+            const saved = localStorage.getItem('bear_center_doc_checks');
+            if (saved) {
+                try {
+                    const docChecks = JSON.parse(saved);
+                    for (const [catName, catData] of Object.entries(budgetData.categories)) {
+                        catData.items.forEach(item => {
+                            if (docChecks[item.id]) {
+                                item.checkedDocs = docChecks[item.id];
+                            }
+                        });
+                    }
+                } catch (e) {
+                    console.error('서류 체크 데이터 로드 실패:', e);
+                }
+            }
         }
 
         function closeDocModal() {
@@ -2851,7 +2951,7 @@
 
             // 1. 전체 요약 시트
             const summaryData = [];
-            summaryData.push(['[국립공원 사육곰 관리센터] 2025년도 예산 집행 관리 대장']);
+            summaryData.push(['[국립공원 사육곰 보호센터] 2025년도 예산 집행 관리 대장']);
             summaryData.push(['작성일자', new Date().toLocaleDateString('ko-KR')]);
             summaryData.push([]);
 
