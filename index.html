@@ -1486,7 +1486,7 @@
 
     <!-- 품목 추가 모달 -->
     <div id="itemModal" class="modal">
-        <div class="modal-content">
+        <div class="modal-content" style="max-width: 900px;">
             <div class="modal-header">
                 <h3 class="modal-title"><i class="fas fa-box"></i> 품목 등록</h3>
                 <button class="modal-close" onclick="closeItemModal()">×</button>
@@ -1498,45 +1498,56 @@
                         <option value="">▷ 사업을 선택하세요</option>
                     </select>
                 </div>
-                <div class="form-group">
-                    <label class="form-label required">품목명</label>
-                    <input type="text" id="itemName" class="form-input" placeholder="예) 키폰 주장치 1식">
+
+                <!-- 품목 리스트 -->
+                <div id="itemsListContainer">
+                    <div class="item-row" data-item-index="0">
+                        <div style="display: grid; grid-template-columns: 2fr 1.5fr 1fr 1fr 1fr 2fr 40px; gap: 10px; margin-bottom: 10px; align-items: start;">
+                            <div class="form-group" style="margin: 0;">
+                                <label class="form-label required">품목명</label>
+                                <input type="text" class="form-input item-name" placeholder="예) 키폰 주장치 1식">
+                            </div>
+                            <div class="form-group" style="margin: 0;">
+                                <label class="form-label">계약업체명</label>
+                                <input type="text" class="form-input item-company" placeholder="예) (주)케이티">
+                            </div>
+                            <div class="form-group" style="margin: 0;">
+                                <label class="form-label">연락처</label>
+                                <input type="text" class="form-input item-phone" placeholder="02-1234-5678">
+                            </div>
+                            <div class="form-group" style="margin: 0;">
+                                <label class="form-label required">단가</label>
+                                <input type="number" class="form-input item-price" placeholder="1800000">
+                            </div>
+                            <div class="form-group" style="margin: 0;">
+                                <label class="form-label required">수량</label>
+                                <input type="number" class="form-input item-quantity" value="1" min="1">
+                            </div>
+                            <div class="form-group" style="margin: 0;">
+                                <label class="form-label">비고</label>
+                                <input type="text" class="form-input item-note" placeholder="특이사항">
+                            </div>
+                            <div style="padding-top: 28px;">
+                                <button class="btn btn-sm" onclick="removeItemRow(this)" style="padding: 8px; background: #f44336; color: white; border: none; cursor: pointer; border-radius: 4px;" title="삭제">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <div class="form-group">
-                    <label class="form-label">계약업체명</label>
-                    <input type="text" id="itemCompany" class="form-input" placeholder="예) (주)케이티">
-                </div>
-                <div class="form-group">
-                    <label class="form-label">업체 연락처</label>
-                    <input type="text" id="itemPhone" class="form-input" placeholder="예) 02-1234-5678">
-                </div>
-                <div class="form-group">
-                    <label class="form-label required">단가 (원)</label>
-                    <input type="number" id="itemPrice" class="form-input" placeholder="1800000" onchange="updateDocGuide()">
-                </div>
-                <div class="form-group">
-                    <label class="form-label required">수량</label>
-                    <input type="number" id="itemQuantity" class="form-input" value="1" min="1" onchange="updateDocGuide()">
-                </div>
-                <div class="form-group">
-                    <label class="form-label">비고사항</label>
-                    <input type="text" id="itemNote" class="form-input" placeholder="특이사항 입력 (선택사항)">
+
+                <div style="margin: 15px 0;">
+                    <button class="btn btn-primary" onclick="addItemRow()" style="width: 100%;">
+                        <i class="fas fa-plus"></i> 품목 추가
+                    </button>
                 </div>
 
                 <!-- 필요 서류 안내 -->
                 <div id="docGuideContainer"></div>
-
-                <!-- 서류 체크리스트 -->
-                <div class="form-group" id="checklistGroup" style="display: none;">
-                    <label class="form-label">구비서류 제출 현황</label>
-                    <div class="checklist" id="docChecklist">
-                        <!-- 동적으로 생성됨 -->
-                    </div>
-                </div>
             </div>
             <div class="modal-footer">
                 <button class="btn" onclick="closeItemModal()"><i class="fas fa-times"></i> 취소</button>
-                <button class="btn btn-success" onclick="saveItem()"><i class="fas fa-save"></i> 등록</button>
+                <button class="btn btn-success" onclick="saveBulkItems()"><i class="fas fa-save"></i> 일괄 등록</button>
             </div>
         </div>
     </div>
@@ -2394,6 +2405,169 @@
 
         function closeItemModal() {
             document.getElementById('itemModal').classList.remove('active');
+            // 품목 리스트 초기화
+            resetItemsList();
+        }
+
+        // 품목 행 추가
+        function addItemRow() {
+            const container = document.getElementById('itemsListContainer');
+            const index = container.children.length;
+
+            const rowHtml = `
+                <div class="item-row" data-item-index="${index}">
+                    <div style="display: grid; grid-template-columns: 2fr 1.5fr 1fr 1fr 1fr 2fr 40px; gap: 10px; margin-bottom: 10px; align-items: start;">
+                        <div class="form-group" style="margin: 0;">
+                            <input type="text" class="form-input item-name" placeholder="예) 키폰 주장치 1식">
+                        </div>
+                        <div class="form-group" style="margin: 0;">
+                            <input type="text" class="form-input item-company" placeholder="예) (주)케이티">
+                        </div>
+                        <div class="form-group" style="margin: 0;">
+                            <input type="text" class="form-input item-phone" placeholder="02-1234-5678">
+                        </div>
+                        <div class="form-group" style="margin: 0;">
+                            <input type="number" class="form-input item-price" placeholder="1800000">
+                        </div>
+                        <div class="form-group" style="margin: 0;">
+                            <input type="number" class="form-input item-quantity" value="1" min="1">
+                        </div>
+                        <div class="form-group" style="margin: 0;">
+                            <input type="text" class="form-input item-note" placeholder="특이사항">
+                        </div>
+                        <div style="padding-top: 0;">
+                            <button class="btn btn-sm" onclick="removeItemRow(this)" style="padding: 8px; background: #f44336; color: white; border: none; cursor: pointer; border-radius: 4px;" title="삭제">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            container.insertAdjacentHTML('beforeend', rowHtml);
+        }
+
+        // 품목 행 삭제
+        function removeItemRow(button) {
+            const container = document.getElementById('itemsListContainer');
+            if (container.children.length <= 1) {
+                alert('최소 1개의 품목은 있어야 합니다.');
+                return;
+            }
+            button.closest('.item-row').remove();
+        }
+
+        // 품목 리스트 초기화
+        function resetItemsList() {
+            const container = document.getElementById('itemsListContainer');
+            container.innerHTML = `
+                <div class="item-row" data-item-index="0">
+                    <div style="display: grid; grid-template-columns: 2fr 1.5fr 1fr 1fr 1fr 2fr 40px; gap: 10px; margin-bottom: 10px; align-items: start;">
+                        <div class="form-group" style="margin: 0;">
+                            <label class="form-label required">품목명</label>
+                            <input type="text" class="form-input item-name" placeholder="예) 키폰 주장치 1식">
+                        </div>
+                        <div class="form-group" style="margin: 0;">
+                            <label class="form-label">계약업체명</label>
+                            <input type="text" class="form-input item-company" placeholder="예) (주)케이티">
+                        </div>
+                        <div class="form-group" style="margin: 0;">
+                            <label class="form-label">연락처</label>
+                            <input type="text" class="form-input item-phone" placeholder="02-1234-5678">
+                        </div>
+                        <div class="form-group" style="margin: 0;">
+                            <label class="form-label required">단가</label>
+                            <input type="number" class="form-input item-price" placeholder="1800000">
+                        </div>
+                        <div class="form-group" style="margin: 0;">
+                            <label class="form-label required">수량</label>
+                            <input type="number" class="form-input item-quantity" value="1" min="1">
+                        </div>
+                        <div class="form-group" style="margin: 0;">
+                            <label class="form-label">비고</label>
+                            <input type="text" class="form-input item-note" placeholder="특이사항">
+                        </div>
+                        <div style="padding-top: 28px;">
+                            <button class="btn btn-sm" onclick="removeItemRow(this)" style="padding: 8px; background: #f44336; color: white; border: none; cursor: pointer; border-radius: 4px;" title="삭제">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // 품목 일괄 저장
+        async function saveBulkItems() {
+            const categoryName = document.getElementById('itemCategory').value;
+
+            if (!categoryName) {
+                alert('사업을 선택하세요.');
+                return;
+            }
+
+            const category = budgetData.categories[categoryName];
+            const categoryId = category.id;
+
+            // 모든 품목 행 수집
+            const itemRows = document.querySelectorAll('.item-row');
+            const items = [];
+
+            for (const row of itemRows) {
+                const name = row.querySelector('.item-name').value.trim();
+                const company = row.querySelector('.item-company').value.trim();
+                const phone = row.querySelector('.item-phone').value.trim();
+                const price = parseInt(row.querySelector('.item-price').value) || 0;
+                const quantity = parseInt(row.querySelector('.item-quantity').value) || 1;
+                const note = row.querySelector('.item-note').value.trim();
+
+                if (!name) {
+                    alert('모든 품목의 품목명을 입력하세요.');
+                    return;
+                }
+
+                if (price <= 0) {
+                    alert('모든 품목의 올바른 단가를 입력하세요.');
+                    return;
+                }
+
+                items.push({
+                    categoryId,
+                    name,
+                    company,
+                    phone,
+                    price,
+                    quantity,
+                    note
+                });
+            }
+
+            if (items.length === 0) {
+                alert('등록할 품목이 없습니다.');
+                return;
+            }
+
+            try {
+                // 각 품목을 순차적으로 등록
+                for (const itemData of items) {
+                    const response = await fetch(`${API_BASE_URL}/items`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(itemData)
+                    });
+
+                    if (!response.ok) throw new Error('저장 실패');
+                }
+
+                alert(`${items.length}개 품목이 등록되었습니다.`);
+                await loadData();
+                closeItemModal();
+            } catch (error) {
+                console.error('품목 일괄 저장 오류:', error);
+                alert('저장 중 오류가 발생했습니다.');
+            }
         }
 
         async function saveItem() {
