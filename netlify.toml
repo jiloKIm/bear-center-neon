@@ -6,7 +6,7 @@
   skip_processing = true
 
 [build.environment]
-  NODE_VERSION = "18"
+  NODE_VERSION = "20"
 
 [dev]
   port = 8888
