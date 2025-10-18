@@ -10,8 +10,8 @@ exports.handler = async (event, context) => {
     const headers = {
         'Access-Control-Allow-Origin': '*',
         'Access-Control-Allow-Headers': 'Content-Type',
-        'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
-        'Content-Type': 'application/json'
+        'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, PATCH, OPTIONS',
+        'Content-Type': 'application/json; charset=utf-8'
     };
 
     // OPTIONS 요청 처리 (CORS preflight)
@@ -37,7 +37,8 @@ exports.handler = async (event, context) => {
                             'phone', i.phone,
                             'price', i.price,
                             'quantity', i.quantity,
-                            'note', i.note
+                            'note', i.note,
+                            'checked_docs', COALESCE(i.checked_docs, '[]'::jsonb)
                         ) ORDER BY i.id
                     ) FILTER (WHERE i.id IS NOT NULL) as items
                 FROM categories c
@@ -126,6 +127,70 @@ exports.handler = async (event, context) => {
             };
         }
 
+        // PUT /items/:id - 품목 수정
+        if (path.startsWith('/items/') && !path.includes('checked-docs') && method === 'PUT') {
+            const id = parseInt(path.split('/')[2]);
+            const { categoryId, name, company, phone, price, quantity, note } = JSON.parse(event.body);
+
+            console.log('품목 수정 요청:', { id, body: event.body });
+
+            if (!categoryId || !name) {
+                return {
+                    statusCode: 400,
+                    headers,
+                    body: JSON.stringify({ error: 'categoryId와 name은 필수입니다.' })
+                };
+            }
+
+            const result = await sql`
+                UPDATE items
+                SET category_id = ${categoryId},
+                    name = ${name},
+                    company = ${company || ''},
+                    phone = ${phone || ''},
+                    price = ${price || 0},
+                    quantity = ${quantity || 1},
+                    note = ${note || ''}
+                WHERE id = ${id}
+                RETURNING *
+            `;
+
+            console.log('품목 수정 성공:', result[0]);
+
+            return {
+                statusCode: 200,
+                headers,
+                body: JSON.stringify(result[0])
+            };
+        }
+
+        // PATCH /items/:id/checked-docs - 품목 서류 체크 업데이트
+        if (path.match(/\/items\/\d+\/checked-docs/) && method === 'PATCH') {
+            const id = parseInt(path.split('/')[2]);
+            const { checkedDocs } = JSON.parse(event.body);
+
+            const result = await sql`
+                UPDATE items
+                SET checked_docs = ${JSON.stringify(checkedDocs)}::jsonb
+                WHERE id = ${id}
+                RETURNING *
+            `;
+
+            if (result.length === 0) {
+                return {
+                    statusCode: 404,
+                    headers,
+                    body: JSON.stringify({ error: 'Item not found' })
+                };
+            }
+
+            return {
+                statusCode: 200,
+                headers,
+                body: JSON.stringify(result[0])
+            };
+        }
+
         // DELETE /items/:id - 품목 삭제
         if (path.startsWith('/items/') && method === 'DELETE') {
             const id = parseInt(path.split('/')[2]);
@@ -154,7 +219,8 @@ exports.handler = async (event, context) => {
                             'phone', i.phone,
                             'price', i.price,
                             'quantity', i.quantity,
-                            'note', i.note
+                            'note', i.note,
+                            'checked_docs', COALESCE(i.checked_docs, '[]'::jsonb)
                         ) ORDER BY i.id
                     ) FILTER (WHERE i.id IS NOT NULL) as items
                 FROM categories c
