@@ -1834,7 +1834,7 @@
                 // 사용액 계산 (지출완료된 항목만)
                 let usedBudget = 0;
                 items.forEach(item => {
-                    if (item.status === '지출완료') {
+                    if (item.status === '지출완료' || item.status === '진행중') {
                         // 품목이 있으면 품목 합계, 없으면 예산액
                         const itemTotal = item.items.reduce((sum, subItem) => sum + (subItem.price * subItem.quantity), 0);
                         usedBudget += itemTotal > 0 ? itemTotal : item.budget;
@@ -1957,8 +1957,8 @@
                 const status = data.status || '계획';
 
                 // 각 상태별로 예산 분류
-                if (status === '지출완료') {
-                    // 지출완료는 실제 집행액으로 계산
+                if (status === '지출완료' || status === '진행중') {
+                    // 지출완료, 진행중은 실제 집행액으로 계산
                     const used = data.items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
                     completedBudget += used > 0 ? used : budget;
                 } else if (status === '지출진행') {
@@ -2013,8 +2013,8 @@
                 let mainUsed = 0;
                 items.forEach(([name, data]) => {
                     mainBudget += data.budget;
-                    // 지출완료인 경우만 사용액으로 계산
-                    if (data.status === '지출완료') {
+                    // 진행중, 지출완료인 경우 사용액으로 계산
+                    if (data.status === '지출완료' || data.status === '진행중') {
                         mainUsed += data.items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
                     }
                 });
@@ -2044,9 +2044,9 @@
 
                 // 세부 사업
                 items.forEach(([name, data]) => {
-                    // 지출완료인 경우만 사용액으로 계산
+                    // 진행중, 지출완료인 경우 사용액으로 계산
                     let used = 0;
-                    if (data.status === '지출완료') {
+                    if (data.status === '지출완료' || data.status === '진행중') {
                         used = data.items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
                     }
                     const remaining = data.budget - used;
