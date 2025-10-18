@@ -1704,6 +1704,8 @@
                 budgetData.categories = {};
                 categories.forEach(cat => {
                     budgetData.categories[cat.name] = {
+                        id: cat.id,
+                        name: cat.name,
                         type: cat.type,
                         budget: Number(cat.budget),
                         note: cat.note,
@@ -1717,7 +1719,8 @@
                             company: item.company,
                             phone: item.phone,
                             price: Number(item.price),
-                            quantity: Number(item.quantity)
+                            quantity: Number(item.quantity),
+                            note: item.note
                         })) : []
                     };
                 });
