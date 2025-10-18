@@ -2050,15 +2050,15 @@
                     row.innerHTML = `
                         <td><input type="checkbox" class="category-checkbox" data-category="${escapedName}"></td>
                         <td>${globalIndex++}</td>
-                        <td class="text-left" style="padding-left: 20px; color: #666; font-size: 12px;">└ ${mainCat}</td>
-                        <td class="text-left" style="color: #888; font-size: 12px;">${data.subCategory ? data.subCategory : '-'}</td>
+                        <td class="text-left editable-cell" style="padding-left: 20px; color: #666; font-size: 12px;" data-field="mainCategory" data-category="${escapedName}" ondblclick="makeCellEditable(this, 'category', '${escapedName}')">└ ${mainCat}</td>
+                        <td class="text-left editable-cell" style="color: #888; font-size: 12px;" data-field="subCategory" data-category="${escapedName}" ondblclick="makeCellEditable(this, 'category', '${escapedName}')">${data.subCategory ? data.subCategory : '-'}</td>
                         <td class="text-left editable-cell" data-field="name" data-category="${escapedName}" ondblclick="makeCellEditable(this, 'category', '${escapedName}')">${name}</td>
                         <td><span class="category-badge ${data.type}">${data.type}</span></td>
                         <td class="text-right amount editable-cell" data-field="budget" data-category="${escapedName}" ondblclick="makeCellEditable(this, 'category', '${escapedName}')">${formatNumber(data.budget)}</td>
                         <td class="text-right amount">${formatNumber(used)}</td>
                         <td class="text-right ${remaining >= 0 ? 'positive' : 'negative'}">${formatNumber(remaining)}</td>
                         <td>${rate}%</td>
-                        <td><span class="status-badge ${paymentStatus}">${paymentStatus}</span></td>
+                        <td class="editable-cell" data-field="status" data-category="${escapedName}" ondblclick="makeCellEditable(this, 'category', '${escapedName}')"><span class="status-badge ${paymentStatus}">${paymentStatus}</span></td>
                         <td style="font-size: 12px;" class="editable-cell" data-field="paymentDate" data-category="${escapedName}" ondblclick="makeCellEditable(this, 'category', '${escapedName}')">${paymentDate}</td>
                         <td>${statusBadge}</td>
                         <td>
@@ -2557,6 +2557,42 @@
 
             cell.classList.add('editing');
 
+            // 지출상태는 select로 처리
+            if (field === 'status') {
+                const select = document.createElement('select');
+                select.style.cssText = 'width: 100%; border: 2px solid #2196F3; padding: 8px; font-size: inherit; font-family: inherit;';
+                const statuses = ['계획', '진행중', '지출완료', '보류'];
+                statuses.forEach(status => {
+                    const option = document.createElement('option');
+                    option.value = status;
+                    option.textContent = status;
+                    if (status === originalValue) {
+                        option.selected = true;
+                    }
+                    select.appendChild(option);
+                });
+
+                cell.innerHTML = '';
+                cell.appendChild(select);
+                select.focus();
+
+                select.addEventListener('keydown', async (e) => {
+                    if (e.key === 'Enter') {
+                        e.preventDefault();
+                        await saveCellEdit(cell, type, id, field, select.value, originalValue);
+                    } else if (e.key === 'Escape') {
+                        cancelCellEdit(cell, originalValue, field);
+                    }
+                });
+
+                select.addEventListener('blur', async () => {
+                    if (currentEditingCell === cell) {
+                        await saveCellEdit(cell, type, id, field, select.value, originalValue);
+                    }
+                });
+                return;
+            }
+
             // input 타입 결정
             let inputType = 'text';
             if (field === 'paymentDate') {
@@ -2568,6 +2604,11 @@
             const input = document.createElement('input');
             input.type = inputType;
             input.value = originalValue;
+
+            // 대분류의 경우 '└ ' 제거
+            if (field === 'mainCategory' && originalValue.startsWith('└ ')) {
+                input.value = originalValue.substring(2);
+            }
 
             cell.innerHTML = '';
             cell.appendChild(input);
@@ -2625,6 +2666,12 @@
             let displayValue = originalValue;
             if (field === 'budget' || field === 'price') {
                 displayValue = formatNumber(parseInt(originalValue) || 0);
+            } else if (field === 'status') {
+                // 지출상태는 badge로 복원
+                const statusClass = originalValue.replace(/\s/g, '');
+                cell.innerHTML = `<span class="status-badge ${originalValue}">${originalValue}</span>`;
+                currentEditingCell = null;
+                return;
             } else if (!originalValue) {
                 displayValue = '-';
             }
@@ -2658,6 +2705,12 @@
                 updateData.paymentDate = value || null;
             } else if (field === 'name') {
                 updateData.name = value;
+            } else if (field === 'mainCategory') {
+                updateData.mainCategory = value;
+            } else if (field === 'subCategory') {
+                updateData.subCategory = value;
+            } else if (field === 'status') {
+                updateData.status = value;
             }
 
             const response = await fetch(`${API_BASE_URL}/categories/${category.id}`, {
