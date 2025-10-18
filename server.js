@@ -30,7 +30,8 @@ app.get('/api/categories', async (req, res) => {
                         'phone', i.phone,
                         'price', i.price,
                         'quantity', i.quantity,
-                        'note', i.note
+                        'note', i.note,
+                        'checked_docs', COALESCE(i.checked_docs, '[]'::jsonb)
                     ) ORDER BY i.id
                 ) FILTER (WHERE i.id IS NOT NULL) as items
             FROM categories c
@@ -163,7 +164,32 @@ app.delete('/api/items/:id', async (req, res) => {
     }
 });
 
-// 8. 이름으로 카테고리 조회
+// 8. 품목 서류 체크 업데이트
+app.patch('/api/items/:id/checked-docs', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { checkedDocs } = req.body;
+
+        // checkedDocs는 문자열 배열
+        const result = await sql`
+            UPDATE items
+            SET checked_docs = ${JSON.stringify(checkedDocs)}::jsonb
+            WHERE id = ${id}
+            RETURNING *
+        `;
+
+        if (result.length === 0) {
+            return res.status(404).json({ error: 'Item not found' });
+        }
+
+        res.json(result[0]);
+    } catch (error) {
+        console.error('Error updating checked docs:', error);
+        res.status(500).json({ error: 'Failed to update checked docs' });
+    }
+});
+
+// 9. 이름으로 카테고리 조회
 app.get('/api/categories/by-name/:name', async (req, res) => {
     try {
         const { name } = req.params;

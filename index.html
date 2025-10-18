@@ -1758,13 +1758,11 @@
                             phone: item.phone,
                             price: Number(item.price),
                             quantity: Number(item.quantity),
-                            note: item.note
+                            note: item.note,
+                            checkedDocs: item.checked_docs || []
                         })) : []
                     };
                 });
-
-                // localStorage에서 서류 체크 상태 복원
-                loadDocChecksFromLocalStorage();
 
                 renderAll();
             } catch (error) {
@@ -2837,7 +2835,7 @@
         }
 
         // 서류 체크박스 토글
-        function toggleDocCheck(categoryName, itemId, docName, isChecked) {
+        async function toggleDocCheck(categoryName, itemId, docName, isChecked) {
             // budgetData에서 해당 품목 찾기
             const category = budgetData.categories[categoryName];
             if (!category) return;
@@ -2859,8 +2857,30 @@
                 item.checkedDocs = item.checkedDocs.filter(d => d !== docName);
             }
 
-            // localStorage에 저장 (임시)
-            saveDocChecksToLocalStorage();
+            // API로 데이터베이스에 저장
+            try {
+                const response = await fetch(`${API_BASE_URL}/items/${itemId}/checked-docs`, {
+                    method: 'PATCH',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ checkedDocs: item.checkedDocs })
+                });
+
+                if (!response.ok) {
+                    throw new Error('서류 체크 저장 실패');
+                }
+            } catch (error) {
+                console.error('서류 체크 저장 오류:', error);
+                alert('서류 체크 저장 중 오류가 발생했습니다.');
+                // 실패 시 원래 상태로 복원
+                if (isChecked) {
+                    item.checkedDocs = item.checkedDocs.filter(d => d !== docName);
+                } else {
+                    item.checkedDocs.push(docName);
+                }
+                return;
+            }
 
             // 제출 현황 업데이트
             updateDocSubmissionCount(categoryName, itemId);
@@ -2891,36 +2911,6 @@
                         }
                     }
                 });
-            }
-        }
-
-        function saveDocChecksToLocalStorage() {
-            const docChecks = {};
-            for (const [catName, catData] of Object.entries(budgetData.categories)) {
-                catData.items.forEach(item => {
-                    if (item.checkedDocs && item.checkedDocs.length > 0) {
-                        docChecks[item.id] = item.checkedDocs;
-                    }
-                });
-            }
-            localStorage.setItem('bear_center_doc_checks', JSON.stringify(docChecks));
-        }
-
-        function loadDocChecksFromLocalStorage() {
-            const saved = localStorage.getItem('bear_center_doc_checks');
-            if (saved) {
-                try {
-                    const docChecks = JSON.parse(saved);
-                    for (const [catName, catData] of Object.entries(budgetData.categories)) {
-                        catData.items.forEach(item => {
-                            if (docChecks[item.id]) {
-                                item.checkedDocs = docChecks[item.id];
-                            }
-                        });
-                    }
-                } catch (e) {
-                    console.error('서류 체크 데이터 로드 실패:', e);
-                }
             }
         }
 
