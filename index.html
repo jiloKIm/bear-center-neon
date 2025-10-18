@@ -2053,7 +2053,7 @@
                         <td class="text-left editable-cell" style="padding-left: 20px; color: #666; font-size: 12px;" data-field="mainCategory" data-category="${escapedName}" ondblclick="makeCellEditable(this, 'category', '${escapedName}')">└ ${mainCat}</td>
                         <td class="text-left editable-cell" style="color: #888; font-size: 12px;" data-field="subCategory" data-category="${escapedName}" ondblclick="makeCellEditable(this, 'category', '${escapedName}')">${data.subCategory ? data.subCategory : '-'}</td>
                         <td class="text-left editable-cell" data-field="name" data-category="${escapedName}" ondblclick="makeCellEditable(this, 'category', '${escapedName}')">${name}</td>
-                        <td><span class="category-badge ${data.type}">${data.type}</span></td>
+                        <td class="editable-cell" data-field="type" data-category="${escapedName}" ondblclick="makeCellEditable(this, 'category', '${escapedName}')"><span class="category-badge ${data.type}">${data.type}</span></td>
                         <td class="text-right amount editable-cell" data-field="budget" data-category="${escapedName}" ondblclick="makeCellEditable(this, 'category', '${escapedName}')">${formatNumber(data.budget)}</td>
                         <td class="text-right amount">${formatNumber(used)}</td>
                         <td class="text-right ${remaining >= 0 ? 'positive' : 'negative'}">${formatNumber(remaining)}</td>
@@ -2557,8 +2557,8 @@
 
             cell.classList.add('editing');
 
-            // 지출상태와 대분류는 select로 처리
-            if (field === 'status' || field === 'mainCategory') {
+            // 지출상태, 대분류, 구분은 select로 처리
+            if (field === 'status' || field === 'mainCategory' || field === 'type') {
                 const select = document.createElement('select');
                 select.style.cssText = 'width: 100%; border: 2px solid #2196F3; padding: 8px; font-size: inherit; font-family: inherit;';
 
@@ -2574,6 +2574,9 @@
                     if (currentValue.startsWith('└ ')) {
                         currentValue = currentValue.substring(2).trim();
                     }
+                } else if (field === 'type') {
+                    // 구분 옵션
+                    options = ['물품', '용역', '공사'];
                 }
 
                 options.forEach(option => {
@@ -2681,6 +2684,11 @@
                 cell.innerHTML = `<span class="status-badge ${originalValue}">${originalValue}</span>`;
                 currentEditingCell = null;
                 return;
+            } else if (field === 'type') {
+                // 구분은 category-badge로 복원
+                cell.innerHTML = `<span class="category-badge ${originalValue}">${originalValue}</span>`;
+                currentEditingCell = null;
+                return;
             } else if (!originalValue) {
                 displayValue = '-';
             }
@@ -2720,6 +2728,8 @@
                 updateData.subCategory = value;
             } else if (field === 'status') {
                 updateData.status = value;
+            } else if (field === 'type') {
+                updateData.type = value;
             }
 
             const response = await fetch(`${API_BASE_URL}/categories/${category.id}`, {
