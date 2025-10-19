@@ -3401,6 +3401,200 @@
             }
         }
 
+        // 선택된 항목만 엑셀로 다운로드
+        function exportSelectedToExcel() {
+            const selectedCategories = getSelectedCategories();
+            const selectedItems = getSelectedItems();
+
+            if (selectedCategories.length === 0 && selectedItems.length === 0) {
+                alert('다운로드할 사업 또는 품목을 선택해주세요.');
+                return;
+            }
+
+            try {
+                const wb = XLSX.utils.book_new();
+
+                // 선택된 데이터만 필터링
+                const filteredData = {};
+
+                // 1. 사업 전체가 선택된 경우
+                selectedCategories.forEach(categoryName => {
+                    if (budgetData.categories[categoryName]) {
+                        filteredData[categoryName] = budgetData.categories[categoryName];
+                    }
+                });
+
+                // 2. 개별 품목이 선택된 경우 - 품목만 필터링
+                selectedItems.forEach(({category, index}) => {
+                    if (budgetData.categories[category]) {
+                        if (!filteredData[category]) {
+                            // 해당 카테고리가 아직 추가되지 않았다면 복사본 생성
+                            filteredData[category] = {
+                                ...budgetData.categories[category],
+                                items: []
+                            };
+                        }
+                        // 선택된 품목만 추가 (중복 방지)
+                        const item = budgetData.categories[category].items[index];
+                        if (item && !filteredData[category].items.some(i => i === item)) {
+                            filteredData[category].items.push(item);
+                        }
+                    }
+                });
+
+                if (Object.keys(filteredData).length === 0) {
+                    alert('선택된 데이터가 없습니다.');
+                    return;
+                }
+
+                // 1. 전체 요약 시트
+                const summaryData = [];
+                summaryData.push(['[국립공원공단 야생생물보전원 사육곰 보호센터] 선택 항목 예산 집행 관리']);
+                summaryData.push(['작성일자', new Date().toLocaleDateString('ko-KR')]);
+                summaryData.push([]);
+
+                let totalBudget = 0;
+                let totalUsed = 0;
+
+                for (const [name, data] of Object.entries(filteredData)) {
+                    totalBudget += data.budget;
+                    const used = data.items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+                    totalUsed += used;
+                }
+
+                summaryData.push(['구분', '금액(원)']);
+                summaryData.push(['총 편성예산', totalBudget]);
+                summaryData.push(['집행액', totalUsed]);
+                summaryData.push(['잔액', totalBudget - totalUsed]);
+                summaryData.push(['집행률(%)', totalBudget > 0 ? ((totalUsed / totalBudget) * 100).toFixed(1) : 0]);
+                summaryData.push([]);
+                summaryData.push(['선택된 사업별 예산 집행 현황']);
+                summaryData.push(['연번', '대분류', '소분류', '사업명', '구분', '편성예산', '집행액', '잔액', '집행률(%)', '상태', '비고']);
+
+                let index = 1;
+                for (const [name, data] of Object.entries(filteredData)) {
+                    const used = data.items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+                    const remaining = data.budget - used;
+                    const rate = data.budget > 0 ? ((used / data.budget) * 100).toFixed(1) : 0;
+
+                    summaryData.push([
+                        index++,
+                        data.mainCategory || '미분류',
+                        data.subCategory || '-',
+                        name,
+                        data.type,
+                        data.budget,
+                        used,
+                        remaining,
+                        rate,
+                        data.status || '계획',
+                        data.note || ''
+                    ]);
+                }
+
+                const ws1 = XLSX.utils.aoa_to_sheet(summaryData);
+                ws1['!cols'] = [{wch: 8}, {wch: 18}, {wch: 15}, {wch: 25}, {wch: 8}, {wch: 15}, {wch: 15}, {wch: 15}, {wch: 12}, {wch: 10}, {wch: 30}];
+                XLSX.utils.book_append_sheet(wb, ws1, '선택항목요약');
+
+                // 2. 사업별 세부 시트
+                for (const [name, data] of Object.entries(filteredData)) {
+                    if (data.items.length === 0) continue; // 품목이 없는 경우 스킵
+
+                    const sheetData = [];
+                    sheetData.push([`[${name}] 세부 품목별 집행내역`]);
+                    sheetData.push(['대분류', data.mainCategory || '미분류']);
+                    sheetData.push(['소분류', data.subCategory || '-']);
+                    sheetData.push(['사업구분', data.type]);
+                    sheetData.push(['편성예산', data.budget + '원']);
+                    sheetData.push(['비고사항', data.note || '-']);
+                    sheetData.push([]);
+                    sheetData.push(['연번', '품목명', '계약업체', '연락처', '단가(원)', '수량', '합계(원)', '비고', '필요서류', '제출서류']);
+
+                    data.items.forEach((item, idx) => {
+                        const total = item.price * item.quantity;
+                        const docs = getRequiredDocuments(data.type, total);
+                        const allDocs = [...docs.시행결의, ...docs.결과보고서, ...docs.지출];
+                        const docStr = allDocs.join(', ');
+                        const checkedDocsStr = item.checkedDocs && item.checkedDocs.length > 0 ? item.checkedDocs.join(', ') : '-';
+
+                        sheetData.push([
+                            idx + 1,
+                            item.name,
+                            item.company || '-',
+                            item.phone || '-',
+                            item.price,
+                            item.quantity,
+                            total,
+                            item.note || '-',
+                            docStr,
+                            checkedDocsStr
+                        ]);
+                    });
+
+                    const used = data.items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+                    sheetData.push([]);
+                    sheetData.push(['', '', '', '', '소계', used]);
+                    sheetData.push(['', '', '', '', '잔액', data.budget - used]);
+
+                    const ws = XLSX.utils.aoa_to_sheet(sheetData);
+                    ws['!cols'] = [{wch: 6}, {wch: 25}, {wch: 20}, {wch: 15}, {wch: 12}, {wch: 8}, {wch: 12}, {wch: 20}, {wch: 50}, {wch: 50}];
+
+                    const sheetName = name.length > 31 ? name.substring(0, 31) : name;
+                    XLSX.utils.book_append_sheet(wb, ws, sheetName);
+                }
+
+                // 3. 선택된 품목 리스트
+                const allItemsData = [];
+                allItemsData.push(['선택된 품목별 집행내역 (구비서류 포함)']);
+                allItemsData.push([]);
+                allItemsData.push(['연번', '대분류', '소분류', '사업명', '구분', '품목명', '계약업체', '연락처', '단가(원)', '수량', '합계(원)', '비고', '필요서류', '제출서류', '제출율']);
+
+                let itemNumber = 1;
+                for (const [categoryName, data] of Object.entries(filteredData)) {
+                    data.items.forEach(item => {
+                        const total = item.price * item.quantity;
+                        const docs = getRequiredDocuments(data.type, total);
+                        const allDocs = [...docs.시행결의, ...docs.결과보고서, ...docs.지출];
+                        const checkedDocs = item.checkedDocs ? item.checkedDocs.join(', ') : '-';
+                        const completionRate = item.checkedDocs ? `${item.checkedDocs.length}/${allDocs.length}` : `0/${allDocs.length}`;
+
+                        allItemsData.push([
+                            itemNumber++,
+                            data.mainCategory || '미분류',
+                            data.subCategory || '-',
+                            categoryName,
+                            data.type,
+                            item.name,
+                            item.company || '-',
+                            item.phone || '-',
+                            item.price,
+                            item.quantity,
+                            total,
+                            item.note || '-',
+                            allDocs.join(', '),
+                            checkedDocs,
+                            completionRate
+                        ]);
+                    });
+                }
+
+                const ws3 = XLSX.utils.aoa_to_sheet(allItemsData);
+                ws3['!cols'] = [{wch: 6}, {wch: 18}, {wch: 15}, {wch: 20}, {wch: 8}, {wch: 25}, {wch: 20}, {wch: 15}, {wch: 12}, {wch: 8}, {wch: 12}, {wch: 20}, {wch: 50}, {wch: 50}, {wch: 10}];
+                XLSX.utils.book_append_sheet(wb, ws3, '선택품목');
+
+                // 파일 다운로드
+                const today = new Date();
+                const dateStr = `${today.getFullYear()}${String(today.getMonth() + 1).padStart(2, '0')}${String(today.getDate()).padStart(2, '0')}`;
+                const fileName = `[국립공원공단_야생생물보전원]사육곰보호센터_선택항목_${dateStr}.xlsx`;
+
+                XLSX.writeFile(wb, fileName);
+                console.log('선택 항목 엑셀 파일 다운로드 완료:', fileName);
+            } catch (error) {
+                console.error('선택 항목 엑셀 다운로드 오류:', error);
+                alert('엑셀 다운로드 중 오류가 발생했습니다.\n브라우저 콘솔을 확인해주세요.\n\n오류: ' + error.message);
+            }
+        }
+
         // 모달 배경 클릭시 닫기
         document.getElementById('categoryModal').addEventListener('click', function(e) {
             if (e.target === this) closeCategoryModal();
