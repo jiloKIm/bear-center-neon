@@ -2405,16 +2405,21 @@
                     body: JSON.stringify(categoryData)
                 });
 
-                if (!response.ok) throw new Error('저장 실패');
+                if (!response.ok) {
+                    const errorData = await response.json().catch(() => ({}));
+                    console.error('API 응답 오류:', errorData);
+                    throw new Error(`저장 실패: ${errorData.error || response.statusText}`);
+                }
 
                 // 수정 모드 초기화
                 editingCategoryId = null;
 
                 await loadData();
                 closeCategoryModal();
+                alert('저장되었습니다.');
             } catch (error) {
                 console.error('카테고리 저장 오류:', error);
-                alert('저장 중 오류가 발생했습니다.');
+                alert('저장 중 오류가 발생했습니다.\n오류: ' + error.message);
             }
         }
 
