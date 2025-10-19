@@ -3337,8 +3337,17 @@
         // 초기 데이터는 Neon DB에 직접 입력하여 사용
         // initial-data.sql 파일을 Neon DB SQL Editor에서 실행하세요
         function exportToExcel() {
+            console.log('엑셀 다운로드 시작');
+            console.log('budgetData:', budgetData);
+            console.log('XLSX 객체:', typeof XLSX);
+
+            if (typeof XLSX === 'undefined') {
+                alert('엑셀 라이브러리가 로드되지 않았습니다.\n페이지를 새로고침해주세요.');
+                return;
+            }
+
             if (Object.keys(budgetData.categories).length === 0) {
-                alert('내보낼 데이터가 없습니다.');
+                alert('내보낼 데이터가 없습니다.\n데이터를 먼저 불러와주세요.');
                 return;
             }
 
