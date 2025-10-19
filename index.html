@@ -1209,6 +1209,8 @@
             </div>
             <div class="gov-header-right">
                 <span id="currentDateTime"></span>
+                <span id="currentUser" style="margin-left: 20px; font-weight: bold;"></span>
+                <button onclick="logout()" style="margin-left: 10px; padding: 5px 10px; cursor: pointer; background: #003876; color: white; border: none; border-radius: 4px;">로그아웃</button>
             </div>
         </div>
     </div>
@@ -1415,6 +1417,47 @@
 
     </div>
 
+    <!-- 로그인 모달 -->
+    <div id="loginModal" class="modal" style="display: flex;">
+        <div class="modal-content" style="max-width: 450px;">
+            <div class="modal-header" style="background: #003876; color: white;">
+                <h3 class="modal-title"><i class="fas fa-user-circle"></i> 예산 관리 시스템 접속</h3>
+            </div>
+            <div class="modal-body">
+                <div style="text-align: center; margin-bottom: 25px; padding: 20px; background: #f8f9fa; border-radius: 8px;">
+                    <div style="font-size: 16px; font-weight: bold; color: #003876; margin-bottom: 8px;">
+                        국립공원공단 야생생물보전원
+                    </div>
+                    <div style="font-size: 14px; color: #666;">
+                        사육곰 보호센터 예산관리대장
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label required">이름을 입력하세요</label>
+                    <input type="text" id="loginName" class="form-input" placeholder="홍길동" autofocus style="font-size: 16px; padding: 12px;">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">소속부서 (선택)</label>
+                    <select id="loginDepartment" class="form-select" style="font-size: 16px; padding: 12px;">
+                        <option value="">▷ 선택하세요</option>
+                        <option value="야생생물보전원">야생생물보전원</option>
+                        <option value="사육곰보호센터">사육곰보호센터</option>
+                        <option value="관리부서">관리부서</option>
+                        <option value="기타">기타</option>
+                    </select>
+                </div>
+                <div style="margin-top: 10px; padding: 10px; background: #fff3cd; border-left: 4px solid #ffc107; border-radius: 4px; font-size: 13px; color: #856404;">
+                    <i class="fas fa-info-circle"></i> 입력하신 이름은 엑셀 다운로드 시 작성자로 기록됩니다.
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" onclick="doLogin()" style="width: 100%; padding: 12px; font-size: 16px;">
+                    <i class="fas fa-sign-in-alt"></i> 접속하기
+                </button>
+            </div>
+        </div>
+    </div>
+
     <!-- 사업 추가 모달 -->
     <div id="categoryModal" class="modal">
         <div class="modal-content">
@@ -1595,6 +1638,86 @@
         let budgetData = {
             categories: {} // {사업명: {type: 구분, budget: 예산, note: 비고, mainCategory: 대분류, subCategory: 소분류, status: 지출상태, paymentDate: 지출일, items: []}}
         };
+
+        // 사용자 정보
+        let currentUserInfo = {
+            name: '',
+            department: '',
+            loginTime: null
+        };
+
+        // 로그인 함수
+        function doLogin() {
+            const name = document.getElementById('loginName').value.trim();
+            const department = document.getElementById('loginDepartment').value;
+
+            if (!name) {
+                alert('이름을 입력해주세요.');
+                document.getElementById('loginName').focus();
+                return;
+            }
+
+            // 사용자 정보 저장
+            currentUserInfo.name = name;
+            currentUserInfo.department = department || '미지정';
+            currentUserInfo.loginTime = new Date();
+
+            // localStorage에 저장
+            localStorage.setItem('userInfo', JSON.stringify(currentUserInfo));
+
+            // 헤더에 이름 표시
+            updateUserDisplay();
+
+            // 로그인 모달 닫기
+            document.getElementById('loginModal').style.display = 'none';
+
+            // 데이터 로드
+            loadData();
+        }
+
+        // 로그아웃 함수
+        function logout() {
+            if (confirm('로그아웃 하시겠습니까?')) {
+                localStorage.removeItem('userInfo');
+                currentUserInfo = { name: '', department: '', loginTime: null };
+                document.getElementById('loginModal').style.display = 'flex';
+                document.getElementById('currentUser').textContent = '';
+            }
+        }
+
+        // 사용자 정보 표시
+        function updateUserDisplay() {
+            const userElement = document.getElementById('currentUser');
+            if (currentUserInfo.name) {
+                const deptText = currentUserInfo.department !== '미지정' ? ` (${currentUserInfo.department})` : '';
+                userElement.innerHTML = `<i class="fas fa-user"></i> ${currentUserInfo.name}${deptText}`;
+            }
+        }
+
+        // 페이지 로드 시 로그인 체크
+        function checkLogin() {
+            const savedUser = localStorage.getItem('userInfo');
+            if (savedUser) {
+                currentUserInfo = JSON.parse(savedUser);
+                updateUserDisplay();
+                document.getElementById('loginModal').style.display = 'none';
+                loadData();
+            } else {
+                document.getElementById('loginModal').style.display = 'flex';
+            }
+        }
+
+        // 엔터키로 로그인
+        document.addEventListener('DOMContentLoaded', function() {
+            const loginInput = document.getElementById('loginName');
+            if (loginInput) {
+                loginInput.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') {
+                        doLogin();
+                    }
+                });
+            }
+        });
 
         // API 기본 URL
         // 로컬 개발: http://localhost:3000/api
@@ -3221,6 +3344,7 @@
             const summaryData = [];
             summaryData.push(['[국립공원공단 야생생물보전원 사육곰 보호센터] 2025년도 예산 집행 관리 대장']);
             summaryData.push(['작성일자', new Date().toLocaleDateString('ko-KR')]);
+            summaryData.push(['작성자', currentUserInfo.name ? `${currentUserInfo.name} (${currentUserInfo.department})` : '미기재']);
             summaryData.push([]);
 
             let totalBudget = 0;
@@ -3451,6 +3575,7 @@
                 const summaryData = [];
                 summaryData.push(['[국립공원공단 야생생물보전원 사육곰 보호센터] 선택 항목 예산 집행 관리']);
                 summaryData.push(['작성일자', new Date().toLocaleDateString('ko-KR')]);
+                summaryData.push(['작성자', currentUserInfo.name ? `${currentUserInfo.name} (${currentUserInfo.department})` : '미기재']);
                 summaryData.push([]);
 
                 let totalBudget = 0;
@@ -3741,8 +3866,8 @@
             return filtered;
         }
 
-        // 초기 로드
-        window.addEventListener('DOMContentLoaded', loadData);
+        // 초기 로드 - 로그인 체크 후 데이터 로드
+        window.addEventListener('DOMContentLoaded', checkLogin);
     </script>
 </body>
 </html>
