@@ -3484,7 +3484,9 @@
                 const ws = XLSX.utils.aoa_to_sheet(sheetData);
                 ws['!cols'] = [{wch: 6}, {wch: 25}, {wch: 20}, {wch: 15}, {wch: 12}, {wch: 8}, {wch: 12}, {wch: 20}, {wch: 50}, {wch: 50}];
 
-                const sheetName = name.length > 31 ? name.substring(0, 31) : name;
+                // 엑셀 시트 이름에서 특수문자 제거 및 길이 제한
+                let sheetName = name.replace(/[\:\\/\?\*\[\]]/g, '_');
+                sheetName = sheetName.length > 31 ? sheetName.substring(0, 31) : sheetName;
                 XLSX.utils.book_append_sheet(wb, ws, sheetName);
             }
 
@@ -3679,7 +3681,9 @@
                     const ws = XLSX.utils.aoa_to_sheet(sheetData);
                     ws['!cols'] = [{wch: 6}, {wch: 25}, {wch: 20}, {wch: 15}, {wch: 12}, {wch: 8}, {wch: 12}, {wch: 20}, {wch: 50}, {wch: 50}];
 
-                    const sheetName = name.length > 31 ? name.substring(0, 31) : name;
+                    // 엑셀 시트 이름에서 특수문자 제거 및 길이 제한
+                    let sheetName = name.replace(/[\:\\/\?\*\[\]]/g, '_');
+                    sheetName = sheetName.length > 31 ? sheetName.substring(0, 31) : sheetName;
                     XLSX.utils.book_append_sheet(wb, ws, sheetName);
                 }
 
