@@ -1352,13 +1352,14 @@
                             <th style="width: 6%">소분류</th>
                             <th style="width: 10%">사업명</th>
                             <th style="width: 5%">구분</th>
-                            <th style="width: 8%">편성예산(원)</th>
-                            <th style="width: 8%">집행액(원)</th>
-                            <th style="width: 8%">잔액(원)</th>
+                            <th style="width: 7%">총예산(원)</th>
+                            <th style="width: 7%">편성예산(원)</th>
+                            <th style="width: 7%">집행액(원)</th>
+                            <th style="width: 7%">잔액(원)</th>
                             <th style="width: 5%">집행률(%)</th>
                             <th style="width: 6%">지출상태</th>
                             <th style="width: 7%">지출일</th>
-                            <th style="width: 24%">관리</th>
+                            <th style="width: 20%">관리</th>
                         </tr>
                     </thead>
                     <tbody id="categoryTableBody">
@@ -2081,11 +2082,11 @@
                 const status = data.status || '계획';
 
                 // 각 상태별로 예산 분류
-                if (status === '지출완료' || status === '진행중') {
-                    // 지출완료, 진행중은 실제 집행액으로 계산
+                if (status === '지출완료') {
+                    // 지출완료만 실제 집행액으로 계산
                     const used = data.items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
                     completedBudget += used > 0 ? used : budget;
-                } else if (status === '지출진행') {
+                } else if (status === '지출진행' || status === '진행중') {
                     inProgressBudget += budget;
                 } else if (status === '계획') {
                     plannedBudget += budget;
@@ -2137,8 +2138,8 @@
                 let mainUsed = 0;
                 items.forEach(([name, data]) => {
                     mainBudget += data.budget;
-                    // 진행중, 지출완료인 경우 사용액으로 계산
-                    if (data.status === '지출완료' || data.status === '진행중') {
+                    // 지출완료인 경우만 사용액으로 계산
+                    if (data.status === '지출완료') {
                         mainUsed += data.items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
                     }
                 });
@@ -2151,6 +2152,7 @@
                 headerRow.style.fontWeight = '700';
                 headerRow.style.borderTop = '2px solid #003876';
                 headerRow.style.borderBottom = '2px solid #003876';
+                const mainCatTotalBudget = mainCategoryBudgets[mainCat] || 0;
                 headerRow.innerHTML = `
                     <td style="background: rgba(255,255,255,0.5);"></td>
                     <td colspan="3" class="text-left" style="padding: 14px 12px; color: #003876; font-size: 15px; font-weight: 700;">
@@ -2158,6 +2160,7 @@
                     </td>
                     <td class="text-right" style="color: #003876; font-size: 13px;">총 ${items.length}개 사업</td>
                     <td style="background: rgba(255,255,255,0.5);"></td>
+                    <td class="text-right amount" style="color: #d32f2f; font-size: 14px; font-weight: 700; background: rgba(255,255,255,0.5);">${formatNumber(mainCatTotalBudget)}</td>
                     <td class="text-right amount" style="color: #003876; font-size: 14px; background: rgba(255,255,255,0.5);">${formatNumber(mainBudget)}</td>
                     <td class="text-right amount" style="color: #1565c0; font-size: 14px; background: rgba(255,255,255,0.5);">${formatNumber(mainUsed)}</td>
                     <td class="text-right ${mainRemaining >= 0 ? 'positive' : 'negative'}" style="font-size: 14px; background: rgba(255,255,255,0.5);">${formatNumber(mainRemaining)}</td>
@@ -2168,9 +2171,9 @@
 
                 // 세부 사업
                 items.forEach(([name, data]) => {
-                    // 진행중, 지출완료인 경우 사용액으로 계산
+                    // 지출완료인 경우만 사용액으로 계산
                     let used = 0;
-                    if (data.status === '지출완료' || data.status === '진행중') {
+                    if (data.status === '지출완료') {
                         used = data.items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
                     }
                     const remaining = data.budget - used;
@@ -2182,6 +2185,7 @@
                     const paymentStatus = data.status || '계획';
                     const escapedName = name.replace(/'/g, "\\'");
                     const paymentDate = data.paymentDate ? formatDate(data.paymentDate) : '-';
+                    const mainCatTotalBudget = mainCategoryBudgets[mainCat] || 0;
                     row.innerHTML = `
                         <td><input type="checkbox" class="category-checkbox" data-category="${escapedName}"></td>
                         <td>${globalIndex++}</td>
@@ -2189,6 +2193,7 @@
                         <td class="text-left editable-cell" style="color: #888; font-size: 12px;" data-field="subCategory" data-category="${escapedName}" ondblclick="makeCellEditable(this, 'category', '${escapedName}')">${data.subCategory ? data.subCategory : '-'}</td>
                         <td class="text-left editable-cell" data-field="name" data-category="${escapedName}" ondblclick="makeCellEditable(this, 'category', '${escapedName}')">${name}</td>
                         <td class="editable-cell" data-field="type" data-category="${escapedName}" ondblclick="makeCellEditable(this, 'category', '${escapedName}')"><span class="category-badge ${data.type}">${data.type}</span></td>
+                        <td class="text-right amount" style="color: #999; font-size: 12px;">${formatNumber(mainCatTotalBudget)}</td>
                         <td class="text-right amount editable-cell" data-field="budget" data-category="${escapedName}" ondblclick="makeCellEditable(this, 'category', '${escapedName}')">${formatNumber(data.budget)}</td>
                         <td class="text-right amount">${formatNumber(used)}</td>
                         <td class="text-right ${remaining >= 0 ? 'positive' : 'negative'}">${formatNumber(remaining)}</td>
